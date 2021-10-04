@@ -1,0 +1,107 @@
+Overall, all of the presented methods in previous sections were looking to find a balance between accuracy and fairness either using a re-ranking methods or a regularization based method. Most of the focus of the previous methods were on reaching provider-side fairness. Here are the next steps for the previous projects.
+\begin{itemize}
+    \item \textbf{Fairness Survey}: Research on recommender systems fairness usually revolves around new algorithms. we are in the process of producing a journal article that surveys existing algorithms and compares their fairness properties on several data sets, from the perspective of both recommendation consumers and item providers. 
+
+    We examine prominent examples from three different classes198of algorithms:  neighborhood-based, factorization using prediction loss, and factorization using ranking loss. From the neighborhood based algorithms we picked Sparse Linear Methods (SLIM) and item-based Knn. From the Matrix Factorization family using prediction loss we picked Biased Matrix Factorization, Weighted Regularized Matrix Factorization, Non-Negative Matrix Factorization, and from the factorization methods that use ranking loss we picked Bayesian Personalized Ranking. We are testing their fairness properties on the following datasets: The Movies Dataset, MovieLens 1M, Kiva dataset and Lastfm.
+    
+    we intend to submit this project to a journal.
+    
+    \item \textbf{Balanced Neighborhoods}: In this project, we built on the standard nearest neighbor techniques in recommender systems and built balanced neighborhoods to ensure diversity among the peers from whom recommendations are generated. In our future work for this project, we plan to extend these findings in several ways. We would like to have a more extensive experimentation of the fairness properties of the balanced neighborhood SLIM. And we would like to run these experimentation for both consumers and providers. We would also like to test this idea on different neighborhood-based methods besides SLIM. 
+    
+    It is possible that a multisided platform may require fairness be considered for both consumers and providers at the same time: a CP-fairness condition. For example, a rental property recommender may treat minority applicants as a protected class and wish to ensure that they are recommended properties similar to unprotected renters. At the same time, the recommender may wish to treat minority landlords as a protected class and ensure that highly-qualified tenants are referred to them at the same rate as to landlords who are not in the protected class. One important question for future research is how the outcomes for each stakeholder and the overall system performance are affected by combining consumer- and provider-fairness concerns.
+    
+    Finally, we expect to publish a journal article of these thorough experiments in the Information and Management Journal.
+    
+    \item \textbf{Dynamic Fairness}: In this paper, we conceptualized algorithmic fairness and recommendation fairness, in particular, as a problem of \textit{social choice}. That is, we define the task of computing a recommendation as a problem of arbitrating among the preferences of different individual agents to arrive at a single outcome. For our purposes, the agents in question include the user and also multiple \textit{fairness concerns} that may be active within a particular organization.
+    
+    The most important consequence of framing fairness as a problem of social choice is that it highlights the multiplicity and diversity of fairness (and other stakeholder) concerns that might be relevant in a given application. This approach allows us to be agnostic to different definitions and metrics of fairness and does not impose any particular structure on stakeholder preferences. The other important consequence is that we can use the extensive body of research on fairness in this field.
+    
+    We build the SCRUFF framework for dynamic adaptation of recommendation fairness using social choice to arbitrate between different re-ranking methods. We defined a set of choice functions, ranging from a simple fixed lottery to an adaptation of the probabilistic serial mechanism, and demonstrate their performance on two data sets where multiple fairness concerns have been defined. However, we found relatively minor differences between the different lottery mechanisms, except that the Allocation mechanism, which takes user preferences over features into account, provides lower variance in fairness over time and therefore a more consistently fair output.
+    
+    Therefore we intend to experiment with different aspects of this framework and test different aspects of it. Firstly, we intend to test different fairness definitions in this framework, test different base recommendation algorithms and re-ranking methods. The main reason behind that is that all these parts add extra restrictions to the framework and might hinder the results to change. Secondly, we didn't have an appropriate evaluation method to observe the results. We intend to use Generalized Cross Entropy for this purpose. Our results for fairness weren't bounded, therefore we intend to use Hinge Loss function to add a cap to the fairness values. Lastly, we intend to design a method that could guarantee certain fairness proportionality in the outputs.
+    This Project is intended to be submitted to either the ACM Conference Series on Recommender Systems 2021 or the ACM conference on Fairness, Accountability, and Transparency 2021.
+    
+    
+\end{itemize}
+
+
+
+% \subsection{Fairness Survey}
+% Research on recommender systems fairness usually revolves around new algorithms. we are in the process of producing a journal article that surveys existing algorithms and compares their fairness properties on several data sets, from the perspective of both recommendation consumers and item providers. 
+
+% We examine prominent examples from three different classes198of algorithms:  neighborhood-based, factorization using prediction loss, and factorization using ranking loss. From the neighborhood based algorithms we picked Sparse Linear Methods (SLIM) and item-based Knn. From the Matrix Factorization family using prediction loss we picked Biased Matrix Factorization, Weighted Regularized Matrix Factorization, Non-Negative Matrix Factorization, and from the factorization methods that use ranking loss we picked Bayesian Personalized Ranking.
+% We are testing their fairness properties on the following datasets: The Movies Dataset, MovieLens 1M, Kiva dataset and Lastfm.
+
+
+% \subsection{Balanced Neighborhoods}
+% % This paper extends ideas of fairness in classification to personalized recommendation. 
+% Our BN-SLIM algorithm can be seen as an approach to building systems that target particular diversity-aware recommendation problems, where the providers and/or items can be divided into two disjoint categories. However, the approach is particularly suited to fairness-aware contexts because the objective function is optimized precisely when the protected and unprotected groups are weighted the same by the algorithm. 
+
+% The most obvious precursor for this research is the work of Dwork et al. in the area of fair representation~\cite{zemel2013learning,fairness}. The authors propose learning a mapping between the individual instances in the data to prototype instances with balanced membership such that protected group identities are not recoverable. 
+
+% This paper extends this idea of fairness in classification to personalized recommendation. However, our application of this concept is different in that we are building on the standard nearest neighbor techniques in recommender systems and building balanced neighborhoods to ensure diversity among the peers from whom recommendations are generated. 
+
+% A key aspect of this extension is to note the tension between a personalized view of recommendation delivery and a regulatory view that values particular outcomes. The regulatory view is somewhat foreign to research in personalization, but there are strong arguments that total obedience to user preference is not always risk-free or desirable~\cite{pariser2011filter,sunstein2009republic}. This paper also introduces the concept of multisided fairness, relevant in multisided platforms that serve a matchmaking function. We identify consumer- and provider- fairness as properties desirable in certain applications and demonstrate that the concept of balanced neighborhoods in conjunction with the well-known sparse linear method can be used to balance personalization with fairness considerations.
+
+% In our future work, we plan to extend these findings in several ways. It is possible that a multisided platform may require fairness be considered for both consumers and providers at the same time: a CP-fairness condition. For example, a rental property recommender may treat minority applicants as a protected class and wish to ensure that they are recommended properties similar to unprotected renters. At the same time, the recommender may wish to treat minority landlords as a protected class and ensure that highly-qualified tenants are referred to them at the same rate as to landlords who are not in the protected class. One important question for future research is how the outcomes for each stakeholder and the overall system performance are affected by combining consumer- and provider-fairness concerns.
+
+% Another path to pursue is to have a more extensive experimentation of the fairness properties of the balanced neighborhood SLIM for both consumers and providers. We would like to test this idea on K-nearest neighbor method as well. Finally, we expect to publish a journal article of these thorough experiments in the Information and Management Journal.
+
+% Another important area of research is to extend our measures of fairness. The additive measures used in this paper capture an aggregate representation of how recommendation results are changing for user and provider groups generally, but they do not permit fine-grained analysis of the tradeoffs experienced by individual users or providers. We do not know, for example, if the results of our Kiva.org experiments represent a Pareto improvement in system performance or just an average improvement over the stakeholder groups, and whether some subgroups are impacted more than others.
+
+% One of the key challenges in this area is the domain-specificity of recommendation environments. The utilities that are delivered to each class of stakeholder are highly dependent on the type of item being recommended, the social function of the platform, and the interactions that it enables. It is therefore difficult to find appropriate data sets for experimentation and challenging to generalize across recommendation scenarios. 
+
+
+% expanding balanced neighborhood on the provider-side fairness
+
+% \subsection{Fairness-Aware Re-ranking / Personalized Fairness-Aware Re-ranking}
+
+% In this work, we proposed a personalized fairness-aware re-ranking algorithm for microlending that can balance accuracy and fairness. We increase the coverage rate of borrowers' regions for Kiva.org to achieve borrower-side fairness, and we show that our algorithm can do so with minimal loss in ranking accuracy. In addition, our algorithm includes lender-specific weights that can be used to personalize the degree of loan diversity.
+
+% In the future, we will consider the position bias into the fairness-aware recommendation for microlending. As discussed in this paper, the recommendation for microlending is moved forward by considering the coverage rate of borrowers and the lenders' diversity tolerance. However, the top positions are generally more valuable than the bottom ones \cite{robertson1977probability}. We plan to make a further assumption that the chance of exposure for an item depends on its position in ranking. Thus, incorporating such position bias into the re-ranking criteria for microlending is promising.
+
+% In the future, we will study a number of variants of our algorithms presented here. We plan to explore different methods for computing personalized diversity tolerance factors, especially to solve the cold-start problem in the current algorithm. We also plan to examine variants of the re-ranking algorithm to take into account the size of each provider group's inventory. 
+
+% FAR/PFAR is extremely strict in its requirement that each possible provider group appears at least once at the top of the list. Therefore, another variant to consider is one that can adjust the accuracy/fairness tradeoff in a dynamic way as items are ranked, valuing accuracy more at the top of the list and provider-side fairness more at the bottom of the list.
+
+% Finally, we note that, in real-world recommendation applications, managing the tradeoff between accuracy and coverage of provider groups is not a single-shot process. Rather it is an online process, where a current lack of coverage can be compensated for at a later time, and where results are evaluated temporally. This would require making the algorithm sensitive to historical patterns of coverage, rather than just the results obtained in the current list. We intend to explore this type of algorithm design and evaluation in our future work.
+
+% This project currently is an on-going project and we intend to develop a method using probabilistic serial allocation and submit it to the ACM Conference Series on Recommender Systems 2021.
+
+% \subsection{Opportunistic Multi-aspect Fairness through Personalized Re-ranking}
+% The results of our experiments show that OFAiR works as intended. Its proportion-based MMR model provides a much better tradeoff between ranking accuracy and fairness for the protected-unprotected case than the FAR/PFAR models explored in prior work. In the datasets under study, we show that users' tolerance for diversity varies across features, which justifies our approach of differentiating users based on the opportunities they represent for enhancing provider-side fairness. 
+
+% We show that the combination of personalized, feature-specific, weights together with weights identifying protected feature values is effective with the feature-specific tolerance helping maintain accuracy and the feature weight promoting protected group items. As we showed, our method can be applied across multiple protected groups at the same time and can ensure fairness with respect to system's designed fairness goal for each feature.
+
+% One of the challenges in this work is the lack of proper datasets that have user features and these datasets are specifically lacking in domains where fairness matters. Due to this issue, we chose the Movies dataset to show the capabilities of our method.
+
+% As our future work in this section, we intend to run a more thorough experimentation with weights of the weighted cosine similarity and capture the influence of these weights on the final results. We also intend to use different recommendation algorithms as the base recommendation.
+
+% A more general method to use is the metric learning approach, that assumes different dimensions and assigns weights to these dimensions accordingly. This is useful as it automatically assigns weights to dimensions not manually.
+
+% The other approach to explore is to use voting methods in the fair resource allocation literature in the computational social choice field. Specifically, the cake cutting problem, where we want to allocate cake slices fairly where we assume users have different preferences for different layers of the cake which is similar to our research problem here, where users have different preferences over different dimensions.
+
+% The results of this experimentation is intended to be submitted to the ACM FAcct 2021 conference.
+
+% journal
+
+% In our next work, we intend to explore further the idea of ``opportunity'' in subgroup-fairness-aware recommendation. In particular, when recommendations are delivered over time, prior outcomes relative to different protected groups may dictate what opportunities should be most salient at any given moment. We intend to publish this work later this year in The ACM Series on Recommender Systems.
+
+
+% \subsection{Dynamic Fairness}
+% In this paper, we conceptualize algorithmic fairness and recommendation fairness, in particular, as a problem of \textit{social choice}. That is, we define the task of computing a recommendation as a problem of arbitrating among the preferences of different individual agents to arrive at a single outcome. For our purposes, the agents in question include the user and also multiple \textit{fairness concerns} that may be active within a particular organization. 
+
+% The move to frame fairness as a problem of social choice has several important consequences. First, it highlights the multiplicity and diversity of fairness (and other stakeholder) concerns that might be relevant in a given application. This approach allows us to be agnostic to different definitions and metrics of fairness and does not impose any particular structure on stakeholder preferences.
+
+% Second, we are able to make use of the large body of research in computational social choice, including the study of fairness, that has emerged in the past decades. 
+
+% Building on these ideas, we demonstrate the SCRUFF framework for dynamic adaptation of recommendation fairness using social choice to arbitrate between different re-ranking methods. We define a set of choice functions, ranging from a simple fixed lottery to an adaptation of the probabilistic serial mechanism, and demonstrate their performance on two data sets where multiple fairness concerns have been defined. We found relatively minor differences between the different lottery mechanisms, except that the Allocation mechanism, which takes user preferences over features into account, provides lower variance in fairness over time and therefore a more consistently fair output.
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% What evaluation function fits the dynamic fairness environment
+% What's regret in this environment
+% Using hinge loss for the objective function to bound the fairness achievement etc.
+% trying out different fairness definitions
+% designing a method that guarantees certain properties in the re-ranked list
+
