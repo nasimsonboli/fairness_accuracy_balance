@@ -1,0 +1,237 @@
+
+% motivation
+After a period of substantially fast development in different aspects of digital systems, and with more and more decisions being delegated to algorithms, the society has begun to realize these systems that were intended to assist people in different tasks have ethical issues and can cause harm to individuals and the society.
+
+
+Take as a real-world example the following study: \cite{1Muhammad2019facebookads} studied the distribution of ads on Facebook to understand potentially discriminatory impact in the visibility of different kinds of ads. They found that even when an advertiser wishes to have fair distribution of their ad, for example to ensure that an ad for a job opening is seen by people of all genders, the combination of relevance optimization and market dynamics results in disparate distribution of ads across racial and gender lines. 
+% \cite{barocas2016big} has caution that algorithms can introduce new biases in systems or perpetuate existing ones.
+
+Discrimination caused by algorithms that are trained on biased data or by lack of a good design, propagation of bias \cite{barocas2016big}, marginalization of minority groups in the society, inflation in the polarization of the society that can be caused by tight filter bubbles due to massive filter bubbles, and etc. are among the harms that algorithms can potentially cause. These problems have gained the attention of a multidisciplinary community from computer scientists, social scientists and legal scholars. Thus as a response, recent research has shifted from design of algorithms that pursue purely optimal outcomes with respect to an objective function into ones that also consider social impacts such as fairness.
+
+\subsection{Fairness in Machine Learning}
+% fairness in ML
+Fairness, bias and discrimination are topics of considerable research interest in the recent years~\cite{pedreshi2008discrimination,fairness,bozdag_bias_2013}.
+
+% what fairness means in machine learning? how fairness is detected in machine learning? What are the solutions presented?
+Much of the work in algorithmic fairness has been focused on classification methods with a myriad of definitions that has been proposed. %\todo{cite}.
+The key definition are explained in \cite{mitchell2021algorithmic}.
+
+One of the main divisions in fairness definitions comes from the way we assess and evaluate fairness and whether this evaluation is individual based or group based.
+
+\subsubsection{Group Fairness}
+%group fairness
+In group fairness based definitions, a model’s treatment of two or more groups with respect to a sensitive attribute (e.g. gender, race, ethnicity, etc.) is compared. In this method, the protected group(s) is designated with respect to a previously defined sensitive attribute and should be protected against discrimination. The sensitive attribute definition is usually rooted in anti-discrimination laws\cite{barocas2016big}.This notion of fairness tries to ensure that algorithms don't impact the members of the protected group more adversely and disproportionately. Group-based methods of fairness has helped build the most prevalent structures to achieve and assess fairness ~\cite{zemel2013learning,kamishima2012fairness,kamiran2010discrimination,zhang2017anti}.
+
+\paragraph{Statistical Parity}
+% Statistical Parity
+% This notion has become the most prevalent structure, but even there researchers have shown tension between different definitions \todo{cite}.
+The notion of Statistical or Demographic Parity requires that two groups with a different sensitive group have the same chance of getting a positive result. This notion has been discussed under different names of avoiding disparate impact \cite{Feldman2015}, independence \cite{barocas2018fairness} and anti-classification \cite{corbett2018measure}. This measure is used to ensure a ``fair'' representation of different groups in different tasks such as ranking\cite{singh2018fairness,zehlike2017fa,yang2017measuring}, and recommendation\cite{mehtora2018towards,ekstrand2018exploring}.
+    
+\paragraph{Performance Parity}
+    % Performance Parity
+Performance Parity is another category of group fairness that requires equal error rates for different groups. Equality of opportunity or equality of true positive rates \cite{hardt2016equality} that requires the positive classification rates to be independent of the protected attribute given the true label, equality of both true positive and false positive rates which is known as equalized odds \cite{hardt2016equality}, equality of mis-classification rates (e.g. equality of false negative rates aka lack of disparate mistreatment\cite{zafar2017fairness}) and equality of positive predictive values aka calibration, belong to this category. 
+    Performance Parity has also been studied as error parity in recommendation algorithms\cite{ekstrand2018all,yao_huang_fatml-2017}.
+
+\subsubsection{Individual Fairness}
+%individual fairness
+Dwork et al. \cite{Dwork2012individual} observed that the demographic parity requirements can be met when qualified candidates from one groups and random candidates from the other groups were chosen. Thus, satisfying certain group based fairness notions might degrade fairness for individuals in a group. Therefore fairness might be a requirement on an individual level.
+Dwork et al. \cite{Dwork2012individual} introduces the concept of individual fairness \cite{Dwork2012individual} which posits that similar individuals with respect to the task at hand should be treated similarly or in other words should have similar probabilities of positive classification outcomes. One of the limitations of this method is the choice of similarity metric to compare individuals and whether this metric is unbiased. This method also doesn't place any requirement on the treatment of dissimilar individuals.
+Another individual fairness definition was proposed by \cite{pmlr-v70-kearns17a} for the problem of candidate set selection from diverse incomparable source sets. Choosing candidates for a research position from a diverse research communities with uncomparable research metrics (e.g. citation rates are different in different research communities) is an example of this problem. Meritocratic fairness requires that less qualified candidates are probabilistically almost never chosen over the more qualified candidates.
+
+\subsubsection{Harm}
+% harm!
+Independent to group and individual fairness, Crawford \cite{crawford2017trouble} defines two new fairness definitions which are connected to the harm caused by unfairness: (a) distributional harm that is cause by an inequitable distribution of a resource or opportunities, and (b) representational harm, where a system doesn't have an accurate representation of the society or where it systematically misrepresents certain groups.
+
+\subsubsection{Anti-classification \& Anti-subordination}
+The motivation of fairness constructs also categorizes fairness definitions into two groups: anti-classification and anti-subordination. U.S. anti-discrimination law is rooted in anti-classification ideas which requires that the influence of a protected group should not play a role in the decision making process. This notion can also be called as disparate treatment. The main idea of anti-subordination is to actively work to reverse the effects of historical discriminatory patterns in the decision making processes \cite{barocas2016big}.
+
+Although these motivations are often very clear, their proper application is still vague \cite{xiang2019legal}. It is also worth mentioning that it has been shown that satisfying different fairness notions at the same time is mathematically impossible and infeasible \cite{Kleinberg:InherentTrade,chouldechova2017fair}. Due to the competing and sometimes conflicting goals of different fairness definitions, different needs of various stakeholders involved, etc. we cannot have a system that is universally "fair". Thus, it is essential to pick a fairness notion that serves best in the specific context of the target application. 
+
+\subsection{Fairness in Recommender Systems}
+% what are recommender systems?
+Recommender systems are one of the most pervasive applications of machine learning in industry. They play a pivotal role in connecting users to relevant items or content throughout the web while not only users rely heavily on them but also content producers, sellers or information providers.
+
+Consider a recommender system suggesting job opportunities to job seekers. Discriminatory recommendations in this system could mean that men and women with similar qualifications don't get recommendations of jobs with similar rank and salary. Or when women get similar recommendations just because of their demographic information not because of their qualifications. The system would therefore need to defend against biases in recommendation output, even biases that arise due to behavioral differences: for example, male users might be more likely to click optimistically on high-paying jobs.
+
+% How this problem extends to other areas of machine learning such as recommendation system?
+Traditionally the focus of recommendation algorithms have been on accuracy and it was known that it is tied strongly with user satisfaction. Later on, the focus of these systems changed to \emph{beyond accuracy} methods such as diversity, coverage, novelty, serendipity. This change of focus was supported by the literature that showed these properties in recommendation lists of users increase their overall satisfaction.
+%  \todo{cite}
+In recent years, aligned with the change of focus on these beyond-accuracy and socially sensitive properties in machine learning, the social aspects of these algorithms has come to the fore.
+
+% to the injustice they have caused for the society \todo{cite}.
+Therefore achieving fairness in recommendation algorithms has gotten more attention. However, the goal of fairness isn't completely new in the recommender system literature. Alleviating the problem of popularity bias in recommendations \cite{popbias2018} and ensuring equality or equity in long-tail recommendations \cite{ferraro2019} can be thought of achieving fairness for content providers in the systems. Group recommendation also tries to recommend items to users while considering and treating all the members of the group fairly \cite{kaya2020}. However, the goal of fairness in recommendation goes beyond one stakeholder and is not bounded to the previously mentioned problems. Rather it focuses on the aspects that are socially sensitive such as discrimination against sensitive-groups, under-representation of sensitive groups and preventing biases from creeping into these systems.
+
+
+\subsubsection{Challenges of Fairness in Machine Learning}
+Recommender systems have their unique challenges for investigating the fairness concepts and the methods that have been developed in other machine learning literature is not fully applicable in recommender systems. The role of personalization and multistakeholder nature of recommender systems add major additional complications to the problem of fairness in recommendations.
+% ranking the outputs and the context add additional complications to the problem of fairness in recommendations.
+    
+\paragraph{Personalization}
+% personalization
+There is a tension between the goals of personalization and fairness \cite{modani2017fairness}. On the one hand, the goal of personalization is to find the best item(s) for each user while this list could be different for the users. On the other hand, fairness for providers means to give them equal visibility. So, one could simply divide the recommendation opportunities equally among providers. In this case personalization for consumers and fairness for providers are conflicting goals and achieving one means sacrificing the other one.
+
+Additionally, recommendations become homogeneous over time in iterative environments \cite{Chaney2018} causing multiple issues like deteriorating popularity bias in a system. This issue both causes less visibility for less popular or marginalized item providers (provider unfairness), and can be unfair to marginalized consumers as popularity bias in the input data can cause the preference of 95\% the users be overshadowed by only the preference of 5\% of users who have rated mostly popular items (consumer unfairness) \cite{Eskandanian2019power}.
+
+
+% Personalization interferes with the goal of fairness. This is mainly because fairness for all means that all the users in a system should receive the same recommendations while the goal of personalization is to find the best item for each user which could be different for different users.
+
+%Besides maximizing the lenders' interests, we also consider the allocation of recommendation opportunities across the borrower side. The concepts of personalization and fairness are conflicting to some extent \cite{modani2017fairness}. On the one hand, the main goal of personalization is to break the absolute fairness so that the recommended loans can best match the lenders' interests and needs. On the other hand, to obtain the ideal fairness, one could simply divide the recommendation opportunities equally to each region.
+    
+\paragraph{Multistakeholder aspects}
+% multistakeholderness
+Recommender systems exist to facilitate transactions between consumers, content providers. Thus, many recommendation applications involve multiple stakeholders and therefore may give rise to fairness issues for more than one group of participants~\cite{burke_multisided_2017}.
+As an example, Uber Eats is a multistakeholder setting, where consumers are users who order food, providers are restaurants who provide the food, Uber itself is the system, and drivers are the other stakeholders involved as well. Fairness concerns of any or all of these entities are important and necessary.
+Consumer fairness, is concerned with fair and equitable treatment of all the users in the system regardless of their membership to any protected group. For example ensuring that all the subgroups of users are receiving quality recommendations not only certain groups. Provider fairness is concerned with a fair treatment of content providers or content creators. For example, by making sure they are represented in the recommendations fairly and have equal opportunities to benefit from the system. Subject fairness is concerned with fair treatment of the content, people or entities in a system. For example, ensuring that recommendations do not systematically under-represented specific segments of the society or certain content.
+
+Therefore, recommendation fairness is not one problem. Multiple stakeholders might be involved and although they might all seek fairness, their goal of fairness might be different (due to different definitions of fairness), competing or conflicting.
+
+For the previous two challenges, take the job recommendation scenario as an example. Since a recommender system is often in the position of facilitating a transaction between parties, such as job seeker and prospective employer. Defending biases towards both parties may be important. For example, at the same time that a job recommender system is ensuring that male and female users to get recommendations with similar salary distributions, it might also need to ensure that jobs at minority-owned businesses are being recommended to the most desirable job candidates at the same rate as jobs at majority-owned businesses such as white-owned businesses.
+
+Due to issues as such, researchers in recommender systems have begun to seek ways to ensure fairness in the results that such systems produce for multiple parties (stakeholders).
+
+Defeating such biases becomes more challenging when a system's main goal is personalization. Even in the example before, some users might prefer a somewhat lower-paying job if it had other advantages: such as a shorter commute time, or better benefits. 
+Personalization is so important that if a job seeker does not find the system's recommendations valuable, he or she may ignore the fair aspect of the system and may migrate to a competing platform. The same is true of job providers; a company may choose other platforms on which to promote its job openings if a given site does not present its job ads as recommendations or does not deliver acceptable candidates. Therefore the fairness goal has some tensions with the personalization goal.
+
+% how fairness is detected in recsys? and this ...
+\paragraph{Other Challenges}
+
+As mentioned previously, we cannot achieve a universally fair system, therefore for each problem, it's essential that we consider the target stakeholders, the definition of harm or unfairness and the specific metrics for measuring harm or integrating in the system to avoid harm. These elements are important in order to define, integrate and assess fairness in recommendation algorithms.
+% Besides the previously mentioned challenges, 
+
+Lack of appropriate data to study fairness goals is another challenge with which we have to deal. We might need sensitive attributes (e.g. gender, race, etc.) for the stakeholder entities but sharing and using this data might have privacy, legal or ethical concerns. Some of solutions that were used for this problem were using crowd sourcing\cite{biega2020overview}, or professional annotation, integrating different datasets, using inference methods to impute demographic information, generating synthetic datasets \cite{burke2018synthetic}, or training algorithms without demographics\cite{Kallus2020Assessing}. But, all of the previous solutions bring their specific limitations to the method. 
+
+One of the other key challenges in this area is the domain-specificity of recommendation environments. The utilities that are delivered to each class of stakeholder are highly dependent on the type of item being recommended, the social function of the platform, and the interactions that it enables. It is therefore difficult to find appropriate data sets for experimentation and challenging to generalize across recommendation scenarios.
+
+\subsection{Fairness for Multi-stakeholders}
+% fairness solutions and methods presented in recommender systems.
+Fairness notions can be defined, assessed and integrated to the algorithms for different stakeholders. For each stakeholder here we investigate the prior work and categorize it based on previous fairness notions such as group fairness, individual fairness, etc.
+
+        % consumer fairness
+        % individual fairness
+        % group fairness
+        % fairness beyond accuracy
+        % more complex scenarios
+\subsubsection{Consumer Side Fairness}
+% consumer side fairness
+Consumer fairness or (C-fairness) is concerned with the fair treatment of consumers (of recommendations) and the impact that recommendations have specifically on marginalized groups. Such objectives are sometimes required by law.
+    
+\paragraph{Individual Fairness}
+%individual fairness
+In collaborative filtering, the recommendations are build based on the similarity of users. And the goal is to use these similarities to recommend items to users in a personalized way. In other words, the recommendations of similar users are similar, thus they are treated similarly. This property might appear similar to the definition of individual fairness, although the metric based on which the similarity is calculated is different. As an example,
+collaborative filtering uses the rating behavior of users whereas individual fairness looks at the user demographic information to calculate similarity which is hard to get by.
+Another issue is that while similar users will be treated similarly, but since the data is not rich for minority groups, statistically, all of the users in that group might be treated unfairly when compared to the whole.
+As an example, if women in a job recommendation platform tend to click on lower paying jobs, and since their rating behavior is similar, all of them get equally low paying jobs. Therefore, individual fairness and personalization might have similar goals, but the similarity metric and the information they use is different.
+
+
+\paragraph{Group Fairness}
+% group fairness
+To integrate group fairness in recommendation algorithms, we can imagine the utility that the consumers receive from recommendations and whether it is distributed equally or whether all the individuals are benefiting equally from it. Similar to the group fairness definition in machine learning, here also we have both categories of (a) statistical or demographic parity and (b) performance parity. The first category focuses on sub-group representation while the latter focuses on subgroup loss (or gain). Since the performance parity is the statistical parity in performance metrics, it has been called statistical parity in previous research.
+
+we measure the distribution of the genders of the authors of books in user rating profiles and recommendation lists produced from this data.
+
+\cite{ekstrand2018exploring} demonstrates that the distribution of the authors' genders in user rating profiles and recommendation lists produced from this data are very different while the collaborative filtering algorithms propagate this bias. As a conclusion, to achieve demographic parity of authors' genders in the recommendations, we need to ensure that group (authors' genders) proportions in the recommendation sets should be similar to group proportions in input ratings. 
+Performance parity in recommendation is calculated based on the effectiveness of recommendations and whether different subgroups are experiencing the same accuracy or error. Although not all of the definitions of error in classification can be applied to recommendation settings. Similar to \cite{kamishima2016model}, Yao and Huang \cite{yao_huang_fatml-2017} have designed different error-based fairness metrics for collaborative filtering such as value unfairness, over-representation, under-representation, etc. They have compared the discrepancy between the actual and predicted ratings for protected and unprotected groups or inconsistencies between the predicted ratings for these groups. 
+\cite{ekstrand2018all} has performed an off-line top-N evaluation of several collaborative filtering algorithms and has compared the results of different user demographics based on their NDCG.
+\cite{steck2018calibrated} introduces the concept of miscalibration in recommendations which has been used detected as consumer unfairness. Miscalibration happens when the item preferences of the users in their profile isn't covered in the recommendations they receive. \cite{Kun2020calib} has discusses that usually smaller or niche subgroups receive more miscalibrated recommendations compared to bigger or more popular subgroups.
+% \cite{burke2018balanced} has also compared the statistical parity in precision for different demographic groups in consumers. 
+    % provider fairness
+        % provider utility
+        % individual fairness
+        % group fairness
+        
+\subsubsection{Provider Side Fairness}        
+Provider-side fairness or (P-fairness) is concerned with treating the suppliers of information or items that are being recommended fairly. We can think of recommendation opportunities as a resource and the fair distribution of those opportunities among providers as provider fairness. 
+Much of the research on diversity and decreasing popularity bias, contributes to provider fairness. Although, provider fairness derives from the goal of social justice and promotes the content from the underprivileged groups to provide more opportunities for them to be discovered. 
+To achieve P-fairness, \cite{mehtora2018towards} tried to ensure that different sub-groups are similarly represented in the recommendations.
+    
+The utility defined in this context is mostly defined as exposure. A recommendation list is a short list that provides limited opportunities to expose items to consumers. According to the user attention pattern, the items that are on top of the list, receive more attention and this attention decreases as we go down in the list. Therefore, not all the positions in a list have equal utilities and only one item in the whole list can have the most valuable position and receive the most benefit \cite{diaz2020}. Therefore provider utility is calculated over all the recommendation lists delivered to all the users, while to calculate each consumers utility we only need to look at each consumer's recommendation and nothing more. Most of the metrics introduced for provider utility are based on NDCG \cite{biega2018equity}. %\todo{cite}
+
+\paragraph{Individual Fairness}
+%individual fairness
+individual fairness for providers mean that similar items should receive similar utility from the recommender system. As an example, items that bring the same utility to a user (the user likes them both), are considered similar and should receive the same exposure in a recommendation list. \cite{biega2018equity} aggregates each item's attention and relevance over multiple rankings and assumes the providers are being treated fairly if the attention they have received from users are proportional to their relevance. The similarity of providers can be calculated in many other different ways and is an open research area.
+    
+\paragraph{Group Fairness}
+%group fairness
+Group fairness for providers is concerned with a fair treatment of different provider sub-groups. This goal should be aligned with the goal of personalization which considers users preferences so it doesn't recommend provider groups to users that don't like them. \cite{kamishima2018recommendation} proposes that the recommendations outcomes should be statistically independent of a sub-group's protected attribute in order to have group fairness. In this case, the probability that an item shows up in a recommendation list is independent of its sensitive attribute.
+Another method is to ensure that there is a fair representation of providers in the recommendation lists. Unfairness in this case is when there is a big divergence between the distribution of the provider groups in the lists and the target distribution. \cite{yang2017measuring,das2019conceptual}. This divergence can be calculated using KL-divergence, difference in probabilities, odds ratio, etc. \cite{biega2018equity} calculates the provider groups fairness by aggregating expected exposure over multiple rankings. Fairness in this context happens when each provider group receives an appropriate level of exposure. \cite{beutel2019fairness} incorporates a fair construct (disparate mistreatment) in BPR\cite{rendlebpr2009} loss function. In this construct, a fair ranking happens when ranking a relevant item over an irrelevant item is independent of its group membership. Their pairwise fairness objective is defined in two way: once between groups and once within groups.
+    
+\subsubsection{Other stakeholders}     
+% subject fairness
+% other stakeholders
+Besides the consumers and providers, there might be other stakeholders in the system whose fairness matters. In the Uber Eats scenario, besides considering fairness for users (who place orders) and restaurants (providers), we might want to increase fairness for drivers as well. For example, we might not want to overbook one driver, while other drivers stay in the queue to take delivery orders.
+Subject fairness is another instance of this type, where subject is a stakeholder entity. And the fair goal might be having a fair distribution of the subjects of items being recommended. For example, in news platforms, to avoid polarization in the society, we might want to have a fair representation of different points of views, or giving a fair coverage to different topics and avoiding certain popular topics from monopolizing news feeds.
+% Chen Karako
+% diversity contributes to subject fairness
+
+% It's worth noting that methods that intend to increase fairness for other stakeholders might indirectly contribute to fairness for other stakeholders.
+
+% There is considerable research in the area of diversity-aware recommendation~\cite{Vargas:2011:RRN:2043932.2043955,adomavicius2012improving}. Essentially, these systems treat recommendation as a multi-objective optimization problem where the goal is to maintain a certain level of accuracy, while also ensuring that recommendation lists are diverse with respect to some representation of item content. These techniques can be re-purposed for P-fairness recommendation by treating the items from the protected group as a different class and then optimizing for diverse recommendations relative to this definition.
+
+% Note, however, that this type of solution does not guarantee that any given item is recommended fairly, only that recommendation lists have the requisite level of diversity. This distinction is known as list diversity vs catalog coverage in the recommendation literature and as individual vs. group fairness in fairness-aware classification~\cite{fairness}. List diversity can be achieved by recommending the same ``diverse'' items to everyone, without necessarily providing a fair outcome for the whole set of providers. In this work, we are using metrics that measure group fairness, but we will extend these results to individual fairness measures in future work.
+
+\subsubsection{Dynamic Fairness}  
+% fairness over time
+To define, measure and incorporate fairness definitions in algorithms, we should take into account many different aspects of fairness as we mentioned above. Another important aspect to consider is measuring the dynamics of fairness. Recommendation engines, change over time, as they interact with their users, attract new users and lose other users in the process. Therefore achieving fairness in one iteration might not be enough and might overlook these temporal changes.
+As an example, in these systems, feedback loops might occur and this phenomena causes the system to pay more attention to popular/dominant subgroups of users \cite{hashimoto2018fairness} and therefore lose their under-represented sub-groups (either in consumers or providers). \cite{zhang2019group} analyzes the dynamics of fairness in sequential decision-making and tries to achieve a more balance performance which improves user retention. \cite{Chaney2018} studies how recommendations become more and more homogeneous in iterative environments which leads to inequity of exposure among items. 
+    
+% our contributions
+
+\subsection{Achieving Algorithmic Fairness}
+To achieve algorithmic fairness, interventions can be made at different steps of the processing pipeline. \cite{Friedler2019} provides a broad overview of these methods.
+
+\subsubsection{Pre-processing}
+Pre-processing methods focus on compensating the existing biases in the dataset. \cite{chen2018why} suggest different data collection enhancements to compensate for the biases that occur due to data imbalance. In order to do so, if there is an under-represented group in the data, by collecting more data on that group or imputing the fundamental features of that group, we can see improvements in the performance metrics automatically. \cite{Feldman2015} modifies the numerical attributes in the data to equalize their marginal distributions conditioned on the sensitive attribute. In this way, these distributions will be independent of the sensitive attribute and therefore the outcome of the machine learning models which are trained on this data will be independent of the group membership. \cite{hajian2012methodology} suggests modifying the values of the attributes and labels in the data such that unfair association rules cannot be mined from the dataset. Some other approaches create intermediary (lower-dimensional) representations of the data points so as to hide the information about sensitive attributes, while keeping the utility
+of the modified data for the required task \cite{zemel2013learning,lahoti2019ifair}. 
+Despite all this work, except a few exceptions \cite{ekstrand2018all}, there isn't much work in the recommenders systems field that focuses on de-biasing the data in recommender systems. However, many of these work in machine learning are applicable to the data that is appropriate for recommender systems. 
+I recognize the existing gap in this topic in the field, however, my current work doesn't contribute to this section.
+
+
+\subsubsection{In-processing}
+%in-processing methods
+In-processing approaches try to improve the fairness of results by modifying the algorithms and by integrating fairness notions in their loss functions. Therefore the problem will turn into a multi-objective optimization problem that seeks to simultaneously maximize utility and fairness.
+These types of algorithmic interventions, sometimes take the form of regularizers to control certain structural properties of the model in the optimization functions. 
+Regularizers are usually used to control the complexity of the model and to prevent the model from overfitting, although they can capture unfairness of the model as well. For example, \cite{zafar2017fairness} proposes to add fairness constraints on top of the accuracy constraints in the optimization objective of a classifier. Fairness regularization has been used in other classification and regression problems such as \cite{kamishima2012fairness,berk2017convex} and recommendation problems. For example, \cite{kamishima2018recommendation, kamishima-} proposes to add an independence term to the loss function that penalizes any correlations between the sensitive attribute and the predicted ratings. This term can also be added to achieve consumer-side fairness\cite{kamishima2017considerations}. They also propose multiple non-independence measures as well such as the difference in mean ratings between groups and the mutual information between the predicted ratings and the sensitive attributes. \cite{yao_huang_fatml-2017} also uses a regularization approach to minimize disparate rating predictions errors rather than recommendation errors. \cite{beutel2017data} adds a penalty term to their pairwise ranking loss function, to ensure that the difference between the ranking scores of the relevant and irrelevant items is uncorrelated with the relevant item's sensitive attribute. It is also possible to directly optimize a learning-to-rank such as \cite{diaz2020} that uses such method to achieve equal expected exposure.
+
+In section 2, I present Balanced Neighborhood method as an in-processing algorithm with the goal of balancing between fairness and accuracy term. We realize unfair recommendation in neighborhood based models, could be a cause of having a neighborhood that is too homogeneous. To achieve fairness in this approach, we added a regularizer that ensures a diverse neighborhood for users. In this way, we prevent the algorithm to form unfairly homogeneous neighborhoods. Additionally, our goal is to reach a balance between fairness and accuracy.
+
+Despite all the progress in this approach to improve fairness, the goal of accuracy and fairness can contradict sometimes. Since traditionally a lot of these algorithms' objective functions are designed to achieve accuracy, adding fairness notions as an extra constraint might prevent the objective functions to converge. Therefore, post-processing methods provide alternatives where in-processing modification of algorithms is not fruitful.
+
+
+\subsubsection{Post-processing}
+% post-processing methods
+Post-processing approaches focus on modifying the outputs of the algorithms to satisfy a fairness criteria. In these methods, fairness constraints will not interfere with the goals of the objective function, rather they intervene after the output is produced. This approach can be applied both to classification and recommendation problems.
+In \cite{fish2016confidence}, the proposed method tries to shift the boundaries of the already trained classifiers to achieve statistical parity with minimal accuracy loss. \cite{hardt2016equality} tries to balance the true positive rates of different groups by modifying the decision score thresholds of a trained classifier. \cite{kamiran2010discrimination} proposes a methodology that relabels the nodes of a decision tree classifier in order to ensure demographic parity.
+
+Fairness can also be improved by re-ranking the output lists which were produced with the goal of achieving a high relevance. There are two main approaches of reranking: (a) those that treat the problem as a global optimization task and try to improve fairness with respect to the entire list of recommendations and (b) those methods that focus on the fairness of single lists one at a time.
+An example of the first approach is \cite{surer2018multistakeholder} that proposes a constrained optimization-based method to enhance fairness (item exposure) for multiple provider groups, avoid unfairness towards under-represented groups and ensures a minimum degree of diversity for consumers. These methods are useful for occasions when recommendations are generated and cached in advance.
+A more common approach is to re-rank individual lists as they are generated. Such approaches use methods like MMR (Maximal Marginal Relevance) \cite{carbonell1998use} or xQuAD \cite{santos2010explicit} that were presented in the information retrieval literature. These methods propose a greedy list expansion approach, where the re-reranked list is generated by adding new items to this list where it satisfies a fairness or diversity criteria. This approach also provides the benefit of controlling the balance between the accuracy and the fairness goal. 
+\cite{modani2017fairness} use a re-rank approach to enhance provider exposure while preserving relevance. \cite{Geyik2019} uses a greedy approach to produce rankings of job-candidates that have a fair distribution of their demographic attributes, simultaneously optimizing for fairness and relevance. \cite{zehlike2017fa} uses A-star algorithm for reranking to achieve fairness in a ranked list at depth K. The goal here is to re-arrange the ranked lists to meet a fair distribution of items from different protected groups while keeping the quality of ranked lists as high as possible. 
+
+Overall, re-ranking approaches offer a number of advantages. First, the trade-off between accuracy and fairness can be tuned without re-learning the recommendation model (as we have to do in in-processing approaches). Second, researchers have found that re-ranking can achieve better trade-offs versus accuracy with this type of model~\cite{abdollahpouri2019managing,liu2019personalized}. Due to this advantages we choose to use the latter method to increase fairness. In section 4, I present three re-ranking algorithms: Fairness-Aware re-Ranking, Personalized Fairness-Aware re-Ranking and Opportunistic Fairness-Aware re-Ranking. All of these methods are greedy approaches that focus on the fairness of single lists one at a time and they are based on information retrieval approaches that are intended to increase aggregate diversity.
+
+
+\subsection{Summary of Contributions}
+
+My work here has primarily focused on developing recommendation approaches in which fairness metrics are jointly optimized along with recommendation accuracy. I have structured the problem in a way that the balance between these two goals can be controlled and set using a hyper-parameter. However, my goal is to improve fairness, while preserving the accuracy as much as possible. Throughout the following work, I recognize all the stakeholders in a recommendation setting and their fairness concerns. Although I considered to improve fairness for both consumers and providers in the Fairness through Balanced Neighborhoods and have demonstrated the fairness improvements for both parties, in the rest of my work, the stakeholder of interest is the provider. All of the following work's fairness definitions are group-based definitions not individual-based fairness definitions. In the following methods, I have used performance parity metrics to assess fairness of the results where these metrics where both accuracy-based and exposure-based.
+
+I present my five main contributions to the fairness-aware recommendation field. After a thorough literature review of fairness in machine learning, I present 
+\begin{itemize}
+    \item \textbf{(1) Fairness through Balanced Neighborhoods}:
+    Here, I present an in-processing method with the goal of improving fairness while preserving as much accuracy as possible.
+    By adding a regularizer to the objective function, for each user a diverse neighborhood is generated. These user neighborhoods play an important role in creating the recommendations of users. A diverse neighborhood for each user ensures a non-biased (or less biased) set of recommendations. Here our, goal is to reach a balance between fairness and accuracy. Additionally, I define the concept of multi-sided fairness and demonstrate improvements in fairness both for two sides of the recommendation setting: consumers and providers. 
+    
+    \item \textbf{(2) Fairness-Aware Recommendation Re-ranking (FAR) and personalized fairness-aware re-ranking methods (PFAR)}: 
+    I present two greedy re-ranking approaches here which are both based on XQuAD (an information retrieval method to improve diversification). Both methods are designed to improve the fairness / accuracy tradeoff for the protected providers. 
+    Other contributions of this project is the definition of a group-fairness metric for providers and the adaptation of fairness concepts to micro-finance systems. Therefore, the designed methods here are purposed for a loan recommendation scenario although they can be adapted to other contexts.
+    
+    \item \textbf{(3) Opportunistic Fairness-Aware Re-ranking (OFAiR)}:
+    Here, I introduce the concept of opportunistic fairness. Users are not willing to experience diversity in every aspect of their recommendation. We detect the areas in which the users show willingness to see diversity and we consider them as opportunities to increase fairness without sacrificing much accuracy.
+    Additionally, I use a greedy re-ranking approach based on Maximal Marginal Relevance or MMR (an information retrieval method to improve diversification), with the goal of improving the accuracy / fairness trade-off for multiple provider groups at the same time. This post-processing approach is one of the few approaches that defines multi-aspect fairness and designs a method to improve different fairness goals of various providers in a simultaneous way. As an example, improving the visibility of impoverished loan borrowers with respect to different aspects such as: region of the world, their demographic information, loan amount, the economic sector, etc.
+    
+    
+    \item \textbf{(4) SCRUF framework}:
+    Here, I propose a novel framework for recommender systems called \textit{Social Choice for Re-ranking Under Fairness} (SCRUF). This framework is appropriate for dynamic environments where multiple fairness concerns matter. In this method, we use group-based exposure-based fairness definitions for providers.
+    
+    \item \textbf{(5) Fair Librec-auto}: I present my contributions to \libauto{}, an open-source Python package providing a wrapper for the well-known LibRec which provides implementation of various recommendation algorithms. My contributions to this project were the implementation and addition of in-processing and post-processing fairness algorithms and fairness metrics.
+    
+\end{itemize}
