@@ -1,0 +1,108 @@
+% \documentclass{article}
+\documentclass[manuscript,screen,review]{acmart}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{bbm}
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{mathrsfs} % needed for mathscr
+\usepackage{color}
+\usepackage{balance}
+\usepackage[bottom]{footmisc}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\usepackage[para,online,flushleft]{threeparttable}
+\usepackage{verbatim}
+\usepackage{dsfont}
+\usepackage{todonotes}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,spy,positioning,decorations,decorations.pathreplacing}
+\newcommand{\libauto}{\texttt{librec-auto}}
+
+%% Math Macros
+\newcommand{\reals}{\ensuremath{\mathbb{R}}}
+\newcommand{\users}{\mathcal{U}}
+\newcommand{\items}{\mathcal{V}}
+\newcommand{\features}{\mathcal{F}}
+\newcommand{\domain}{\mathcal{D}}
+\newcommand{\pro}{\mathcal{P}}
+\newcommand{\sensitive}{\mathcal{S}}
+\newcommand{\rerankers}{\mathcal{K}}
+\newcommand{\metrics}{\mathcal{M}}
+
+
+
+\title{Balancing between Fairness and Accuracy in Fairness-Aware Recommender Systems}
+\author{Nasim Sonboli}
+
+\begin{document}
+
+\begin{abstract}
+
+
+The increasing role of recommender systems in many aspects of the society makes it essential to consider how such systems may impact social good. Traditionally, recommender system's focus has been on optimizing for accuracy. However, the research in this field has shifted its focus to beyond-accuracy and socially sensitive properties of fairness. Much of the previous work on fairness has been on classification problems,  work that is not necessarily extendable to recommendation problems, due to the main characteristics of recommender systems: personalization and being a multi-stakeholder setting.
+One of the key challenges is the tension between personalization and fairness goals. As an example, in a crowd-sourced loan recommendation scenario, the fairness goal of the system might be to increase the visibility of under-represented loans, while personalization is trying to tailor the recommendation for individual users. Some users might not like to lend money to certain loans. Therefore these two goals might be competing at times and we would need to balance between them.
+
+Another challenge is that recommender systems facilitate transactions between different parties such as borrowers, lenders, etc.: recommendation fairness is not one problem. Multiple stakeholders might be involved and they might all seek fairness, while their goal of fairness might be different (due to different definitions of fairness), competing or conflicting. This work has primarily focused on developing recommendation approaches for multiple-stakeholders and through designing methods in which fairness metrics are jointly optimized along with recommendation accuracy. In this proposal, I present my five main contributions to the fairness-aware recommendation field, working to achieve reasonable fairness improvements with minimal accuracy loss: (1) balanced neighborhood SLIM method, (2) fairness-aware recommendation re-ranking (FAR) and personalized fairness-aware re-ranking methods (PFAR), (3) opportunistic fairness-aware re-ranking (OFAiR), (4) SCRUF, a framework for assessing and achieving fairness in dynamic environments. In addition, I present my contributions to reproducibility in the fairness-aware recommendation field through enhancements to the Librec-auto experimentation platform.
+
+\end{abstract}
+
+\maketitle
+
+% \section{Introduction}
+% saying the problem i am solving (describing the problem) through an example or two. then talking about the proposed solutions and contributions.
+% \paragraph{\textbf{Summary of contributions}}
+
+\section{Introduction}
+\input{01_intro}
+% \input{fairness_in_ml_recsys.tex}
+
+% \section{fairness problems in recommendation}
+% - IPM paper (probably skippabale since there's not much time to run all the experiments)
+% the calibration paper with Nicole
+
+\section{Regularization}
+% balanced neighborhoods
+In this section, we examine applications in which fairness with respect to consumers and to item providers is important. We focus on integrating a group fairness definition to the objective function of the well-known sparse linear method (SLIM) via adding a regularizer. And we show that variants of SLIM can be used to negotiate the tradeoff between fairness and accuracy.
+\input{02_blnnbr}
+
+\section{Re-ranking}
+In this section, we focus on achieving provider fairness using a re-ranking approach.
+
+The problem of promoting provider fairness while maintaining recommendation accuracy can be generally characterized as a multi-objective optimization problem. If optimal fairness and optimal recommendation accuracy could be achieved simultaneously, there would be no need for research in this area. However, optimizing recommendation accuracy often comes at the expense of provider fairness, due to various biases present in recommender systems, including popularity bias \cite{celma2008hits,lee2014fairness}, and user-base composition \cite{lin2019crank, yao2017beyond}. Research in provider fairness is therefore generally concerned with improving the tradeoff between fairness and accuracy, or in other words, increasing the amount of fairness that can be gained for a given degree of accuracy loss.
+
+We motivate the problem in the context of loan recommendation where consumers are lenders and providers are borrowers. We propose two reranking methods: (1) Fairness-Aware Re-ranking (PFAR) and the personalized version of PFAR, and (2) Opportunistic Fairness-Aware Re-ranking (OFAiR).
+
+%  try to increase the exposure of marginalized or protected borrowers. 
+The re-ranking criterion can be regarded as modelling \textit{personalization} and \textit{fairness}, respectively, with a hyper-parameter $\lambda$ controlling the tradeoff between the two. We demonstrate that both methods achieve reasonable fairness / accuracy trade-offs and increase the exposure of the protected group(s) drastically. Although OFAiR achieves a better fairness / accuracy tradeoff compared to FAR/PFAR.
+
+\input{03_far_pfar}
+\input{04_ofair}
+
+\section{Fairness in Dynamic Recommender Systems}
+% SCRUF framework
+\input{05_dynamic_fairness}
+
+\section{Approach and Methodology}
+% - librec-auto
+\input{06_librec-auto}
+
+\section{Proposed work and Timetable}
+\input{07_future_work}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{myref.bib}
+\end{document}
