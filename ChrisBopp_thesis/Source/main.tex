@@ -1,0 +1,153 @@
+\documentclass[11pt,openany,oneside]{book}
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[colorlinks=true,allcolors=black]{hyperref}
+\usepackage[nottoc,notlot,notlof]{tocbibind}
+
+%\usepackage[draft,nomargin,marginclue,footnote,index]{fixme}
+%\newcommand{\fix}[2]{\fxnote*{#1}{#2}}
+
+\newcommand{\dtitle}{Doing ``Good" with Data? Understanding and Working Around Data Doubles in Human Services Organizations}
+
+\begin{document}
+\frontmatter
+\doublespacing
+
+%Title Page
+\thispagestyle{empty}
+\begin{center}
+\begin{minipage}{\linewidth}
+    \centering
+	\vspace{3cm}
+	{\Large\MakeUppercase{\dtitle}\par}
+	{\large by\par}
+	{\uppercase{\Large Chris Bopp\par}}
+	%{\Large CHRIS BOPP\par}
+	{\large B.S., Rochester Institute of Technology, 2006\par}
+	{\large M.S., University of Colorado Boulder, 2015\par}
+	\vspace{3cm}
+	{\large A thesis submitted to the\\Faculty of the Graduate School of the\\University of Colorado in partial fulfillment\\of the requirement for the degree of\\Doctor of Philosophy\\Technology, Media, \& Society\\2020\par}
+	\vspace{1cm}
+\end{minipage}
+\end{center}
+
+\begin{flushright}
+\begin{minipage}{\linewidth}
+\raggedleft
+	{\large Committee Members: \par}
+	{\large Dr. Amy Voida\par}
+	{\large Dr. Lehn Benjamin \par}
+	{\large Dr. Geoffrey Bowker \par}
+	{\large Dr. Leysia Palen \par}
+	{\large Dr. Danielle Varda \par}
+\end{minipage}
+\end{flushright}
+\clearpage
+
+
+%Signature Page
+% \thispagestyle{empty}
+% \singlespacing
+% \begin{center}
+% \begin{minipage}{0.80\linewidth}
+%     \centering
+%     \vspace{2cm}
+% 	This thesis entitled:\\
+% 	\vspace{0.3cm}
+% 	\dtitle\\
+% 	\vspace{0.3cm}
+% 	written by Chris Bopp\\
+% 	\vspace{0.3cm}
+% 	has been approved for the ATLAS Institute\\
+% 	\vspace{1cm} \rule{8cm}{.5pt}\\
+% 	Dr. Amy Voida, Chair\\
+% 	\vspace{1cm} \rule{8cm}{.5pt}\\
+% 	Dr. Lehn Benjamin\\
+% 	\vspace{1cm} \rule{8cm}{.5pt}\\
+% 	Dr. Geoffrey Bowker\\
+% 	\vspace{1cm} \rule{8cm}{.5pt}\\
+% 	Dr. Leysia Palen\\
+% 	\vspace{1cm} \rule{8cm}{.5pt}\\
+% 	Dr. Danielle Varda\\
+% 	\vspace{1cm} \underline{\hspace{2.5cm} June 12th, 2020 \hspace{2.5cm}}\\
+% 	Date\\
+% 	\vspace{1cm}
+% 	The final copy of this thesis has been examined by the signatories, and we find that both the content and the form meet acceptable presentation standards of scholarly work in the above mentioned discipline.\\
+% 	\vspace{1cm}
+% 	IRB Protocols: \#15-0553, \#19-0575
+% \end{minipage}
+% \end{center}
+% \clearpage
+% \doublespacing
+
+%Abstract Page
+\thispagestyle{plain}
+{\large \noindent Bopp, Chris (Ph.D., Technology, Media, \& Society)\par}
+{\large \noindent \dtitle\par}
+{\large \noindent Thesis directed by Assistant Professor Amy Voida\par}
+\vspace{1cm}
+Over a third of US federal spending is dedicated to providing critical human services such as workforce development, public health education, and child welfare. Under the federalist system, decision making authority is shared by the federal, state, and local governments thereby decentralizing responsibility for the delivery of social services across multiple levels of government and implementing nonprofit organizations. The distributed nature of this decision making means that decisions happen within and across multiple levels: at the individual level during client meetings, at the organizational level within one or more human service organizations during the evaluation of a program, at regional- or state- level coordination task force meetings, and during federal-level legislative hearings. For the individual client’s experience to be legible at higher levels of aggregation, institutions and organizations prescribe standardized measures and categories to represent the client as a data double.
+
+In this research, strategies and approaches to work with and around data doubles are examined in the context of interorganizational human services. This work focuses on the stakeholders that have varying degrees of power, the infrastructure with its expectations for translating the world into data schemas, and the broader values and politics that shape both of these. The dissertation is comprised of three empirical chapters which focus on understanding 1) the sociotechnical system, 2) the way that data is aggregated using unique identifiers, and 3) the way that data is used to answer diverse stakeholder questions. Together, this empirical work contributes a detailed analysis of data work across multi-level computer supported cooperative work in the human services domain. This research illustrates that in order to support the kinds of innovative uses of big data that many desire in the social sector, more diverse stakeholders need to be involved in the design and implementation of data systems so that they may better meet the needs of clients, staff, and the community.
+
+\clearpage
+ 
+%Acknowledgement Page
+\thispagestyle{plain}
+{\Large \noindent \textbf{Acknowledgments} \par} \vspace{.5cm}
+This dissertation would not have been possible without the involvement of human services staff and volunteers---who have committed their lives to helping others---as well as individuals who seek this assistance. Thank you for participating in this research, and I hope that I have not only authentically reflected your experiences, but that this research can be used to advocate for change.
+
+I also would like to thank Dr. Tara Walker for not only helping me persevere through the challenges of completing a PhD but for inspiring me to pursue my passion in the first place. You gave me the courage to take the risks that I needed to take to become the person I have always wanted to be. You've encouraged me to embrace uncertainty and complexity in the face of my natural inclination towards order and certainty. Rather than shutting down my curiosity about the world, you've always encouraged me to dig deeper no matter where that may take me. I am so incredibly fortunate to have such a wonderful person as not only my wife but also as a colleague.
+
+Two other people who have been instrumental in encouraging me to pursue this research are Dr. Revi Sterling and Dr. Leysia Palen. In my master's program, both Revi and Leysia sparked a curiosity in me that could not be extinguished. As I neared the end of the short two-year program, both Revi and Leysia encouraged me to continue pursuing my interests and for that, I am incredibly grateful. To this day, I am constantly astounded that Leysia---someone for whom I have the ultimate respect---saw something promising enough in me to employ me as a research assistant in her lab, which kicked off my research career.
+
+And of course, I could not have completed this research without the support of Dr. Amy Voida, my doctoral advisor. I am fortunate to have had such a passionate individual to geek out with on a regular basis. I have learned so much from you and have grown in so many ways as a researcher, teacher, and collaborator as a result of your meticulous advising. I am amazed at your ability to not only understand my passion (often before I do myself), to see the path forward, and to support me in coming to a conclusion myself. It wasn't always efficient or easy, but you somehow found a way to strike a balance between giving me advice and letting me learn for myself. Thank you for your dedication and support over the years, I could not have done this without you.
+
+Finally, none of this would have been possible and I would not be where I am today were it not for my parents. You emphasized the importance of education and made sure that I worked hard towards earning my bachelor's degree. I know that the education I've pursued since then and the decisions that I've made haven't always seemed the most practical, but you've both always supported me unconditionally and for that I am grateful.
+%\clearpage
+
+\pagestyle{plain}
+\tableofcontents
+\listoftables
+\listoffigures
+
+\mainmatter
+
+\singlespacing \chapter{Introduction} \label{ch:intro}
+\doublespacing \input{chapters/chapter1-intro}
+
+\singlespacing \chapter{Literature Review} \label{ch:lit}
+\doublespacing \input{chapters/chapter2-lit}
+
+\singlespacing \chapter{Sociotechnical Ecosystem} \label{ch:dbd}
+\doublespacing \input{chapters/chapter3-dbd}
+
+\singlespacing \chapter{Aggregation, Identifiability, and Anonymity}  \label{ch:pk}
+\doublespacing \input{chapters/chapter4-pk}
+
+\singlespacing \chapter{Multi-stakeholder Questions and Assumptions} \label{ch:wkshp}
+\doublespacing \input{chapters/chapter5-wkshp}
+
+\singlespacing \chapter{Reimagining Data Doubles as Boundary Objects} \label{ch:synth}
+\doublespacing \input{chapters/chapter6-synth}
+
+\singlespacing \chapter{Conclusion} \label{ch:conc}
+\doublespacing \input{chapters/chapter7-conc}
+
+\backmatter
+\doublespacing \bibliography{library}
+\bibliographystyle{apa}
+
+%\appendix
+%\singlespacing \chapter{Appendix}
+%\doublespacing \input{chapters/appendix}
+
+\end{document}

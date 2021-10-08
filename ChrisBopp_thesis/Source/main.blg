@@ -1,0 +1,72 @@
+This is BibTeX, Version 0.99d (TeX Live 2018)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: main.aux
+The style file: apa.bst
+Database file #1: library.bib
+Warning--entry type for "Desilver2017Fed" isn't style-file defined
+--line 816 of file library.bib
+Repeated entry---line 1099 of file library.bib
+ : @inproceedings{Pine2015Politics
+ :                                ,
+I'm skipping whatever remains of this entry
+Warning--entry type for "Brynjolfsson2011Boom" isn't style-file defined
+--line 1421 of file library.bib
+Warning--entry type for "Lohr2012Age" isn't style-file defined
+--line 1447 of file library.bib
+Warning--entry type for "EffectiveAltruismIntro" isn't style-file defined
+--line 1601 of file library.bib
+Warning--to sort, need author or key in EffectiveAltruismIntro
+Name 1 in "Brynjolfsson, E., and McAfee, A." has a comma at the end for entry Brynjolfsson2011Boom
+while executing---line 1048 of file apa.bst
+Name 1 in "Brynjolfsson, E., and McAfee, A." has a comma at the end for entry Brynjolfsson2011Boom
+while executing---line 1048 of file apa.bst
+Warning--empty publisher in Brest2020Outcomes
+Name 1 in "Brynjolfsson, E., and McAfee, A." has a comma at the end for entry Brynjolfsson2011Boom
+while executing---line 1123 of file apa.bst
+Warning--empty publisher in Hall2006History
+Warning--empty publisher in Raley2013Dataveillance
+Warning--empty publisher in Ribes2013DataBite
+Warning--empty publisher in Sealander2003Curing
+Warning--empty publisher in Thomas2016Outcome
+You've used 130 entries,
+            1940 wiz_defined-function locations,
+            1575 strings with 34110 characters,
+and the built_in function-call counts, 55086 in all, are:
+= -- 5560
+> -- 1824
+< -- 140
++ -- 622
+- -- 583
+* -- 4512
+:= -- 9001
+add.period$ -- 428
+call.type$ -- 130
+change.case$ -- 909
+chr.to.int$ -- 127
+cite$ -- 138
+duplicate$ -- 2408
+empty$ -- 4068
+format.name$ -- 798
+if$ -- 11299
+int.to.chr$ -- 4
+int.to.str$ -- 0
+missing$ -- 149
+newline$ -- 655
+num.names$ -- 410
+pop$ -- 849
+preamble$ -- 1
+purify$ -- 930
+quote$ -- 0
+skip$ -- 1942
+stack$ -- 0
+substring$ -- 3908
+swap$ -- 703
+text.length$ -- 46
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 730
+warning$ -- 7
+while$ -- 451
+width$ -- 0
+write$ -- 1754
+(There were 4 error messages)
