@@ -1,0 +1,93 @@
+\chapter{Introduction}
+\label{introchap}
+
+
+\section{one}
+
+\begin{comment}
+example 
+problems that exist
+approaches
+\end{comment}
+
+
+After a period of substantially fast development in creating "smarter" digital systems, more and more decisions are being delegated to algorithms. Having observed the evolution, influence and consequences of these AI-supported systems over time, growing concerns about ethical issues and the potential harms of these systems to individuals and the society has raised in the public discourse.
+
+Machine learning is and continues to be one of the main pillars of the "smart" web. Recommender systems are one of the most pervasive applications of machine learning in industry. Although these systems are intended to assist people in different tasks, they can pose the risk of implicit or explicit discrimination against individuals or groups especially minorities.
+
+
+% example
+Recommender systems play a pivotal role in connecting users to relevant items or content throughout the web while not only users rely heavily on them but also content producers, sellers or information providers. 
+
+
+\begin{comment}
+Consider a recommender system suggesting job opportunities to job seekers. Many online platforms attempt to connect job employments and job applicants in some way. Sometimes they are professional networks which have a job-seeking component such as Xing and LinkedIn, or they might have been designed only for employment seeking.
+
+Discriminatory recommendations in this system could mean that men and women with similar qualifications don't get recommendations of jobs with similar rank and salary. Or when they get similar recommendations, it is just because of their demographic information not because of their qualifications. For examples, if there are more women on a job recommendation website and they all apply for secretarial jobs, these jobs might show up in the recommendations of women who are looking for CEO jobs. On the other side of the coin, jobs with better salaries and higher ranks will be recommended to men regardless of their qualifications. The system would therefore need to defend against biases in recommendation output, even biases that arise due to behavioral differences: for example, male users might be more likely to click optimistically on high-paying jobs. \todo{more clarifications?}
+
+\end{comment}
+
+
+Since recommender systems are multi-stakeholder settings, discrimination in these systems might not only be against the users, but other stakeholders e.g. content producers. 
+
+In the job recommendation example that was mentioned before, besides the users who receive the recommendations, the companies or institutes that offer the jobs are the other involved party. These systems can be discriminatory against the job creators, not giving them enough exposure to the job applicants. Small businesses might struggle to attract applicants in these websites as they are recommended less to the qualified users.
+
+
+There are multiple underlying reasons that cause the recommendation algorithms to be discriminatory. For example, if recommender systems are trained on biased data, the outcomes might get biased a.k.a. "garbage in, garbage out". These algorithms might also propagate the existing biases in the data \cite{barocas2016big}. As an example, recommender systems can over-personalize the recommendation lists of users or in other words trap users in their filter bubbles or echo chambers. This phenomenon is discriminatory to the users of the recommender systems as their choices becomes more and more limited and too similar to each other. Not only it is discriminatory towards users, but it might also be discriminatory towards the providers of items as only a few of them are shown to the users. If this happens in a music recommendation system, it can affect the livelihood of musicians. Another real-world example of the harms of filter bubbles is the influence of the news feeds on peoples minds that can eventually lead to political polarization \todo{cite Facebooks ads}. Over-personalization in Youtube's recommendation algorithms has also caused harm to suicidal teenagers by showing them similar videos on different ways of committing suicide. 
+
+Ignoring the societal and ethical consequences of these algorithms in different contexts leads to algorithm designs that can be unfair against their users.
+
+In the recent years, these issues in machine learning algorithms in general, has gained the attention of a multidisciplinary community from computer scientists, social scientists to legal scholars. Thus as a response, recent research has shifted from design of algorithms that pursue purely optimal outcomes with respect to an objective function (e.g. accurate outcomes) into ones that also consider algorithms' social impacts such as unfairness, discrimination, etc.
+
+The problem of mitigating unfairness in recommender systems has its unique challenges that set it apart from other machine learning problems. Therefore, the methods that have been developed in other machine learning fairness literature is not fully applicable in recommender systems.
+
+But, in order to thinking about approaching to propose solutions to the unfairness issues in recommender systems we need to acknowledge the challenges we face in recommender systems such as the multi-stakeholder nature of these algorithms, the centrality of personalization and its conflict with accuracy-based goals, the role of user response \todo{???} and the ranked outputs \todo{???}. 
+
+% WHAT TO REPLACE THE TERM ACCURACY WITH?
+% what is accuracy and what we mean by it
+% sth that you click on or highly relevant to you
+% providing better lists
+
+%provider-side unfairness
+Traditionally, the main goal of a recommender system is personalization. Although increasing accuracy for better personalization can be a double edged sword. On the one hand, accuracy is known to be strongly tied with user satisfaction and is financially conducive for the system. On the other hand, increase in accuracy comes at the cost of provider/producer unfairness. 
+
+% consumer side unfairness
+Additionally, accuracy based metrics themselves can hide consumer unfairness in their outcomes.
+These metrics are usually computed over all the user base. A lot of the times, the gathered data is not reflective of the diversity on the society due to various reasons. Therefore, the data imbalance can create accuracy imbalance between the user groups with more data and other minority groups. The calculated average accuracy mostly reflects the quality of the recommendations that the majority of the user base experience. So, having a discrepancy in recommendation quality for different user groups is considered as unfairness and reaching to balance it, is of interest for the research community.
+
+
+% These issue complicate the research problems more since, we need to understand these aspects of the problem in order to meticulously identify the context of the problem, the type of unfairness we can address, and the the family of solutions that we want to adopt in order to operationalize fairness in recommender systems.
+
+% kiva? non-profit context? 
+
+% how is this problem and set of solutions different than the ones that are proposed to solve popularity bias?
+
+Therefore, achieving a balance between accuracy and fairness as competing goals is essential for all the stakeholders of a system and the survival of a system in general.
+%briefly talking about approaches
+Three types of solutions have been proposed to operationalize fairness notions in order to mitigate  unfairness: pre-processing, in-processing, and post-processing
+%not theoretical
+
+% 
+
+Throughout this dissertation, we propose different approaches to address achieving a better trade-off between accuracy and fairness. 
+
+%incomplete.. question and brief solution and the problems that it follows
+The research questions that we seek to answer are as follows:
+
+1) Can we maintain a high level of accuracy for the user base while increasing provider fairness? Or consumer fairness?
+
+2) How can we control the accuracy trade-off better for providers? How to preserve accuracy while doing that? 
+
+3) How can we control the accuracy fairness trade-off better for providers when addressing multiple fairness concerns? And can we use user propensities towards different categories to preserve accuracy as much as possible?
+
+4) how can we achieve this balance dynamically?
+
+5) What if we have data constraints? - data minimization
+6) Who controls the trade-off between accuracy and fairness? Should users have some agency over it? Should it be transparent to the users? Will re-rankers provide more transparency?
+
+
+%%%%% incomplete
+
+
+\subsection{Summary of Contributions}
+

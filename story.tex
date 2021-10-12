@@ -70,6 +70,47 @@ note: group fairness
 
 
 
+Starting off with what the issues in fair ml are and moving to fair recsys issues.
+What is still lacking in fair recommender systems in terms of metrics, algorithms, concepts, tools?
+Which gaps aren't filled yet?
+
+Why is the accuracy/fairness balance is important?
+
+The main goal is traditionally accuracy in recommender systems and this goal remains the top priority of recommendation algorithms. We now add other goals to the objective function such as diversity or fairness that are competing or conflicting goals with accuracy.
+
+We still prioritize accuracy, but we intend to integrate fairness goals to the objective function. We also decide to to use group fairness definitions in our research projects.
+We design an in-processing method Balanced Neighborhood SLIM. Although we notice that adding competing goals to the objective function might interfere with the original goal and might prevent the function to converge. We start to think about post-processing methods as a solution to this problem. 
+Re-ranking methods have interesting benefits to them: 1) These methods are more transparent and easier to explain as different goals such as accuracy and fairness are well separated. 2) By changing the fairness/diversity goal, we don't have to re-train our models as we have to do in in-processing algorithms. 3) We have a great control over these competing goals via hyper-parameters. We have the ability to provide pure personalization or pure fairness, or we can find the sweet spot between these two goals, according to our context, the application, and the goals of the system. 
+
+
+Different kinds of biases can creep into any part of the Machine Learning pipeline, from the biased historical data (Amazon recruiting system), the shortsightedness of developers of such systems (Nikon cameras, the hand dryers, etc.), algorithms themselves also can contribute to the existing biases in the system and make the existing biases stronger (filter bubbles, the rabbit hole effects, popularity bias), etc.
+
+Researchers have tried to heal these defects in different part of this ecosystem. Researchers have integrated fairness constraints with recommender systems in three main ways: 1) pre-processing, 2) in-processing and 3) post-processing.
+
+Although personalization or accuracy is at the heart of recommender systems and the major goal, it is not the biblical goal. As accuracy comes at the cost of provider fairness and sometimes consumers themselves. 
+
+As we reach to increase accuracy, we might push the users and therefore our data to fall into the popularity bias pit, where the popular providers and their items get more popular over time while the less popular are being marginalized. This phenomenon is a double edged sword. While more accuracy is desired, accuracy up to the point of popularity bias leads to less diverse recommendations for the users which leaves them unsatisfied with the system, and at the same time popularity bias means unjust exposure for some providers.
+
+It's worth mentioning that giving more exposure to the providers, doesn't necessarily mean promoting less qualified providers. Rather, this goal intends to increase provider exposure for the historically marginalized groups and the groups that are discriminated against.
+
+In spite of the provider unfairness that over-personalization brings about, it can also lead to consumer unfairness. Accuracy based metrics are usually computed over the whole user base. A lot of the times, the gathered data is not reflective of the diversity on the society due to various reasons such as less access to internet, to computers, etc. Therefore, the calculated average accuracy mostly reflects the quality of the recommendations that the majority of the user base experience. In this scenario, having a discrepancy in recommendation quality for different user groups is counted as unfairness and reaching to balance it is of interest for the research community.
+
+
+Therefore, achieving a balance between accuracy and fairness as competing goals is essential for all the stakeholders of a system and the survival of a system in general.
+
+
+Can we maintain a high level of accuracy for the user base while increasing provider fairness?
+ (Would achieving accuracy balance between user groups (consumer fairness) contribute to provider fairness? )
+ Which users want more accuracy and which won't care as much? what are the the interests of the users based on their profiles? are they rigid or flexible in those interests? Can we use users' open-mindedness or ignorance as an opportunity for the system to increase provider fairness?
+ 
+ 
+Who controls the trade-off between accuracy and fairness? Should users have some agency over it? Should it be transparent to the users? Will re-rankers provide more transparency?
+
+
+
+
+
+
 
 
 
