@@ -1,93 +1,94 @@
-% % \documentclass{article}
-% \documentclass[manuscript,screen,review]{acmart}
+\documentclass[defaultstyle,11pt,inlineh4]{thesis}
+% \documentclass[11pt,openany,oneside]{book}
 
-% \usepackage[utf8]{inputenc}
-% \usepackage{graphicx}
-% \usepackage{caption}
-% \usepackage{subcaption}
-% \usepackage{bbm}
-% \usepackage{color}
-% \usepackage{colortbl}
-% \usepackage{hyperref}
-% \usepackage{multirow}
-% \usepackage{enumitem}
-% \usepackage{algorithm}
-% \usepackage{algorithmic}
-% \usepackage{enumerate}
-% \usepackage{amsmath}
-% \usepackage{booktabs}
-% \usepackage{multirow}
-% \usepackage{float}
-% \usepackage{mathrsfs} % needed for mathscr
-% \usepackage{color}
-% \usepackage{balance}
-% \usepackage[bottom]{footmisc}
-% \renewcommand{\algorithmicrequire}{\textbf{Input:}}
-% \renewcommand{\algorithmicensure}{\textbf{Output:}}
-% \usepackage[para,online,flushleft]{threeparttable}
-% \usepackage{verbatim}
-% \usepackage{dsfont}
-% \usepackage{todonotes}
-% \usepackage{tikz}
-% \usetikzlibrary{shapes,arrows,spy,positioning,decorations,decorations.pathreplacing}
-% \newcommand{\libauto}{\texttt{librec-auto}}
+\usepackage{amssymb}		% to get all AMS symbols
+\usepackage{graphicx}		% to insert figures
+\usepackage{hyperref}		% PDF hyperreferences??
+\usepackage{todonotes}
+\usepackage{comment}
 
+%%%%%%%%%%%%   All the preamble material:   %%%%%%%%%%%%
 
-% \title{FARS: Fairness-Aware Recommendation Algorithms}
-% \author{Nasim Sonboli}
+\title{Controlling the Fairness Accuracy Tradeoff in Recommender Systems}
 
 % \begin{document}
-% \maketitle
 
-% \section{Introduction}
-% saying the problem i am solving (describing the problem) through an example or two. then talking about the proposed solutions and contribitions.
-% \paragraph{\textbf{Summary of contributions}}
+\author{Nasim}{Sonboli}
 
-% we propose an inprocessing algorithm
-% we propose two re-ranking algorithms
-% pfar/far
-% ofair
-% we propose the SRUFF framework
-% contributions to the library librec-auto
+\otherdegrees{B.A. Computer Engineering-Software, Islamic Azad University, Karaj Branch, 2011 \\
+	      M.S. Data Science, DePaul University, 2016}
 
-% \section{Algorithmic Fairness}
-% \input{01_intro}
-% % \input{fairness_in_ml_recsys.tex}
+\degree{Doctor of Philosophy}		%  #1 {long descr.}
+	{Ph.D., Information Science}		%  #2 {short descr.}
 
-% % \section{fairness problems in recommendation}
-% % - IPM paper (probably skippabale since there's not much time to run all the experiments)
-% % the calibration paper with Nicole
+\dept{Department of}			%  #1 {designation}
+	{Information Science}		%  #2 {name}
 
-% \section{Regularization}
-% % balanced neighborhoods
-% In this section, we examine applications in which fairness with respect to consumers and to item providers is important. We focus on integrating a group fairness definition to the objective function of the well-known sparse linear method (SLIM) via adding a regularizer. And we show that variants of SLIM can be used to negotiate the tradeoff between fairness and accuracy.
-% % \input{02_blnnbr}
+\advisor{Prof.}				%  #1 {title}
+	{Robin D. Burke}			%  #2 {name}
 
-% \section{Re-ranking}
+\reader{Bamshad Mobasher}		%  2nd person to sign thesis
+\readerThree{Bo Waggoner}		%  3rd person to sign thesis
+\readerFour{Casey Fiesler}      %  4rd person to sign thesis
+\readerFive{Michael Ekstrand}   %  5rd person to sign thesis
 
-% In this section, we focus on achieving provider fairness using a re-ranking approach.
 
-% The problem of promoting provider fairness while maintaining recommendation accuracy can be generally characterized as a multi-objective optimization problem. If optimal fairness and optimal recommendation accuracy could be achieved simultaneously, there would be no need for research in this area. However, optimizing recommendation accuracy often comes at the expense of provider fairness, due to various biases present in recommender systems, including popularity bias \cite{celma2008hits,lee2014fairness}, and user-base composition \cite{lin2019crank, yao2017beyond}. Research in provider fairness is therefore generally concerned with improving the tradeoff between fairness and accuracy, or in other words, increasing the amount of fairness that can be gained for a given degree of accuracy loss.
+\abstract{  \OnePageChapter	% because it is very short, Leave out the \OnePageChapter if your abstract runs over one page.
 
-% We motivate the problem in the context of loan recommendation where consumers are lenders and providers are borrowers. We propose two reranking methods: (1) Fairness-Aware Re-ranking (PFAR) and the personalized version of PFAR, and (2) Opportunistic Fairness-Aware Re-ranking (OFAiR).
+	Often the abstract will be long enough to require
+	more than one page, in which case the macro
+	``$\backslash$OnePageChapter'' should {\it not}
+	be used.
 
-% %  try to increase the exposure of marginalized or protected borrowers. 
-% The re-ranking criterion can be regarded as modelling \textit{personalization} and \textit{fairness}, respectively, with a hyper-parameter $\lambda$ controlling the tradeoff between the two. We demonstrate that both methods achieve reasonable fairness / accuracy trade-offs and increase the exposure of the protected group(s) drastically. Although OFAiR achieves a better fairness / accuracy tradeoff compared to FAR/PFAR.
+	But this one isn't, so it should.
+	}
 
-% \input{03_far_pfar}
-% \input{04_ofair}
+\dedication[Dedication]{	% NEVER use \OnePageChapter here.
+	To all of my fluffy socks.
+	}
 
-% \section{Dynamic Fairness}
-% % SCRUF framework
-% \input{05_dynamic_fairness}
+\acknowledgements{	\OnePageChapter	% *MUST* BE ONLY ONE PAGE!
+	Here's where you acknowledge folks who helped.
+	But keep it short, i.e., no more than one page,
+	as required by the Grad School Specifications.
+	}
 
-% \section{Approach and Methodology}
-% % - librec-auto
-% \input{06_librec-auto}
+% \IRBprotocol{E927F29.001X}	% optional!
 
-% \section{Proposed work and Timetable}
-% \input{07_future_work}
+\ToCisShort	% use this only for 1-page Table of Contents
 
-% \bibliographystyle{ACM-Reference-Format}
-% \bibliography{myref.bib}
-% \end{document}
+\LoFisShort	% use this only for 1-page Table of Figures
+% \emptyLoF	% use this if there is no List of Figures
+
+\LoTisShort	% use this only for 1-page Table of Tables
+% \emptyLoT	% use this if there is no List of Tables
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%       BEGIN DOCUMENT...         %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+\input macros.tex
+\input chapter1-intro.tex
+\input chapter2-fairness.tex
+\input chapter3-methodology.tex
+\input chapter4-inprocess.tex
+\input chapter5-postprocess.tex
+\input chapter6-librec.tex
+\input chapter7-conclusion.tex
+
+%%%%%%%%%   then the Bibliography, if any   %%%%%%%%%
+\bibliographystyle{plain}	% or "siam", or "alpha", etc.
+\nocite{*}		% list all refs in database, cited or not
+\bibliography{refs}		% Bib database in "refs.bib"
+
+%%%%%%%%%   then the Appendices, if any   %%%%%%%%%
+\appendix
+\input appendixA.tex
+\input appendixB.tex
+
+
+\end{document}
+

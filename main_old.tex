@@ -1,0 +1,93 @@
+% \documentclass{article}
+\documentclass[manuscript,screen,review]{acmart}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{bbm}
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{mathrsfs} % needed for mathscr
+\usepackage{color}
+\usepackage{balance}
+\usepackage[bottom]{footmisc}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\usepackage[para,online,flushleft]{threeparttable}
+\usepackage{verbatim}
+\usepackage{dsfont}
+\usepackage{todonotes}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,spy,positioning,decorations,decorations.pathreplacing}
+\newcommand{\libauto}{\texttt{librec-auto}}
+
+
+\title{FARS: Fairness-Aware Recommendation Algorithms}
+\author{Nasim Sonboli}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+saying the problem i am solving (describing the problem) through an example or two. then talking about the proposed solutions and contribitions.
+\paragraph{\textbf{Summary of contributions}}
+
+we propose an inprocessing algorithm
+we propose two re-ranking algorithms
+pfar/far
+ofair
+we propose the SRUFF framework
+contributions to the library librec-auto
+
+\section{Algorithmic Fairness}
+\input{01_intro}
+% \input{fairness_in_ml_recsys.tex}
+
+% \section{fairness problems in recommendation}
+% - IPM paper (probably skippabale since there's not much time to run all the experiments)
+% the calibration paper with Nicole
+
+\section{Regularization}
+% balanced neighborhoods
+In this section, we examine applications in which fairness with respect to consumers and to item providers is important. We focus on integrating a group fairness definition to the objective function of the well-known sparse linear method (SLIM) via adding a regularizer. And we show that variants of SLIM can be used to negotiate the tradeoff between fairness and accuracy.
+% \input{02_blnnbr}
+
+\section{Re-ranking}
+
+In this section, we focus on achieving provider fairness using a re-ranking approach.
+
+The problem of promoting provider fairness while maintaining recommendation accuracy can be generally characterized as a multi-objective optimization problem. If optimal fairness and optimal recommendation accuracy could be achieved simultaneously, there would be no need for research in this area. However, optimizing recommendation accuracy often comes at the expense of provider fairness, due to various biases present in recommender systems, including popularity bias \cite{celma2008hits,lee2014fairness}, and user-base composition \cite{lin2019crank, yao2017beyond}. Research in provider fairness is therefore generally concerned with improving the tradeoff between fairness and accuracy, or in other words, increasing the amount of fairness that can be gained for a given degree of accuracy loss.
+
+We motivate the problem in the context of loan recommendation where consumers are lenders and providers are borrowers. We propose two reranking methods: (1) Fairness-Aware Re-ranking (PFAR) and the personalized version of PFAR, and (2) Opportunistic Fairness-Aware Re-ranking (OFAiR).
+
+%  try to increase the exposure of marginalized or protected borrowers. 
+The re-ranking criterion can be regarded as modelling \textit{personalization} and \textit{fairness}, respectively, with a hyper-parameter $\lambda$ controlling the tradeoff between the two. We demonstrate that both methods achieve reasonable fairness / accuracy trade-offs and increase the exposure of the protected group(s) drastically. Although OFAiR achieves a better fairness / accuracy tradeoff compared to FAR/PFAR.
+
+\input{03_far_pfar}
+\input{04_ofair}
+
+\section{Dynamic Fairness}
+% SCRUF framework
+\input{05_dynamic_fairness}
+
+\section{Approach and Methodology}
+% - librec-auto
+\input{06_librec-auto}
+
+\section{Proposed work and Timetable}
+\input{07_future_work}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{myref.bib}
+\end{document}
