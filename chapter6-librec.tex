@@ -1,6 +1,535 @@
 
-\chapter{Standardizing & automating Fairness related experiments}
+\chapter{Standardizing & automating experiments}
 \label{librec-auto}
 
-\section{RecSys experimentation platforms}
-\section{librec-auto}
+In this chapter, we characterize \librecato{}, a Python wrapper we created for LibRec, an existing standard Java-based library for recommender systems. \librecato{} was created for our internal research needs such as having standard fairness-aware algorithms or re-rankers and having standard metrics to assess different types of biases, automating and parallelizing experiments, and etc. Many of the extended features weren't available in the existing recommendation tools, especially the capability of running experiments on fairness and diversity in recommendation.
+
+The system was introduced through a demo at the ACM Recommender Systems conference in 2018 \cite{mansoury2018automating} and also presented to the audience of the ACM Conference on Fairness, Accountability and Transparency as a tutorial in 2020 \cite{Sonboli2020FARLA}. In this chapter, we provide a detailed account of the capabilities of \libauto{} in its current 0.2 release, the typical usage of the system, and description of plans for future releases.
+
+\section{Introduction}
+
+\libauto{} is a Python-based tool for recommender systems experimentation\footnote{https://librec-auto.readthedocs.io/en/latest/quickstart.html}. It is designed to support researchers by automating experimental methodology, thereby making experimental results more reproducible, and allowing simplified access to the large collection of algorithm implementations found in the LibRec platform. The system supports off-line batch evaluation in which ratings data (either explicit or implicit) are divided into training and test sets and the algorithm is evaluated on test set performance. Although other evaluation methods are gaining currency, particularly those that support reinforcement learning \cite{joachims2018reveal,joachims2019reveal,joachims2020reveal}, this type of evaluation is still extremely common in research practice and in educational settings. 
+
+\textbf{Reproducibility in Recommender Systems Research}
+Reproducibility remains a challenge in recommender systems research~\cite{said2014comparative,beel2016towards,sun2020we}, particularly in the areas that are not well-established such as fairness-aware recommendation.
+Even minor differences in parameters and experimental settings can yield incompatible results, which make it difficult to provide definitive answers about the relative properties of different algorithms. Additionally, many of the existing libraries are not comprehensive. They mostly support experimentation for a very specific class of algorithms, making it difficult to readily re-use their capabilities for general research purposes. 
+
+We believe that progress towards reproducibility is best supported by providing a platform on which comparative experiments can be conducted using declarative experimental configuration (so that experimental settings can be easily shared), with pre-implemented methodological workflows, and with a large library of algorithms for easy of benchmarking against prior work. \libauto{} is such a platform and it has been steadily enhanced over multiple years to meet the needs of researchers.
+
+
+
+\section{LibRec and librec-auto}
+\libauto{} was originally designed as an open-source command-line Python package providing a wrapper for the LibRec recommender systems algorithm library\footnote{https://guoguibing.github.io/librec/index.html}. LibRec is a Java-based recommendation generation platform, available under the GPL 3.0 open-source license. It was introduced in 2015 \cite{guo2015librec}, and is maintained by a group led by Professor Guibing Guo at Northeastern University, Shenyang, China. The group has implemented a large library of recommendation algorithms including deep learning algorithms (more than 70 as of this writing) drawn from the recommender systems research literature. In addition to numerous algorithms, the LibRec platform supports a variety of evaluation metrics and evaluation methodologies.
+
+Despite the significant capabilities of LibRec, we found that for practical experimentation and reproducibility research, the system by itself is not sufficient. For example, intermediate computational outputs, such as recommendation results, cannot be reused as input for new evaluation metrics. If an experimenter runs an experiment and then wishes to follow-up and explore additional properties of the results, LibRec would require re-execution of the entire set of recommendation computations. In addition, result re-ranking is not supported because of the close tie between algorithm execution and result evaluation built into LibRec. This makes it difficult to use LibRec as it is to explore the areas of fairness-aware and diversity-enhanced recommendation.
+
+\libauto{} was conceived and implemented as a wrapper for core aspects of LibRec's functionality, in particular, to control and organize inputs (experiment configuration) and outputs (predictions and metric calculations), while preserving an experimenter's ability to access the large collection of implemented algorithms and metrics found in LibRec. Based on our internal research needs, we have extended this platform in a number of ways, particularly to support research in fairness-aware recommendation. We have also enhanced LibRec with a suite of metrics for measuring the fairness of recommendation outcomes. In addition, the tool now supports recommendation re-ranking, a common approach to enhancing fairness, diversity, and other non-accuracy properties of recommendation outcomes.
+
+Except for a small chunk of Java wrapper code, \libauto{} is implemented in Python and (because it inherits heavily from LibRec) is available under the same GPL 3.0 license. It can be installed using the \texttt{pip} package manager or by downloading the source package from GitHub\footnote{https://github.com/that-recsys-lab/librec-auto}. Because of its ease of configuration and use, \libauto{} also supports students and teachers in learning about recommendation algorithms and their evaluation. The system has been used for courses at the Technical University of Eindhoven and the University of Colorado, Boulder. 
+
+\section{Key Features}
+
+%LibRec 3.0 is a Java-based library for recommender systems. It has been available to the recommender systems community since 2015 \cite{guo2015librec}, and has large library of implemented recommendation algorithms (more than 70 as of this writing). The platform supports a variety of evaluation metrics and evaluation methodologies. 
+
+%However, our experience indicates that for practical experimentation and reproducibility research, LibRec by itself is not sufficient. For example, intermediate computational outputs, such as recommendation results, cannot be reused as input for new evaluation metrics, requiring the re-execution of potentially lengthy experiment executions. 
+%\todo[inline]{more of its drawbacks that lead us to add the new features}
+
+
+%To fill in the previously mentioned gaps and drawbacks, we developed \libauto{}\footnote{github.com/that-recsys-lab/librec-auto} to retain the benefits of working with LibRec while adding support for experimentation. 
+%\todo[inline]{and?}
+
+A sketch of the functionality of \libauto{} is provided in Figure~\ref{fig:librec-auto}. As the figure indicates, LibRec is encapsulated by \libauto{}, and its various component elements are used to execute particular portions of the experimental workflow. The user experience of the system is organized around the concept of a \textit{study}, which involves experimentation with a single data set and a single recommendation algorithm. Multiple hyperparameters may be investigated as part of a study, either through grid search or black-box optimization as described in Section \ref{sec:opt}. Each combination of hyperparameters is evaluated through an \textit{experiment}, which may entail multiple training / test iterations if cross-validation is used. Although the figure indicates a straight-line of execution, parallelism is built into \libauto{} at the level of experiment execution. Because experiments can have lengthy execution times, the post-processing phase allows for integration with messaging platforms, including Slack, so that experimenters are notified when their tasks are complete. These messages can include visualizations of experimental output, to provide a quick overview of results.
+
+\begin{figure*}[ht!]
+    \centering
+    % \includegraphics[width=5.25in]{figs/chapter6-librecauto/librec-auto-diagram2.png}
+    \includegraphics[width=0.95\linewidth]{figs/chapter6-librecauto/workflow.pdf}
+    \caption{Schematic of experimentation workflow with \libauto{}. The LibRec library (Java, shown in grey) is encapsulated by \libauto{} (Python, shown in purple), which manages configuration, experimental outputs and post-processing. Added from \cite{mansoury2018automating} is the new re-ranking module shown in red.}
+    \label{fig:librec-auto}
+    \vspace{-0.15in}
+\end{figure*}
+
+We can follow the workflow of a study through the processes depicted in Figure \ref{fig:librec-auto}. 
+
+\begin{description}
+\item [XML configuration] The experimenter designs a study and crafts a configuration file. The \libauto{} release includes a simple set-up wizard to automate some aspects of this process.
+\item [Configuration processing] The system processes the configuration file and produces internal data sources necessary for the study. These include folders for the experiments to be run, experiment-specific configuration files, and a translation of the LibRec-specific parts of the configuration into the key-value properties file that LibRec consumes.
+\item [CV split] The ratings data file is processed, and cross-validation train / test splits are produced. Ratings data is assumed to be in the form of a CSV file of sparse $\langle user, item, rating \rangle$ triples. Unlike vanilla LibRec, split files are saved, so that they can be used for further analysis, calculation of training data properties, for example, or for use by non-LibRec recommendation libraries, a feature under active development.
+\item [Algorithm] The configured recommendation generation algorithm from LibRec is run, producing predictions over the training data. Depending on the nature of the evaluation metric, it will either generate a prediction for each training data triple or it will generate a ranked list of recommendations for each user in the training data. 
+\item [Re-ranking] (optional) If the study uses a re-ranking algorithm, the output of the (list-generating) recommender is input to this algorithm, and a new list of re-ranked results is produced for each user. The system includes a set of re-ranker implementations (see below), written as Python scripts. 
+\item [Evaluation] The metrics established in the configuration file are executed over the recommendation results. As is the case with LibRec, multiple metrics can be applied to the results of a study. These metrics can be the ones implemented in LibRec or, as the figure indicates, can be implemented in Python and executed by the \libauto{} process.
+\item [Post-processing] (optional) Once a study is complete, post-processing operations are available to put the results of a study into human-readable form through visualizations, or export to forms that can be read by other tools. These may lead to revisions in the experimental protocol or to the launching of additional studies.
+\end{description}
+
+Note that \libauto{} supports incremental updating of study execution. Later portions of the experimental pipeline can be executed without re-computing earlier steps, a capability not available in vanilla LibRec. For example, a re-ranker implementation can be tweaked and tested or an additional evaluation metric can be applied without having to generate new results.
+
+\subsection{Study structure}
+A study is organized in a multi-directory file structure. Some parts of the structure are managed by \libauto{} itself, others are set up by the experimenter. Figure~\ref{fig:study-dir} shows an example of the file layout for a study called ``demo01''. In this case, the data is being used in more than one study, so it is stored in a directory outside of the study structure. As the shaded region in figure indicates, most of the study files are managed by \libauto{} itself. 
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/chapter6-librecauto/study-dir-labeled2.png}
+    \caption{Directory structure for a \libauto{} study. The shaded directories are experiment outputs managed by the system.}
+    \label{fig:study-dir}
+    \vspace{-0.15in}
+\end{figure}
+
+Key files in the study structure include:
+
+\begin{description}
+    \item[Data files] Ratings files and files with user and item meta-data.
+    \item[Configuration files] XML-based study configuration (described in detail below).
+    \item[Properties files] Input to the LibRec library.
+    \item[Log files] Output from the LibRec execution.
+    \item[Output files] Summary files for individual experiments and the study as whole.
+    \item[Post-processing outputs] These can take a variety of forms including image, CSV and others.
+\end{description}
+
+For reproducibility, it is sufficient for experimenters to distribute their data and configuration files (\texttt{conf} directory). All other aspects of a study can be reproduced by running the \libauto{} application.
+
+\subsection{Fairness-aware recommendation}
+\label{sec:fair}
+With the extensive research in literature focusing on the assessment and mitigation of unfair outcome of algorithms, several toolkits for fair machine learning have recently emerged to make such methods widely accessible. Examples of such toolkits include: AI Fairness 360 -- an open source toolkit for mitigating bias in AI application lifecycle designed by IBM \cite{bellamy2019ai}, Fairlearn -- a toolkit for assessing and improving fairness in AI designed by Microsoft \cite{bird2020fairlearn}, Aequitas -- an open-source bias audit toolkit that allows auditing machine learning models for discrimination and bias \cite{saleiro2018aequitas}, LinkedIn Fairness Toolkit (LiFT) \cite{SriramLifT2020}, and FairSight: Visual Analytics for Fairness in Decision Making \cite{ahn2019fairsight}, just to name a few.
+However these toolkits have been proposed to address issues of unfairness in classification, and the metrics and approaches they encode are not always applicable to recommender systems research. What distinguishes \libauto{}'s fairness extensions from other toolkits is its focus on evaluating and mitigating unfairness in recommender system algorithms in particular.
+
+Although \libauto{} has been under development since 2018, the latest release incorporates several key advances that specifically support common tasks in the study of recommendation fairness. These specific fairness-aware capability of \libauto{} are (1) evaluation metrics that report on fairness aspects of recommendation output, (2) support for working with user (demographic) and item (content) features in algorithms and metrics, and (3) an optional re-ranking step in the experiment pipeline, to support what is one of the most common category of fairness enhancing techniques.
+With these features, \libauto{} can support a wide range of research activities in fairness-aware recommendation, and we will be adding additional capabilities in future releases.
+
+
+
+
+%%%%%
+% \begin{markdown}
+% - https://github.com/dawenl/vae_cf
+% - https://github.com/gourabkumarpatro/FairRec_www_2020 - THIS IS NOT A LIBRARY!
+% - A. Salah, Q.-T. Truong, and H. W. Lauw, “Cornac: A comparative ramework for multimodal recommender systems,” Journal of Machin Learning Research, vol. 21, no. 95, pp. 1–5, 2020.
+% - S. Sedhain, A. K. Menon, S. Sanner, and L. Xie,  “Autorec: Autoencoders meet collaborative filtering,” in Proceedings of the 24th international conference on World Wide Web, pp. 111–112, 2015
+% - https://github.com/shenweichen/deepctr
+% - RecSim (https://arxiv.org/abs/2103.08057) https://github.com/google-research/recsim_ng
+
+% - https://github.com/lyst/lightfm
+% - http://surpriselib.com/
+
+% - Michael D. Ekstrand. 2020. LensKit for Python: Next-Generation Software for Recommender Systems Experiments. In <cite>Proceedings of the 29th ACM International Conference on Information and Knowledge Management</cite> (CIKM ‘20). DOI:10.1145/3340531.3412778. arXiv:1809.03125 [cs.IR]. - DONE
+
+% - http://www.mymedialite.net/ - DONE
+% - https://github.com/microsoft/recommenders - DONE
+% - https://recbole.io/ - DONE
+% - MAHOUT
+% - EASYREC
+% \end{markdown}
+
+
+% Although there are still discrepancies in their properties from the number of algorithms and standard datasets, to the coverage of more recent algorithms in newer fields such as fairness, diversity or deeplearning. 
+% Here we describe the major capabilities of some of the current libraries and compare them with the characteristics of librec-auto, although we have not performed a systematic comparison of these libraries.
+
+% \emph{\textbf{Recbole}} \cite{recbole} is an open-source recommender system library (under the MIT license) consisting of 72 recommendation models and 28 benchmark datasets covering general, context-aware, sequential, knowledge-based recommendation algorithms. Most of the implemented algorithms are from the current papers (2017, 2018, 2019 and 2020). This library is based on the most popular deep learning framework, PyTorch. Some of its substantial features are easily extendable algorithms, automatic parameter tuning, GPU-accelerated execution, and break point resume (allows the resume of model training from a previously stored break point).
+% % they have factorization machines and deep factorization machines and newer NN models
+% % it doesn't have nuch commonality with librec algorithms, so it can be used as a complimentary library
+
+% They offer four parameter tuning methods which are implemented based on the hyperopt library~\cite{pmlr-v28-bergstra13}: “Grid Search”, “Random Search”, “Tree of Parzen Estimators (TPE)” and “Adaptive TPE”. These methods provide the capability of simultaneously optimizing the hyper-parameters.
+% % TPE is a kind of Baysian optimization method
+% The performance metrics that are offered in this library are RMSE, MAE, Recall@K, Precision@K, nDCG, and MMR, auc, group AUC, hit, log\_loss.
+% % less evaluation metrics than librec/librec-auto
+
+% The data splitting section offers different approaches of ratio-based, leave-one-out and different item sorting approaches before data splitting (random or temporal). They also cover full ranking anmd sample-based ranking approaches e.g. negative sampling, etc.
+% % less data splitting methods than librec, although they have some approaches that librec doesn't have
+
+
+% \emph{\textbf{Microsoft Recommenders}} \cite{MicrosoftRecommenders} is another open-sourced library by Microsoft which supports Python 3.6 ad 3.7. It support both Linux and Windows platforms. It includes 31 recommendation algorithms (including the most current work in deeplearning and neural networks) that can be run under the following environments (if available): PySpark, Python CPU and Python GPU.  The key features in this library are the ease of implementation and deployment, enhanced speed of performance and scalibility. This library facilitates integrating algorithms into complete end-to-end pipelines for recommendations.
+% It allows to see how recommender system algorithms developed in heterogeneous environemnts such as Spark, GPU, etc. can be operationalized.
+% % it provides online and offline evaluation, heterogeneous computing platforms suhc as distributed computing cluster, GPU, etc, the online monitoring the health status of the recommendaiton system, hyper-parameter tuning, online trainng, model re-training
+% rating
+% rmse, rquared, mae, explained varinace
+% spark rating evaluations for rsquared, mae and rmse
+
+% ranking
+% ndcg@k, precision@k, recall@k, ndcg@k, map@k
+% spark ranking evaluation for ranking metrics such as precision@k, recall@k and ndcg@k and mean average precision
+
+% binary models
+% logistic loss and AUC
+
+
+% for hyper-parameter tuning, they use Spark native construct, hyperopt \cite{pmlr-v28-bergstra13}, Neural Network Intelligence toolkit and Azure Machine Learning. 
+
+% MLlib provides Model selection tools for hyperparameter tuning.
+
+% Hyperopt is a distributed asynchronous hyper-parameter optimization tool tat offers Random Search, Tree of Przen Estimators (TPE), and Adaptive TPE which allows the algorithms be parallelized using Apache Spark or MongoDB.
+
+% NNI offers Exhaustive search (such as Random Search, grid Search and Batch), Heuristic search (such as Anneal, Hyperband, PBT and Naive Evolution), Bayesian optimization (such as BOHB, TPE, SMAC, Metis Tuner, GP Tuner, DNGO Tuner), and Neural Architecture Search(Retiarii) - a deep learning exploratory-training framework on NNI, Early Stop Algorithms, and Model Compression.
+
+
+% for splitting the data, they use three strategies: random split, stratified split (userfix, itemfix) and chronological split (split the data based on timestamps by user or item)
+
+
+% \emph{\textbf{MyMediaLite}} \cite{MyMediaLite} is an open-source software distributed under the terms of the GNU General Public License (GPL), implemented in C\# which runs in .NET platform and can be used in all operating systems. Although it is implemented in C\#, it can be called from other languages such as Ruby and Python. It addresses two main problems in collaborative filtering: rating prediction and item prediction from positive-only implicit feedback. There are some preliminary support for hyper-parameter selection using Grid search and Nelder-Mead\cite{piotte2009pragmatic}. Another key feature of this library is Serialization, which allows to store and load the trained models on a different machine than the recommender engine.
+% %it's documanetation is okay
+% Includes evaluation routines for rating and item prediction; quality measures MAE, NAME, RMSE, CBD, AUC, MAP, precision@N, recall@N, NDCG, MRR; and their last release was in December 2015.
+
+
+% \emph{\textbf{Apache Mahout}} is a collection of mostly distributed implementations of machine learning and data mining algorithms written in Java. One section of the library is dedicated to collaborative filtering algorithms; the majority of algorithms (taken from the predecessor Taste) is not distributed; an item-based kNN model and Slope-One are available as a distributed implementation
+
+
+% \emph{\textbf{EasyRec}} is a recommender system web service, written in Java, that can be integrated into websites, however it does not contain any advanced personalized algorithms; it is more a framework for connecting a recommender service with an application. RecLab is a framework for performing live evaluations in online shopping systems; it contains an API to be implemented by the shop system, and another one for providing recommendations. 
+
+% \emph{\textbf{RecommenderLab}} \cite{hahsler2015recommenderlab} is an open source library written in R, which supports rating and unary datasets. While it's one of the few or maybe the only recommendation library in R, it provides a limited number of algorithms and evaluation metrics. One of the different features of this library is offering the repeated bootstrap sampling which is lacking in other libraries. This library is being maintained and extended regularly. the latest release was in April 2021.
+% % https://github.com/mhahsler/recommenderlab/
+
+
+
+
+% \emph{\textbf{LensKit}} \cite{LensKit2020} is yet another recommender system library written in Java
+
+
+% has thorough documentation with examples \cite{ekstrand2019lenskit}
+
+
+
+% Other recommender system libraries are offered featuring recommender system algorithms in specific fields such as deeplearning \cite{DRecPy2020} or for specific use such as Evaluation \cite{anelli2021elliot} as well as libraries that are not being maintained so often such as Easyrec, or DUINE recommender (http://www.duineframework.org/index.html)
+
+
+% \begin{markdown}
+% - explicit configuration
+% - batch / unattended processing
+% - hyper-parameter search
+% - wider variety of metrics (includ. fairness)
+% - support for re-ranking (fairness and diversity)
+% - file-based. data characteristics
+% - multiple kinds of evaluation
+% - large algorithm library
+% \end{markdown}
+
+% Microsoft's Recommenders library~\cite{argyriou2020microsoft}, is a recommender systems open-source library written in Python programming language, under the MIT License. In this library, some of the algorithms can take advantage of GPU resources and some others require a Spark environment. And it supports Linux and Windows platforms.
+
+
+% %LKPY~\cite{ekstrand_2020},
+% % DeepRec is a TensorFlow-based library written in Python that implements more than 20 well-known deep learning recommendation algorithms. The algorithms based on rating prediction include: DeepFM \cite{guo2017deepfm}, NeuMF \cite{xue2017deep}, NRR \cite{li2017neural}, and AutoRec \cite{sedhain2015autorec}. Learning to rank models include CML \cite{hsieh2017collaborative} and GMF \cite{he2017neural}.  
+
+
+
+
+% =======================================for later===================================
+% Questions to ask about different libraries:
+
+% - version date
+% actively developed/license
+% language
+% scalable
+% online updates
+% OS
+% evaluation (online/offline)
+% url of the repository
+% easy extension of alog ans metrics?
+% documentation / ease of use
+% # algos 
+% #datasets
+% reproducibility
+% easy config
+% re-rankers?
+% newer fields? (fairness, deep learning, ...)
+% constantly maintained
+% post-processing (plots, figures, ...)
+% ease of combining with other libraries?
+% hyper-parameter tuning?
+% tasks they cover (rating, ranking, etc.)
+% environments
+% open-source?
+% parallel run / parallel optimization
+% API
+% commandline tools
+% usage in industry or academia?
+
+
+% https://dl.acm.org/doi/pdf/10.1145/3383313.3418483
+% https://dl.acm.org/doi/pdf/10.1145/3340531.3412778
+% http://surpriselib.com/
+% https://github.com/lyst/lightfm
+% https://arxiv.org/pdf/2103.08057.pdf
+% https://github.com/shenweichen/deepctr
+% https://dl.acm.org/doi/pdf/10.1145/2740908.2742726?casa_token=tC6xS1XXvGgAAAAA:5cnqP48NTKKnqGRuTjoPvfUYQDmG1fJD_KOvQO6yJvzCV-szTWEEltbZp5Yly8bBbGYXWotH0SM
+% https://www.jmlr.org/papers/volume21/19-805/19-805.pdf
+% https://github.com/dawenl/vae_cf
+
+
+
+%%%%%
+
+
+
+
+
+
+
+
+
+
+\subsubsection{Fairness metrics}
+\label{sec:fairmetrics}
+% \todo[inline]{talking about WISIWYG and WAE instead referring to the book chapter?}
+% \todo[inline]{group and individual fairness}
+
+
+There are two types of assumptions behind fairness-aware systems \citet{friedler-impossibility-2021}: (1) \textit{What you see is what you get (WYSIWYG)}, and (2) \textit{We're all equal}. Having a WYSIWYG assumption in a system means that the observations of features do not encode bias, therefore the system uses that unbiased information to make decisions about individuals in a way that similar individuals are treated similarly. WYSISYG seeks to achieve fairness for individuals rather than a group of users. However, the second assumption (WAE) acknowledges that the biases in the society are reflected in data which lead to disparate treatment of different groups with different sensitive features. Therefore WAE supports group fairness. In \libauto{}, we have concentrated on fairness-aware metrics that measure group fairness. However, some individual fairness metrics are also included. We intend to extend the coverage of both types of metrics in future releases.
+
+In addition to the group vs individual fairness distinction, recommender system fairness is also distinguished by the fact that fairness concerns may be formulated relative to multiple different stakeholders \cite{burke2017multisided,abdollahpouri2020multistakeholder}. In particular, we may be concerned about fairness towards consumers of recommendations (end-users) and providers of items being recommended. Consumer-side group fairness asks whether the system is fair to different groups of users: for example, male, female and non-binary job seekers getting recommendations of job listings. Provider-side group fairness asks whether the system is fair to different groups of item providers: for example, male, female and non-binary musical artists whose tracks are being recommended. We have included metrics for both types of stakeholders in \libauto{}.
+
+The WEA assumption is concerned with equitable treatment of users in protected groups. The WAE assumption requires that recommender systems provide individuals of a protected group (regardless of stakeholder position) to experience a similar quality of service as those in the unprotected group, according to some objective or metric deemed important to that group \cite{ekstrand2018all,ekstrand2021exploring,steck2018calibrated,yao2017beyond}. For consumers, the common approach to measure the quality of recommendations is using accuracy-based metrics. These values are computed and compared across groups. As an example, \cite{yao2017beyond} measures and compares different types of errors among user groups. \cite{burke2018balanced} also compared the statistical parity of the precision of recommendations for different demographic groups. A WSIWYG assumption asserts that all users should get similar quality of service and does not make use of a protected / unprotected group assumption. \cite{steck2018calibrated} uses a diversity-based metric (KL-divergence) to measure the discrepancy between the distribution of item categories in user profile and that of her recommendations. A system that scores well on this calibration measure is considered fair in that it is providing recommendations well matched to the tastes of individual recommendation consumers, even when those tastes vary widely from the average user.
+
+Similarly for providers, we provide metrics appropriate under either of the WAE or WYSIWYG assumptions. Under the first assumption, we concentrate on the results associated with protected vs unprotected provider groups. A simple way to compare these results is to look at \textit{exposure}, the likelihood that particular providers will have their items displayed in the recommendation lists of consumers \cite{liu2019farpfar,sonboli2020opportunistic}. However, displaying a recommendation to an uninterested user might not be of much value, so a utility-based (or \textit{hit-based}) alternative considers both how often items are displayed and the quality of match between the user and the item and compares these utilities between protected and unprotected providers \cite{singh2018fairness,biega2018equity}. An example of individual fairness metrics for providers is the Gini index metric, where a high (unfair) value indicates that recommendation results are highly concentrated among a few providers.
+
+\begin{table}[tb]
+\centering
+\caption{Fairness metrics in \libauto.}
+\label{tab:fair_metrics}
+\begin{threeparttable}
+\begin{tabular}{lll}
+\toprule
+Metric            & Stakeholder Focus     & Fairness Type \\\midrule
+Calibration        & consumer             & individual \\
+DPF                & consumer             & group \\
+Error-based        & consumer             & group \\
+Gini Index         & provider             & individual \\
+PPR                & consumer \& provider & group \\
+Statistical Parity & provider             & group \\
+\bottomrule
+%\multirow{2}{*}{Diversity-based} & ILD                & provider             \\ \bottomrule
+                                 
+\end{tabular}
+\end{threeparttable}
+\end{table}
+% Metrics that are based on item/provider exposure, or compute diversity or detect popularity bias belong to the provider-side metric category.
+
+% The proposed metrics for the provider-side have evolved gradually and have become more sophisticated and nuanced. We classify them into the following categories. The first family of metrics focus on the distribution of groups within the list, without accounting for relevance or utility \cite{singh2018fairness,liu2019farpfar,sonboli2020opportunistic} --- in practice, this means utility needs to be measured as a separate complementary or primary objective, with the fairness metric providing additional insight into the composition of metrics already optimized for relevance. The second family of metrics looks at the \emph{proportion} of group members in prefixes of the list of increasing length \cite{yang2017measuring,zehlike2017fa,mehtora2018towards}; And the third family of metrics uses a user model to weight groups by the rank at which their items appear. 
+% \cite{Sapiezynski2019Quant}.
+
+% These metrics remain useful for situations where there is a large relevant set, such as many job candidate search examples: if there are several hundred qualified candidates, ensuring the first 20--100 are fair does not have significant implications for utility.
+
+% Recommendation fairness and associated fairness metrics can be defined from the perspective of two main stakeholders: providers and consumers \cite{burke2017multisided}. Additionally, both provider-side and consumer-side metrics come in two basic varieties: exposure-based and hit-based.
+
+% \textit{Exposure} metrics focus on the the appearance of protected items \cite{singh2018fairness} in a ranked list and \textit{hit-based} metrics take into account the suitability of the target user \cite{abdollahpouri2020multistakeholder}.
+As this discussion suggests, fairness metrics for recommender systems form a fairly complex space with many different proposals \cite{tsintzou2018bias,steck2018calibrated,beutel2019fairness,yao2017beyond,biega2018equity,castillo2019fairness,kuhlman2019fare,yang2017measuring}. We implement the following metrics in \libauto{} and where possible, include both consumer-side and provider-side versions of the metric, as listed in Table \ref{tab:fair_metrics}. All metrics listed here are implemented in Java and integrated with the LibRec code base: 
+
+\begin{itemize}
+    \item \textbf{Calibration} \cite{steck2018calibrated}, a distribution-based metric that uses KL-Divergence to measure the difference in item category distribution between the preferences of users and their respective recommendation lists.
+    \item \textbf{Discounted Proportional Fairness} (DPF), a hit-based fairness metric similar to the metric offered in \cite{castillo2019fairness} where it measures the ranking utility (nDCG) of the protected group with respect to the other groups. 
+    \item \textbf{Error-based} metrics proposed in Yao et al. \cite{yao2017beyond} including value-unfairness, absolute unfairness, underestimation unfairness, overestimation unfairness. Non-parity unfairness as defined by Kamishima et al. \cite{kamishima2011fairness} is also in this group.
+    \item \textbf{Gini Index} calculated over the exposure of all the providers in all recommendation lists. 
+    \item \textbf{P-Percent-Rule} (PPR) discussed in \cite{biddle2006adverse}, is a two-sided extension of statistical parity \cite{barocas2016big}. 
+    \item \textbf{Statistical parity}, based on the ideas discussed in \cite{zemel2013learning,ritov2017conditional}, measuring the difference in outcomes between protected and unprotected groups relative to various recommendation outcomes. Both ranking and prediction accuracy measures are supported.
+\end{itemize}
+
+In addition to this set of fairness metrics, we provide an implementation of the \textit{Intra-List Distance (ILD)} measure \cite{ziegler2005improving}, a pairwise distance between all the item features in each user’s recommendation list. This is a user-focused measure of the diversity that a recommender system provides. 
+
+\subsubsection{Item and user metadata}
+LibRec does not directly support algorithms that use item and user metadata: content-based or demographic recommendation. The ability to make use of such data is an enhancement that was made in order to implement fairness-aware algorithms and metrics: it is clear, for example, that you need to know if a user is in a protected group to know how to apply metrics like statistical parity or value unfairness. 
+
+Our enhancements allow the algorithms and metrics to access data stored in user and item feature files. These files have a simple sparse triple format: item id (or user id), feature name, feature value. Because it is a sparse format, rows with zero values can be omitted. If the value for a feature is binary, the feature value can also be omitted and all $ \langle item, feature \rangle$ pairs that appear in the file will have a feature value of 1.
+
+For the specific case of group fairness algorithms and metrics, the feature file must contain a feature with a binary value that represents the protected / unprotected group distinctions. Items with a value 1 for this feature will be considered protected for the purposes of metrics or algorithms. We plan to generalize this capability in future releases.
+
+\subsubsection{Re-ranking}
+\label{sec:rerank}
+A re-ranking algorithm takes the ranked output of a base system (usually an information retrieval or recommender system) and performs a permutation of the ordering (and usually a truncation) before sending the list to an end user. A typical application of these techniques is to enhance output diversity or fairness when the list of top candidates returned by the base system lacks these properties.
+
+% \todo[inline]{add the name of Weiwen's code - buggy}
+% RE-RANKING
+
+Re-rankers strive to achieve a reasonable balance between accuracy and other output properties, like fairness or diversity, by offering a tunable tradeoff between boosting protected or diverse items and including items ranked highly by the base system. 
+
+\libauto{} includes implementations of the following re-ranking algorithms:
+\begin{itemize}
+    \item \textbf{FAR}, defined in \cite{liu2019farpfar}, combines a personalization-induced and fairness-induced scores with hyper-parameter $\lambda$;
+    \item \textbf{PFAR}, from \cite{liu2019farpfar}, adds a personalized weight to FAR, calculated based on item-features in user profile, representing the tolerance of the user for diverse results
+    \item \textbf{OFAiR} is based on PFAR and allows fine-grained control of protected group promotion when there are multiple protected groups \cite{sonboli2020opportunistic}.
+    \item \textbf{FA*IR} \cite{zehlike2017fa} builds a queues of protected and unprotected items and draws from each queue to build the final re-ranked list.
+    \item \textbf{MMR} diversifies result lists by greedily adding items with maximal marginal relevance \cite{carbonell1998use}.
+    \item \textbf{XQuAD} defined in \cite{santos2010explicit} has similar goal to MMR algorithm, but it enhances diversity with respect to specific aspects.
+    \item \textbf{Calibrated Recommendations}, an algorithm closely tied to the Calibration metric above, which re-ranks recommendations to ensure a close match to the user's distribution of interests in item features~\cite{steck2018calibrated}.
+\end{itemize}
+
+The re-ranking methods are part of \libauto{} and are implemented in Python. A re-ranking script loads the original set of (large) recommendation lists computed for each user and then computes new re-ranked sub-lists for output. As noted above, re-rankers can participate in the optimization process. However, it would be inefficient to compute LibRec results multiple times if the only parameters changing were within the re-ranker. \libauto{} detects this situation and only computes results once for a given set of algorithm parameters. 
+
+
+\subsection{Optimization}
+\label{sec:opt}
+% \begin{markdown}
+
+As noted above, \libauto{} supports grid search, an exhaustive method of checking each combination of values specified in order to find the optimal value. The number of experiments is determined by a cross-product of the variables. The syntax to run grid-search involves specifying specific values for a given metric. For example,
+
+{\small
+\begin{verbatim}
+    <item-reg><value>0.01</value>
+          <value>0.05</value></item-reg> 
+\end{verbatim}}
+
+While grid search is guaranteed to find the optimal result within the specified parameter-value combinations, it can be expensive and time-consuming to run, particularly with a large number of variables, and depends heavily on experimenter expertise in choosing specific parameter values to sample. To overcome these difficulties, we have introduced Bayesian black-box optimization (using \texttt{optuna}), which aims to reduce the time to find an optimal combination of values \cite{akiba2019optuna}. The \texttt{optuna} package includes a number of optimization methods including the Tree Of Parzen Estimators (TPE) method, which makes probabilistically sampled estimates of optimal parameter values based on prior experimental results. In our experiments, this method outperformed other options that we considered. 
+
+In order to use this system, an \texttt{optimize} element must be added to the configuration file (see below), and instead of the \texttt{value} syntax used to indicate possible values for grid search, the experimenter includes \texttt{lower} and \texttt{upper} elements indicating the legal range for each variable. If the metric being used is a LibRec metric then the direction of optimization is automatically determined. For user-defined metrics, the experimenter must specify the direction of optimization.
+
+\section{Study Configuration}
+
+\libauto{} uses an XML configuration file to specify all aspects of the experimental pipeline. As noted above, a configuration file defines a \textit{study}, which computes evaluation results for a single algorithm and a single data set, possibly over multiple choices of hyperparameters, each combination of which constitutes an \textit{experiment}. The configuration file is divided into sections, some of which are optional. We devote some attention here to this file because a study of its components gives a good overview of the capabilities and flexibility of \libauto{}. A sample configuration file is shown in Figure~\ref{fig:config}.
+
+XML was chosen because configuration files need to be managed both by human experimenters and by the system itself. The unstructured key-value properties format used by LibRec was found to be difficult for experimenters to manage as it does not impose a natural structure on the different aspects of the configuration and makes it difficult to re-use and adapt configurations. JSON was also considered, but XML is more self-describing, which is important when the configuration must provide documentation for what experiments were performed. XML enables configuration files to be easily modularized, so that, for example, multiple studies can share the same methodology elements, preventing inadvertent misconfiguration. XML also provides facilities for validating configuration files against an XML schema, which in future versions will allow us to provide error checking of configuration files before processing them.
+
+\begin{figure}[ht!]
+    \centering
+    \include{config_xml}
+    \caption{Sample configuration file}
+    \label{fig:config}
+    \vspace{-0.15in}
+\end{figure}
+
+\subsection{Global elements (all optional)}
+The global elements establish conditions under which all aspects of the configuration file interpretation and study execution will take place.
+
+\begin{description}
+\item[random-seed]: An integer that will be used as the seed for any randomized actions that the platform takes. This ensures repeatability for experiments.
+\item[thread-count]: If this is greater than zero, librec-auto will spawn multiple threads for various tasks, including parallel execution of experiments.
+\item[library]: There can be multiple \texttt{library} elements, from which algorithms, metrics and other elements can be imported. There is a default system library for algorithms (referenced in the example). An element from the library can be imported using the \texttt{ref} attribute.
+\end{description}
+
+In the example file in Figure~\ref{fig:config}, \texttt{<alg ref="alg:biasedmf"/>}` refers to the \texttt{biasedmf} (Biased Matrix Factorization) algorithm as implemented in LibRec with the default hyperparameters given in the library. The library file is also a useful reference for experimenters to see what hyperparameters a given algorithm accepts. These can be overridden by local declarations in the configuration file.
+
+\subsection{Data Section}
+The data section indicates where the data for the study can be found. The data can be in any convenient place. However, \libauto{} will need to be able to write to this directory since it will by default add new data split directories here. \footnote{Note that, for LibRec compatibility, there are two different places where the label ``format'' is used. The \texttt{format} element indicates the columns in the ratings file. The \texttt{format} attribute of the \texttt{data-file} element is the file format of the ratings file: LibRec supports text and AIFF file formats.}
+
+\subsection{Feature Section (optional)}
+LibRec is heavily focused on collaborative algorithms, so the basic form for input data is the user/rating matrix. However, as noted above, for content-oriented algorithms and for fairness-aware algorithms and metrics, it may be necessary to have item metadata and/or user demographic data. The \texttt{feature} element allows experimenters to include either item or user features as input to a study's algorithm or metrics. 
+
+\subsection{Splitter Section}
+A variety of different evaluation strategies are employed by recommender systems researchers to evaluate algorithms. K-fold cross-validation is a common one, and LibRec supports multiple variants on this approach. 
+
+The example in Figure~\ref{fig:config} directs \libauto{} to perform five-fold cross-validation using 80\% of each user's data for training and 20\% for testing in each fold. The splits will be saved to the data directory, and can be re-used in subsequent experimentation. 
+
+The configuration file also supports fixed training and test files supplied by the experimenter and temporal splitting (when dates are available for ratings). 
+
+\subsection{Algorithm Section}
+LibRec supports more than 70 recommendation algorithms, each linked to a paper from the scientific literature that it implements. A default algorithms library contains a number of the most common algorithms and complete lists of their hyperparameters with default values.
+
+Typically, a study will consist of multiple experiments over different algorithm hyperparameters. As noted in Section~\ref{sec:opt}, \libauto{} supports both grid search and Bayesian black-box optimization In Figure~\ref{fig:config}, the weight for the item regularization term (\texttt{item-reg}) is being varied across two values, 0.01 and 0.05. This information tells the system to conduct two experiments using the given weight values. Any number of hyperparameters can be searched over. The system will conduct an experiment for every combination of values (Cartesian product), so the number of experiments can be quite large.
+
+\subsection{Optimize Section (optional)}
+The black-box optimization capability requires the use of a separate \texttt{optimize} element to specify what metric is used for optimization and how many iterations are to be performed. For example,
+
+{\small
+\begin{verbatim}
+<optimize><metric>precision</metric>
+          <iterations>25</iterations></optimize>
+\end{verbatim}}
+
+This option cannot be combined with grid search. If it is used, instead of providing a list of values associated with a parameter (the \texttt{value} element), we provide an upper and lower bound to the search range.
+
+{\small
+\begin{verbatim}
+<item-reg><lower>0.01</lower>
+          <upper>0.05</upper></item-reg>
+\end{verbatim}}
+
+\subsection{Metrics Section}
+A study can employ multiple metrics. LibRec supports over 20 different metrics for evaluating recommender system performance. There are two basic types: \textit{error metrics}, which compare the predictions produced by an algorithm with known ratings from the test set, (for example, RMSE), and \textit{ranking metrics}, which evaluate a ranked list of results produced for each user in the training data (for example, Precision@10). Although multiple metrics can be used, only one type of metric can be used at a time since these methodologies are quite different in how they make use of the training data. Ranking metrics (like Precision@10 shown in the example) require the \texttt{ranking} element to be true and a list-size to be specified.
+
+Fairness-aware metrics require a \texttt{protected-feature} element. As described in Section~\ref{sec:fair}, the current release requires this to be a binary feature drawn from the item or user feature file. Items (or users) associated feature value of 1 will be considered protected for the purposes of a fairness metric. This value is also used by fairness-aware algorithms in LibRec.
+
+\libauto{} supports custom metrics defined as Python scripts, similar to re-ranking scripts described below. Implementers can make use of generic error or ranking metric abstract classes for building their metrics, minimizing the amount of implementation effort. This eliminates the need to program such metrics in Java and re-compile the LibRec executable.
+
+If black-box optimization is used, the optimizer needs to know which direction of a metric is considered ``good'': note that large RMSE is bad, but large nDCG is good. This property is pre-defined for built-in metrics, but for custom metrics, a flag must be included in the metric \texttt{script} declaration to indicate whether to optimize for larger or small values of the metric.  
+
+\subsection{Rerank Section (optional)}
+For a study that includes re-ranking, the re-ranking script is specified in a \texttt{rerank} element. Note that all re-ranking is done by script resources and these can be easily customized by experimenters. Currently, only Python scripts are supported.
+
+The configuration for a re-ranker indicates the parameters to be passed. In the following example, we see that the \texttt{far-rerank.py} script is being used, which implements the re-ranker described in \cite{liu2019farpfar}. The \texttt{max\_len} parameter tells the script how many items will be returned for each user from the re-ranked set. Other parameters are algorithm-specific controls on the re-ranking process. The FAR algorithm defined in \cite{liu2019farpfar} uses the \texttt{lambda} and \texttt{binary} parameters shown here.
+
+{\small
+\begin{verbatim}
+<rerank>
+   <script lang="python3" src="system">
+      <script-name>far-rerank.py</script-name>
+         <param name="max_len">10</param>
+         <param name="lambda">
+            <value>0.3</value>
+            <value>0.0</value>
+         </param>
+         <param name="binary">False</param>
+   </script>
+</rerank>
+\end{verbatim}}
+
+Note that a re-ranking step can participate in the optimization aspects of \libauto{}. In the example above, we explore two different values of \texttt{lambda} in combination with whatever other hyperparameters are being searched. (Black-box optimization is not yet available for re-ranker parameters, but is a planned feature.)
+
+\subsection{Post-Processing Section (optional)}
+\libauto{} supports the post-processing of study results. There are existing scripts for producing simple visualizations (see Figure~\ref{fig:viz}), for producing CSV files for further analysis, and for posting experimental results to Slack and Dropbox (see Figure~\ref{fig:slack}). The latter are useful for experiments with longer run-times. There is a script provided for encrypting application API keys so that they do not need to be shared (insecurely) in the configuration file. 
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/chapter6-librecauto/sample-output.png}
+    \caption{Sample auto-generated study output visualizations. These simple plots support experimenters in providing a quick analysis of study outcomes.}
+    \label{fig:viz}
+    \vspace{-0.15in}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/chapter6-librecauto/slack-post.png}
+    \caption{Sample auto-generated Slack posts. Such notifications provide experimenters and research teams with asynchronous notifications of study progress.}
+    \label{fig:slack}
+    \vspace{-0.15in}
+\end{figure}
+
+\section{Related Work}
+
+With the rapid growth of published recommendation algorithms, the concern about reproducibility of models in the research community has given rise to the need of having standard implementations for models and evaluation metrics. Many of the recommendation algorithms lack public implementations or those that have one, are inconsistent in details. \libauto{} is a response to this need, but it should be noted that there many other recommender systems libraries have been created and offered to the research community, beginning with earlier systems such as MyMediaLite \cite{MyMediaLite} and continuing through newer releases such as Microsoft Recommenders \cite{MicrosoftRecommenders} and RecBole \cite{recbole}. However, none of these libraries offer the precise combination of features that are found in \libauto{} and some are no longer being maintained.
+
+One of the key aspects of \libauto{} is its incorporation of fairness-aware metrics and algorithms. As noted above, the platform has strong support for re-ranking, perhaps the most common fairness-aware recommendation technique, and it includes examples of re-ranking algorithms from the research literature, as described in Section \ref{sec:rerank}. Also, \libauto{} supports metrics for both consumer- and provider-side fairness as noted in Section \ref{sec:fairmetrics}. No other existing library has these capacities. 
+
+Another important difference between \libauto{} and existing libraries is its large collection of algorithms (~70) drawn from LibRec itself. Many existing libraries, for example, RecommenderLab \cite{hahsler2015recommenderlab}, LKPY \cite{LensKit2020}, and Surprise \cite{Hug2020} concentrate on a relatively small handful of algorithms. Microsoft Recommenders \cite{MicrosoftRecommenders} and RecBole \cite{recbole} have large algorithm libraries including dozens of implementations, but these have almost no overlap with those included in LibRec and so can be thought of as useful complements. We plan to integrate the algorithms from the Microsoft library in particular as part of our next major release, as described below.
+
+Finally, \libauto{} stands apart for its use of explicit algorithm configuration and support for unattended operation. While Jupyter notebooks are very convenient for interactive exploration of algorithm properties, we have found that large-scale experimentation (especially for researchers on limited compute budgets) is best supported through the ability to configure and run batch processes and this has been considered a primary use case since the project's inception.
+
+\section{Discussion and Future Directions}
+The \libauto{} project is driven by the needs of recommender systems experimentation and education and continues to evolve. Its key features (explicit configuration, built-in parameter optimization, computationally-efficient result handling) were all requirements that surfaced within our research work. Newer capabilities in the area of fairness-aware recommendation and re-ranking have a similar genesis and proven practical value. 
+
+We note that \libauto{} does not directly support all popular methodologies for recommender systems evaluation. In particular, it supports only batch evaluation, and not iterative evaluation as required by bandit and reinforcement learning paradigms. There are other platforms, for example RecoGym \cite{rohde2018recogym} and RecSim NG \cite{mladenov2021recsim}, that support this type of methodology and we do not anticipate the need to evolve our system in this direction. 
+
+\subsection{Algorithm integration}
+One of the key requirements for future releases is that the platform makes it easy to experiment with algorithms other than those implemented in LibRec. By the time of publication, we expect to have released interfaces to two popular recommendation libraries:  LibFM~\cite{rendle2012factorization} and Microsoft's Recommenders library~\cite{argyriou2020microsoft}. 
+
+LibFM\cite{rendle2012factorization} is a factorization machine (FM) software tool written in C++, that features stochastic gradient descent (SGD) and alternating least-squares (ALS) optimization, as well as Bayesian inference using Markov Chain Monto Carlo (MCMC) for regression and classification tasks. It also contains methods for optimizing an FM model with respect to ranking. 
+
+
+As noted above, Microsoft Recommenders \cite{MicrosoftRecommenders} is an open-source platform for recommender systems development and evaluation. This Python-based tool includes 31 recommendation algorithms including some recent deep learning algorithms, for example, Neural Recommendation with Multi-Head Self-Attention (NRMS) \cite{wu2019neural}. While the platform includes many capabilities for data handling and evaluation, these are handled by \libauto{} in our integration. We draw only from the algorithm implementations. 
+
+An experimenter accesses non-LibRec platforms through custom wrapper scripts to which parameters are passed. For example, the algorithm configuration element below invokes the xDeepFM algorithm using the \texttt{msrec-wrapper.py} and passing arguments needed by this algorithm.
+
+{\small
+\begin{verbatim}
+<alg>
+   <script lang="python3" src="system">
+      <script-name>msrec-wrapper.py</script-name>
+         <param name="model">xdeepfm</param>
+         <param name="epochs">200</param>
+         <param name="batch_size">256</param>
+         <param name="learning_rate">1e-3</param>
+         <param name="cross_reg">0.0001</param>
+         <param name="embed_reg">0.0001</param>
+         <param name="num_factors">100</param>
+         <param name="feature_count">1000</param>
+         <param name="field_size">10</param>
+   </script>
+</alg>
+\end{verbatim}}
+
+\subsection{Fairness-aware aspects}
+\libauto{} is unique in its library of recommendation re-ranking algorithms, and this aspect of the project is being actively developed. The current library of re-rankers only includes \textit{listwise} re-rankers that optimize one recommendation list at a time. There is a thread of fairness- and diversity-aware research that studies \textit{batch} re-rankers that optimize over the entire collection of recommendation lists at once: see, for example, \cite{surer2018multistakeholder,patro2020fairrec,mansoury2020fairmatch}. We plan to extend our library of re-rankers to include this class of algorithm, and, as we have with the listwise class, provide base implementations with which researchers can construct their own.
+
+Similarly, while \libauto{} has a large variety of fairness metrics and supports both consumer-side and provider-side analysis, this capability will be enhanced in future versions. There remain some fairness definitions in the literature that we have not yet implemented, and some of our existing implementations are not as flexible as might be desired. In particular, we note that currently all fairness-aware aspects of any given study must be focused on a single side of the analysis (consumer or provider) and all group fairness aspects are controlled by the same definition of what is protected. We are extending this capability to allow (for example) re-ranking under one fairness definition and evaluating based on another. We are also planning to relax the constraint that protected groups must be defined by binary features, so that experimenters can control how protected groups are defined without having to produce new feature files in which the distinction is encoded. 
+
+\subsection{Other enhancements}
+While the system supports experimenters in planning, executing and evaluating individual studies, it does not support more general research workflows that might involve the comparison of multiple algorithms. For this higher-level support, we are working to integrate ClearML\footnote{https://clear.ml/}, an open-source machine learning management platform. A prototype of this integration is already in use.
+
+\libauto{} also does not currently support Bayesian optimization in combination with re-ranking. We anticipate adding support for this in the near future.  
+
+Finally, we are seeking to make \libauto{} more accessible to new users through the development of a setup wizard that automates the creation of study directories and configurations for typical use cases. The initial version of this wizard is part of the current codebase and we have plans for its continued enhancement. 
+
+

@@ -3,11 +3,237 @@
 
 \section{Datasets}
 
+Experiments were performed on the following publicly and proprietary datasets: MovieLens\cite{movielens}, The Movies dataset\footnote{https://www.kaggle.com/rounakbanik/the-movies-dataset}, Kiva dataset, and Yelp dataset\todo{do we need that?}. The characteristics of the datasets are summarized in Table \todo{create a table for them}, we also we describe how we have chosen our protected attributes. 
+% In this section we describe the characteristics of the datasets we have used and how we have chosen our protected and unprotected features.
 
-\section{Metrics}
-\subsection{Fairness}
-\subsubsection{Calibration?
-\subsection{Accuracy}
+    \subsection{MovieLens 1M Dataset}
+    For some of our experiments, we are using the well-known MovieLens 1M dataset~\cite{movielens}. This dataset is a movie rating dataset and was collected by the GroupLens research group. It contains gender information for each user, as well as ratings of 4,000 movies by 6,000 users. The density of this dataset is 4.47\%.
+    
+    \todo{extra info, combine}
+    It contains 1,000,209 ratings from 6,040 users over 3,706 movies, covering 18 movie genres (e.g. "Animation", "Comedy"). The sparsity of MovieLens is 4.47\%. All of the users in the MovieLens data set rated at least 20 movies. 
 
+        \subsubsection{Protected features for single-fairness}
+        Movie recommendation is, of course, a domain of pure individual taste and therefore not an obvious candidate for fairness-aware recommendation. 
+        Following the example of \cite{yao2017beyond}, our approach to construct an artificial equity scenario within this data for expository purposes only, with the understanding that real scenarios can be approached with a similar methodology.
+
+    \subsection{The Movies Dataset}
+    
+    This dataset was obtained from the Kaggle website and contains the metadata of 45,000 movies listed in the full MovieLens Dataset \footnote{https://grouplens.org/datasets/movielens} which were released on or before July 2017. Although movies are not a domain to which important fairness concerns are typically applied, we use this dataset as a well-known example with a rich set of provider-side features. The dataset contains 26 million ratings from 270,000 users for all 45,000 movies. Ratings are on a scale of 1-5. Each movie contains a set of features from which the following were used in this project: genres, original language, release date, revenue, run-time, popularity, production countries and spoken language. A sample of this dataset was extracted which contained the 559,070 ratings from 6,000 users on 14,623 items (density of 0.63\%).
+
+    All the features were transformed into categorical variables. If the movie's popularity is greater than the average popularity, we tag the movie as popular and unpopular otherwise. We transform the revenue and run-time in the same way as well. The release date is bucketed into old and new if the movie's release date is before or after 1990 \cite{kamishima2016model}. All the categorical features were transformed into dummy variables, resulting in a total of 323 binary features.
+
+        \subsubsection{Protected features for multi-concern provider fairness}
+        \todo{should this be moved somewhere else}
+        This dataset was used in Chapter \ref{fairness_postproc} for the to incorporate a multi-concern fairness definition in ht post-processing approach.
+        
+        For the purposes of exposition, we selected two features in this dataset along which to identify protected features, although the OFAiR algorithm in Chapter \ref{fairness_postproc} supports any number of sensitive features. In the Movies Dataset, we identified the following protected classes within each feature: ``unpopular'' (popularity), ``lower revenue'' (revenue) , ``longer'' (running time), ``before 1990'' (release date), some genres and movies the were produced in some non-US countries. More specifically, in our experiments, within genre and production country features we chose ``Horror'', ``Music'', ``Mystery'', ``History'' (genres) and ``CA'', ``ES'', ``DE'', ``HK'' (countries) to be the protected group. These feature values were chosen because they represented a minority within each feature, and so are good exemplars for demonstrating the capabilities of our algorithm.
+
+
+
+    \subsection{Kiva dataset}
+    Some of the collected data in \todo{balanced neighborhood slim, the provider side} was extracted from the Kiva.org microlending site using the site's API\footnote{http://build.kiva.org/}.
+    %protected value: higher than average number of unfunded loans
+    
+    Our algorithms are also evaluated on a proprietary dataset obtained from Kiva.org, including all lending transactions over an 12-month period. Initially, there were 1,084,521 transactions involving 122,464 loans and 207,875 Kiva users. Of these loans, we found that 116,650 were funded, that is they received their full funding amount from Kiva users by the 30-day deadline imposed by the site. We selected only the funded loans for analysis. Each loan is specified by features including borrower's name/id, gender, borrower's country, loan purpose, funded date, posted date, loan amount, loan sector, and geographical coordinates. 
+    To reduce the feature space, and to solve the multicollinearity problem, highly correlated features were removed. The percentage funding rate (PFR) was added as a new feature, computed as follows:
+    
+    \begin{equation}
+     \mbox{\textit{PFR}} =  \frac{1}{\mbox{\textit{{\#} days to fund}}} * 100 
+    \end{equation}
+    
+    The percentage funding rate captures the speed at which a loan goes from being introduced in the system to being fully funded.\footnote{Loans not fully funded within 30 days are dropped from the system and the money raised is returned to lenders.} For example, a loan with PFR of 25\% is accumulating a quarter of its needed capital each day. After preparing the data, the final features for each loan reduced to borrower's gender, borrower's country, loan purpose, loan amount (binned to 10 equal-sized buckets), and loan's percentage funding rate. We found that this dataset was highly sparse (density = $4.2e^{-5}$) and could not support effective collaborative recommendation, because a loan can only attract a limited amount of support (up to that needed for its funding). There are no ``blockbuster'' loans with thousands of lenders.
+    
+    To generate a denser dataset with greater potential for user profile overlap, we applied a content-based technique creating \textit{pseudo-items} that represent groups of items with shared features. We applied agglomerative hierarchical clustering \cite{rokach2005clustering} using the features of borrower gender, borrower country, loan purpose, loan amount (binned to 10 equal-sized buckets), and percentage funding rate (4 equal-sized buckets). We chose the cluster with the highest Silhouette Coefficient \cite{rousseeuw1987silhouettes} of around 0.69 which indicates a reasonable cohesion of the clusters. Then we applied a 10-core transformation, selecting pseudo-items with at least 10 lenders who had funded at least 10 pseudo-items. The retained dataset has 2,673 pseudo-items, 4,005 lenders and 110,371 ratings / lending actions.
+    
+
+
+        \subsubsection{Protected features for multi-concern provider fairness}
+        \todo{1.should this be moved somewhere else}
+        \todo{2.do we need a plot hear?}
+        In this dataset, we observed an imbalance within the following feature values/dimensions: (percentage funding rate), (country), (economic sector), (loan amount), (borrower gender). In keeping with Kiva's mission of providing equal access to capital across regions and economic sectors, we designate the items from the sectors and countries that have less than 1\% frequency in the training data as the protected group. More specifically 5 loan purposes in the economic sectors and 23 countries were selected to be the protected group. 
+        % Although in both datasets we chose two features to achieve fairness within their multiple dimensions, our method supports choosing any number of such features.
+        % \vspace{1cm}
+        
+        \subsubsection{Protected features for single-fairness}
+        For approaches that take only a single attribute, we set the protected attribute as the geographical regions in the world (e.g. )
+
+    \subsection{Yelp dataset}
+    
+    The original Yelp.com data included 6.7 million reviews from 1.6 million users on 192,609 businesses from different industries. We used a filtered subset, Yelp\_core40 \cite{mansoury2019bias}, which includes users who rated at least 40 businesses and businesses which were rated by at least 40 users. In the Yelp\_core40, there are many business categories  (e.g. car dealers, airports, or different types of restaurants, etc.). We limited the data set to restaurant/food establishments, using both "restaurant" and "food" labels for filtering. After pre-processing, the data set included 85,041 ratings by 1,355 users over 1,077 restaurants, covering 231 categories. The sparsity of Yelp is 5.83\%. The categories are defined by the labels provided in the original Yelp data set. Some of the categories are very popular (e.g. "American (New)", "Breakfast \& Brunch", etc.), while some of them are extremely specific (e.g. "Pretzels", "Shaved snow", etc.). There were also many establishments with multiple labels, which meant that they belonged to different item categories. 
+
+
+\section{Evaluation Metrics}
+    \subsection{Accuracy}
+    precision, recall, ndcg@10 or 5
+        \subsubsection{Normalized Discounted Cumulative Gain}
+        Therefore, we also evaluate the ranking accuracy of our algorithms in the results below. The measure that we use is normalized discounted cumulative gain (NDCG) measured at a specific list length. In this measure, an item appearing on a recommendation list accrues ``gain'' according to its position on the list -- thus the discount. The measure is normalized by comparing the algorithm's performance to the best ranking that could have been achieved. 
+
+        Let $P_i@10$ be a list of retrieved list of length 10 and let $\tau$ be an indicator function that is 1 for movies that the user liked and 0 for others. Then, DCG@10 is computed as
+        
+        \begin{equation}
+        DCG@10 = \sum_{k=1}^{10}{\frac{\tau(\rho_k)}{log_2(k+1)}}
+        \end{equation}
+        
+        NDCG@10 is this DCG@10 value divided by the optimal DCG, which occurs when all of the movies liked by the user and appearing the test set are ranked at the top of the list in their order of preference.
+        
+        \textit{Normalized Discounted Cumulative Gain (nDCG).}
+        Proposed in~\cite{jarvelin2002cumulated}, nDCG is a commonly-used measure of ranking quality, defined as Eq.~\eqref{eq:ndcg}.
+        %We follow the convention in recommender systems that there is a gain in DCG (\emph{i.e.,} the item is \textit{relevant}) if the rating of the item in the list is positive.
+        \begin{equation}
+        \text{nDCG}=\frac{\text{DCG}}{\text{IDCG}},
+        \label{eq:ndcg}
+        \end{equation}
+        where the formula of Discounted Cumulative Gain (DCG) of a $K$ ranked list is defined as
+        \begin{equation}
+        \text{DCG}=\sum_{i=1}^K\frac{{rel}_i}{\log(i+1)},
+        \end{equation}
+        where ${rel}_i$ is defined by the ratings of the item in the test set at position $i$. Ideal Discounted Cumulative Gain (IDCG) is the maximum possible DCG, which is the value of DCG computed by sorting all the items in the test set by their ratings.
+        
+    
+    \subsection{Fairness}
+        \subsubsection{Exposure-based Metrics}
+        discounted proportional fairness?, etc.
+        
+        \subsubsection{Intra-list distance(ILD)}
+        feature-based diversity both intra-list distance (ILD) 
+        
+        
+        Our version of Intra List Distance \cite{eskandanian2016user} is an adjusted version of intra list similarity as introduced by Ziegler et al. \cite{ziegler2005improving}. Both capture the diversity of a list, and in our case, we used Euclidean distance as the underlying dissimilarity measure in ILD.
+        
+        \begin{equation}
+            ILD(\mathcal{H}_u) = \frac{1}{|\mathcal{H}_u|(|\mathcal{H}_u|-1)}\sum_{i \in \mathcal{H}_u}\sum_{j \in \mathcal{H}_u}d(i,j)
+        \end{equation}
+
+        
+        
+        \subsection{Entropy}
+        
+        \subsection{Statistical Parity}
+        The fairness of lists was evaluated based on protected group exposure, which measures the fraction of the recommendation list that consists of protected group items. This value is related to the fairness concept of ``statistical parity,'' measured relative to items' level of promotion within the recommender system. Because list lengths are fixed (10 in our case), the exposure of unprotected items is just one minus the protected group exposure.
+        
+        
+        \subsubsection{accuracy-based metrics}
+        calibration, equality of odds/chance, 
+        
+        
+        \textbf{Consumer-side Risk Ratio}: In evaluating fairness of outcome, we use a variant of what is known in statistics as \textit{risk ratio} or \textit{relative risk} (RR)\cite{romei2014multidisciplinary}. We measure what is effectively \textit{relative opportunity}. In other words, we measure the observed probability of protected class items being recommended divided by the probability of unprotected class items being recommended.
+        We construct a consumer-side equity score, $E_c@k$ for recommendation lists of k items, as the ratio between the outcomes for the different groups. Let $P_i@k = {\rho_1, \rho_2, ..., \rho_k}$ be the top $k$ recommendation list for user $i$, and let $\gamma()$ be a function $\rho \rightarrow \{0,1\}$ that maps to 1 if the recommended movie is in a protected genre. Then:
+
+        \begin{equation}
+        E_c@k=\frac{\sum_{i \in U^+}{\sum_{\rho \in P_i@k}{\gamma(\rho)}}/|U^+|}
+        {\sum_{i \in U^-}{\sum_{\rho \in P_i@k}{\gamma(\rho)}}/|U^-|}
+        \end{equation}
+        
+        $E_c@k$ will be less than 1 when the protected group is, on average, recommended fewer movies of the desired genre. It may be unrealistic to imagine that this value should approach 1: the metric does not correct for other factors that might influence this score -- for example, female users may rate a particular genre significantly lower and an equality of outcome should not be expected. While the absolute value of the metric may be difficult to interpret, it is still useful for comparing algorithms. The one with the higher $E_c@k$ is providing more movies in the given genre to the protected group. Note that this is an additive, utilitarian measure of outcome equity and does not take into account variations in user experience. More nuanced measures of distributional equity, including Pareto improvement, we leave for future work.
+        
+        
+        \textbf{Provider-side Risk Ratio}: The provider-side equity score, $E_p@k$, is defined on recommendation lists of k items. Let $L^+$ be the set of loans in the test set that are from the protected regions, and $L^-$ be the corresponding set from the unprotected regions. Also, let $\pi^+()$ be an indicator function $\rho \rightarrow \{0,1\}$ that maps to 1 if the recommended loan is from a protected region and $\pi^-$ is a similar function for the unprotected regions. Then:
+
+        \begin{equation}
+        E_p@k=\frac{\sum_{i \in U}{\sum_{\rho \in P_i@k}{\pi^+(\rho)}}/|L^+|}
+        {\sum_{i \in U}{\sum_{\rho \in P_i@k}{\pi^-(\rho)}}/|L^-|}
+        \end{equation}
+        
+        $E_p@k$ will be less than 1 when loans from the protected regions are appearing less often on recommendation lists. As with $E_c$, this is a utilitarian measure, summing over all borrower regions, and does not speak to the the distribution across individual borrowers. Like $E_c$, it does not take the rank of recommended items into account.
+
+
+        \textit{Average Coverage Rate (ACR) for Provider-side fairness}
+        To measure the fairness for microlending, we compute the average number of borrower groups covered by the ranked list.
+        \begin{equation}
+            \text{ACR}=\frac{\sum_{u\in U_t}N_{S(u)}}{N_\text{bg}|U_t|},
+        \end{equation}
+        where $U_t$ is the test lender set, $|U_t|$ is the number of lenders in the test set, $N_\text{bg}$ is the total number of borrower groups and $N_{S(u)}$ is the number of borrower groups covered in the list $S(u)$. A larger ACR indicates a fairer system regarding borrower-side fairness.
+        
+        
+        \textit{Discounted Proportional Fairness (DPF)}
+        We adopt a well-accepted and axiomatically justified metric of fairness, the proportional fairness \cite{kelly1998rate}. Proportional fairness is a generalized Nash solution for multiple groups.
+        
+        \begin{equation*}
+            DPF=\sum_{i=1}^{n_c}\log\left(\frac{x_c}{\sum_{c'}x_{c'}}\right),
+        \end{equation*}
+        
+        where $x_c$ is the allocation utility of group $\mathcal V_c$. We define the utility of $\mathcal V_c$ by the cumulative gain that $\mathcal V_c$ received from all users,
+        \begin{equation*}
+        x_c=\sum_{u\in\mathcal U}\sum_{c}\sum_{i=1}^K\frac{{rel}_i\mathbbm{1}_{\{v\in \mathcal V_{c}\}}}{\log(i+1)}
+        \end{equation*}
+
+    \subsection{protected item exposure}
+    rotected item exposure at different levels of nDCG loss: 1\%, 2\% and 3\%. We arrive at the exposure values in the table by assuming a locally-linear relationship of nDCG and fairness/exposure in between different $\lambda$ values, basically locating intercepts in the tradeoff graph.
+    
+    \subsection{Misalibration}\todo{do we need this part ?}
+    As noted above, there is a close relationship between calibration and fairness, since miscalibration often disproportionately impacts users, as we show below. 
+    Steck \cite{steck2018calibrated} has proposed a metric to measure recommendation miscalibration which is discussed in detail in \todo{what section??}. This metric measures whether recommender systems reflect the various interests of users relative to their initial preference proportions using the Kullback-Leibler (KL) divergence.
+    The KL-divergence used in Steck's approach, however, measures the difference in preference distributions across item categories more generally than in \cite{tsintzou2018bias}.
+    
+    oted earlier, to evaluate the propagation effect we use the miscalibration metric proposed in \cite{steck2018calibrated}. It uses Kullback-Leibler (KL) Divergence to measure the difference between the preference distribution across all the item categories in a user profile and the distribution in the user's recommendation set. Both are based on the distribution of item categories $c$ for each item $i$, denoted by $p(c|i)$.
+    
+    \begin{itemize}
+        \item $p(c|u)$: the distribution over categories $c$ of the set of items $\mathcal{H}_u$ interacted with by user $u$ in the past.
+        \begin{equation}\label{input_preference}
+            p(c|u) = \frac{\sum_{i \in \mathcal{H}_u} w_{u, i} \cdot p(c|i)}{\sum_{i \in \mathcal{H}_u} w_{u, i}},
+        \end{equation}
+    
+        where $w_{i,u}$ is the weight of each item $i$, e.g. how recently it was liked or clicked on, or its popularity or rank.
+        
+        \item $q(c|u)$: the distribution across categories $c$ of the list of items recommended to user $u$.
+        \begin{equation}
+            q(c|u) = \frac{\sum_{i \in \mathcal{I}_u} w_{r(i)} \cdot p(c|i)}{\sum_{i \in \mathcal{I}_u} w_{r(i)}},
+        \end{equation}
+        
+        where $\mathcal{I}_u$ is the set of recommended items and $w_{r(i)}$ is the weight of an item and can be measured by its rank $r(i)$ in the recommendation list.
+    \end{itemize}
+    
+    KL-divergence \cite{kullback1997information} is used to measure the difference between these two probability distributions, or the divergence of $p$ from $q$. KL-divergence is denoted by:
+    \begin{equation} \label{kl}
+    MC_{KL}(p||q) = KL(p||\Tilde{q})= \sum_{c \in C}{p(c|u)\log\frac{p(c|u)}{\Tilde{q}(c|u)}},
+    \end{equation}
+    
+    where $p(c|u)$ is the target distribution. If $q$ is similar to $p$, $MC_{KL}$ will take small values, and in the case of perfect calibration, it is 0. $MC_{KL}$ diverges if a category $c$ is $q(c|u)=0$ and $p(c|u)>0$, so instead we use:
+    \begin{equation}
+        \Tilde{q}(c|u) = (1 - \alpha) \cdot q(c|u) + \alpha \cdot p(c|u),
+    \end{equation}
+    
+    where $0 < \alpha < 1$, so that $q \approx \Tilde{q}$. We set $\alpha = 0.01$ in this experiment.
+    
+    We rename this metric to $MC_{KL}$ instead of $C_{KL}$ which is described in \cite{steck2018calibrated}, since it specifies the degree to which we have miscalibration in our recommendations and it is more in line with the values that KL-divergence takes. For example, if $p$ and $q$ are very similar, KL-divergence takes lower values, so miscalibration is low and vice versa.
+    
+    One properties discussed in \cite{steck2018calibrated} is worth mentioning. $MC_{KL}$ is sensitive to small differences when $p$ is small. For example, if a user liked a category 2\% of the time and it is recommended to her 1\% of the time, $MC_{KL}$ considers it a significant change compared to a situation where a user likes a category 50\% of the time, while it's recommended to her 49\% of the time. 
+
+    \todo{we need a summary of evaluation metrics in a table?}
 
 \section{Experimental approach}
+    n-fold, data cleaning, pre-processing 7 filtering, train/test etc.
+    all the hyper parameters, librec-auto
+    
+    \subsection{Setup}
+    % All the datasets were split into 80\% for training data and the remaining 20\% for the tested.
+    % In the training phase of all the algorithms \todo{all?most}, 5-fold cross validation was used.
+    All experiments were performed using a 5-fold cross validation setting where 80\% of each user's rating data is used for the training data set and the rest is used as the test data set (LibRec's \texttt{userfixed} configuration).
+    
+    We evaluated the algorithms based on the normalized Discounted Cumulative Gain (nDCG) of the top 10 recommended items, and for each algorithm we chose the hyperparameters that achieved the highest performance using the Grid Search method.
+    
+    For experiments, I used 80\% of each dataset as the training set and the other 20\% for the test. The training set was used for building a recommendation model and generating recommendation lists, and the test set was used for evaluating
+    the performance of generated recommendations. As mentioned earlier, in this dissertation, two solutions for mitigating exposure bias in recommender systems are proposed: pre-processing and post-processing solutions. In pre-processing solution, the pre-processed training set is used as input
+    for a recommendation algorithm, while in post-processing solution, longer recommendation lists generated by a recommendation algorithm is processed to generate the final shorter recommendation lists. In other words, I generated
+    recommendation lists of size t = 50 (longer recommendation lists) for each user using each recommendation algorithm. I then extract the final recommendation lists of size n = 10 using the proposed and each reranking method by processing
+    the recommendation lists of size 50.
+    I used librec-auto and LibRec for running the experiments [67,123,125].
+    
+    
+    
+    
+    \subsection{baseline recommendations}
+        NMF(non-negative matrix factorization), UserKNN, itemKNN, BPR WRMF, Maxent, RankSGD, SLIM, FAR/PFAR, most-popualr, MMR, variants of ofair
+        
+        (a) RankSGD \cite{pmlr-v18-jahrer12b} uses stochastic gradient descent to optimize the ranking error; (b) UserKNN \cite{resnick1997recommender}  is a memory-based collaborative algorithm that computes user similarity; (c) Weighted Regularized Matrix Factorization (WRMF) ~\cite{hu2008collaborative} creates a reduced-dimensionality factorization of the rating matrix; (d) Maximum-entropy distribution (Maxent) \cite{choo2014gather} is a loan recommender system specially designed for Kiva. Maxent models lending behaviors by estimating a maximum-entropy distribution based on a set of heterogeneous information regarding micro-financial transactions available at Kiva.
+        
+        
+        We also used MMR by itself, as a diversity-enhancing re-ranker, a variant of OFAiR that includes only user tolerance weights for each feature, and a variant that includes only the fairness weights for the protected feature dimensions without the tolerance weights. In this way, we can study separately the contribution of each of these aspects of the algorithm.
+        
+        
+        The recommendation algorithms for generating the recommendation lists of size 10 in pre-processing solution are Biased Matrix Factorization (BiasedMF) [94], Singular Value Decomposition (SVD++) [93], and List-wise Matrix Factorization (ListRankMF) [160]. The recommendation algorithms for generating the longer recommendation lists of size 50 in post-processing solution are Bayesian Personalized Ranking (BPR) [146], Neural Collaborative Filtering (NCF) [71], User-based Collaborative Filtering (UserKNN) [147]. I chose these algorithms to cover different approaches in recommender systems: matrix factorization, neural networks, and neighborhood models.
+        
+        Each recommendation algorithm involves several hyperparameters. To identify the best-performing sets of hyperparameters for each algorithms, I performed gridsearch on hyperparameters space and selected the results with the highest precision for the next analysis. Table 5.2 shows the hyperparameter values that gridsearch was performed.
+        
+\section{Standardizing & automating Fairness related experiments}
+????

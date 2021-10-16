@@ -1,0 +1,46 @@
+\small{
+\begin{verbatim}
+<librec-auto>
+    <random-seed>202001</random-seed>
+    <thread-count>1</thread-count>
+    <library src="system">default-algorithms.xml</library>
+	
+	<data>
+        <data-dir>../data</data-dir>
+        <format>UIR</format>
+        <data-file format="text">ratings.csv</data-file>
+	</data>
+	
+	<splitter>
+        <model count="3">kcv</model>
+        <dim>userfixed</dim>
+        <ratio>0.8</ratio>
+        <save>true</save>
+	</splitter>
+	
+	<alg ref="alg:biasedmf">
+        <similarity type="item">pcc</similarity>
+        <iterator-max>25</iterator-max>
+        <item-reg><value>0.01</value>
+                  <value>0.05</value></item-reg>
+        <num-factors>20</num-factors>
+	</alg>
+
+	<metric>
+        <ranking>true</ranking>
+        <list-size>10</list-size>
+        <class>precision</class>
+        <script lang="python3" src="system">
+            <script-name>ndcg_metric.py</script-name>
+            <param name="list_size">10</param>
+        </script>
+	</metric>
+	
+	<post>
+        <script lang="python3" src="system">
+            <script-name>results_to_csv.py</script-name>
+            <param name="option">all</param>
+        </script> 
+	</post>
+</librec-auto>
+\end{verbatim}}
