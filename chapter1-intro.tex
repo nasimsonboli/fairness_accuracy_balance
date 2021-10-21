@@ -10,6 +10,7 @@ problems that exist
 approaches
 \end{comment}
 
+\todo{research context}
 
 After a period of substantially fast development in creating "smarter" digital systems, more and more decisions are being delegated to algorithms. Having observed the evolution, influence and consequences of these AI-supported systems over time, growing concerns about ethical issues and the potential harms of these systems to individuals and the society has raised in the public discourse.
 
@@ -90,7 +91,8 @@ Fairness is a convoluted concept and it can have many different definitions unde
 % Most of the proposed solutions focus on provider-side fairness with one work addressing the consumer-side fairness.
 
 \todo{revise}
-With fairness concerns identified, it becomes possible to consider interventions to improve recommender systems performance relative to them. In doing so, it is worth keeping in mind the ``traps'' identified in \cite{selbst2019fairness}, possible hazards in applying fairness concepts in sociotechnical systems. Sebst and colleagues note that sometimes a technical fix is not always the most appropriate approach for problems of power imbalance and bias, and the failure to recognize this is defined as the \textit{solutionism trap}. There may be a wide variety of non-computational solutions to problems that surface themselves as unfair recommendations. 
+With fairness concerns identified, it becomes possible to consider interventions to improve recommender systems performance relative to them. 
+In doing so, it is worth keeping in mind the ``traps'' identified in \cite{selbst2019fairness}, possible hazards in applying fairness concepts in sociotechnical systems. Sebst and colleagues note that sometimes a technical fix is not always the most appropriate approach for problems of power imbalance and bias, and the failure to recognize this is defined as the \textit{solutionism trap}. There may be a wide variety of non-computational solutions to problems that surface themselves as unfair recommendations. 
 
 
 % briefly talking about approaches
@@ -112,7 +114,8 @@ As e-commerce has become a dominant shopping avenue, so have online sites for ph
 For example, Kiva is a non-profit organization that operates a crowd-sourced microlending platform with the goal of financial global inclusion. In Kiva, the sides of the interaction are the borrowers, generally developing-world entrepreneurs who seek small amounts of capital to enhance their business capacity, and lenders, who are the application's end-users. A typical lender will contribute only a fraction of the total amount for any one loan, but may support multiple loans at any one time. Lenders do not get any interest on their investments and so supporting a Kiva borrower is essentially a philanthropic act. Kiva's mission emphasizes equitable access to capital for its borrowers, who generally cannot make use of traditional forms of banking and lending~\cite{Choo_understanding_kiva}. Lenders are the users of the recommender system, which has the purpose of lowering their search costs in finding borrowers whose goals and needs appeal to them. 
 
 % explaining the fairness issues
-Several provider-side fairness concerns might arise in this recommendation context.\footnote{Consumer-side fairness has not arisen so far as a concern in this application.} One key concern, arising from Kiva's mission of supporting world-wide access to capital, is that the geographic imbalances in users' preferences may manifest themselves in the disproportionate representation of certain countries or regions in recommendation lists. This could give rise to a positive feedback loop, as the recommended items are more likely to be supported, and thus the lending becomes even more highly concentrated. A similar kind of imbalance may arise with respect to different industries or economic sectors. Thus, we can identify at least two fairness concerns within this recommender system: equity in geographic distribution of capital \cite{liu2019personalized}, and equity across economic sectors \cite{Sonboli202Oofair}.
+Several provider-side fairness concerns might arise in this recommendation context.\footnote{Consumer-side fairness has not arisen so far as a concern in this application.} One key concern, arising from Kiva's mission of supporting world-wide access to capital, is that the geographic imbalances in users' preferences may manifest themselves in the disproportionate representation of certain countries or regions in recommendation lists. This could give rise to a positive feedback loop, as the recommended items are more likely to be supported, and thus the lending becomes even more highly concentrated. A similar kind of imbalance may arise with respect to different industries or economic sectors. Thus, we can identify at least two fairness concerns within this recommender system: equity in geographic distribution of capital \cite{liu2019personalized}, and equity across economic sectors
+\cite{sonboli2020opportunistic}.
 
 
 \todo{summary of contributions and research questions}
@@ -128,7 +131,7 @@ The research questions that we seek to answer are as follows:
 
 4) how can we achieve this balance dynamically?
 
-5) What if we have data constraints? - data minimization
+5) What if we have data constraints? data minimization
 6) Who controls the trade-off between accuracy and fairness? Should users have some agency over it? Should it be transparent to the users? Will re-rankers provide more transparency?
 
 
