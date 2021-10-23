@@ -1,22 +1,45 @@
 \chapter{Experimental Method Setups}
 \label{chap:methodology}
 
-
 Personalized recommendation is domain-specific, in other words algorithms that work in one setting might work poorly in others that might have different characteristics. \cite{}
 In this Chapter, I will describe the datasets, data pre-processing, data transformation, as well as recommendation and re-ranking algorithms that were used as baseline to perform experiments on them throughout this dissertation. 
 Additionally, experimental details such as hyper-parameter tuning, the choice of the model and the choice of the protected attribute(s) in each dataset will be explained thoroughly. For my experiments, I have used and/or extended \libauto{}, a recommendation library that I worked on during the course of my PhD. The extended algorithms were added as part of my contribution to \libauto{} or LibRec itself. I will describe \libauto{}'s capabilities and architecture in details in Chapter \ref{librec-auto}.
 
 
+
 \section{Context}
+    \subsection{Philanthropic - loan recommendation}
+    
+    Online sites have become a major avenue for people not only for shopping, but for philanthropic activities. Take Kiva.org as an example. Kiva Microloans is a non-profit organization that operates a crowd-sourced microlending platform. Kiva uses crowdsourcing to provide access to capital for individuals and entrepreneurial groups, especially in the developing world, who are otherwise under-capitalized.
+    % with the goal of financial global inclusion. 
+    
+    Kiva partners with local organizations in countries across the globe and, since its founding, has lent \$1.46 billion to 3.4 million borrowers in 77 countries with the support of 1.9 million lenders. Information about lending opportunities are listed on Kiva's site for a fixed period and promoted to its lenders through various means. A typical lender will contribute only a fraction of the total amount (as low as \$25) for any one loan, but may support multiple loans at any one time. As with any lending transaction, there is risk that the borrower will not repay, but this is rare in Kiva where the repayment rate is approximately 96\%. Lenders do not get any interest on their investments and so supporting a Kiva borrower is essentially a philanthropic act.
 
-\todo{complete this, read the NSF case and the ai magazine talking about it}
+    The main sides of the interaction, therefore, are the borrowers, generally developing-world entrepreneurs who seek small amounts of capital to enhance their business capacity, and lenders, who are the application's end-users. Note that the borrowers are the providers or the producers of the items/loans, and the lenders are the receivers or users of the recommendations. We will use these words interchangeably throughout this dissertation. Kiva's mission emphasizes equitable access to capital for its borrowers, who generally cannot make use of traditional forms of banking and lending~\cite{Choo_understanding_kiva}.
+    
+    
+    A loan recommender system in this situation is purposed to lower the search costs of its users (lenders) by finding borrowers whose goals and needs appeal to them. While in this recommendation context, several provider-side fairness concerns arise, no consumer-side fairness has risen as a concern so far. 
+    One key provider-side concern, arising from Kiva's mission of supporting world-wide access to capital, is that the geographic imbalances in users' preferences may manifest themselves in the disproportionate representation of certain countries or regions in recommendation lists. This could give rise to a positive feedback loop, as the recommended items are more likely to be supported, and thus the lending becomes even more highly concentrated. A similar kind of imbalance may arise with respect to different industries or economic sectors. Thus, we can identify at least two fairness concerns within this recommender system: equity in geographic distribution of capital \cite{liu2019personalized}, and equity across economic sectors \cite{Sonboli202Oofair} which are going to be explained in detail in Chapter \ref{fairness_postproc}. Other provider-side fairness concerns might arise in this context, e.g., the loan amount (loans with higher amounts get funded slower). Although we have mainly addressed the first two aspects in this thesis.
+    
+    
+    We situate our research within the organizational context of Kiva Microloans. This is a compelling case study for the exploration of recommendation fairness since its fairness requirements are driven by internal needs surrounding its philanthropic mission, rather than external demands such as regulatory requirements that might be found in financial services or employment, or etc. A regulatory environment is more likely to provoke a defensive response related to fairness questions, which tends to hamper robust discussion of fairness properties in existing systems~\cite{chen2018fair,holstein2019improving}. In addition, because of its philanthropic mission, it is reasonable to expect that Kiva's users will be receptive to fairness-oriented interventions. Finally, as a hybrid organization, embodying the characteristics of a nonprofit with the characteristics of a financial services institution, research embedded with Kiva is well-situated to have a broader and more generalizable impact across genres of institutions and sectors.
 
-Loan recommendation, as in the case of Kiva is a suitable candidate for the exploration of recommendation fairness due to several reasons. One of them is that fairness requirements are driven by the internal needs surrounding Kiva's philanthropic mission to provide equitable access to capital for its borrowers regardless of their demographic information such as gender, the country of origin, etc., as well as other characteristics e.g. the economic sector for which they need the loan. Another reason reason on the suitability of Kiva is as follows: Kiva's users will be more receptive of the fairness-oriented interventions in recommendations due to its philanthropic nature whereas the users of a movie streaming website such as Netflix, might not care to be fair to the movie producers. 
+    % Loan recommendation, as in the case of Kiva is a suitable candidate for the exploration of recommendation fairness due to several reasons. One of them is that fairness requirements are driven by the internal needs surrounding Kiva's philanthropic mission to provide equitable access to capital for its borrowers regardless of their demographic information such as gender, the country of origin, etc., as well as other characteristics e.g. the economic sector for which they need the loan. Another reason reason on the suitability of Kiva is as follows: Kiva's users will be more receptive of the fairness-oriented interventions in recommendations due to its philanthropic nature whereas the users of a movie streaming website such as Netflix, might not care to be fair to the movie producers. 
 
-Movie recommendation might not be an obvious candidate for fairness-aware recommendation of course, since it is a domain of pure individual taste. Following the example of \cite{yao2017beyond}, our approach is to construct an artificial equity scenario within both MovieLens 1M and The Movies data for expository purposes only, with the understanding that real scenarios can be approached with a similar methodology. Note that this dataset is among the very few datasets with user demographic information for the use case of consumer-side fairness.
 
-Furthermore, we will describe the choice of the protected attribute(s) and the transformation methods used to produce them in each dataset in this Chapter.
+    \subsection{Streaming media/E-commerce - movie recommendation}
 
+    Streaming services for digital media consumption provide users with on-demand access to global content, thereby connecting users with content creators, e.g., users and movie makers on video streaming platforms like Netflix.
+    
+    Algorithmically generated recommendations power and shape the bulk of consumption patterns on such platforms. As \citet{mehrotra2018towards} note, to maximize user satisfaction, streaming platforms that are optimizing for relevance, could inadvertently be detrimental to exposure of the providers or content creators such as movie producers on the tail-end of the spectrum. Optimizing only for relevance not only poses risks of provider-unfairness, but it can also affect the recommendations of consumers themselves. As \cite{eskandanian2019power} notes, this phenomenon in collaborative filtering, can form a powerful minority of users (as low as 5\%) which can affect the recommendations of the majority of the users (as big as 95\%). This will cause a miscalibration in the recommendations of the users as it is discussed in \cite{steck2018calibrated} which can be considered as a type of consumer-side unfairness. 
+    
+    Therefore streaming platforms carefully consider the influence of their recommendations on consumption patterns in a manner benefiting not only the users, but also creators, and the long term goals of the platform itself. To better navigate such trade-offs between different stakeholder objectives, platforms are increasingly relying on multi-objective methods to jointly optimize multiple user-centric goals (e.g., engagement metrics like clicks, number of songs played, time spent), provider-centric goals (e.g., exposure) and platform-centric goals (e.g., fairness, discovery, diversity) \cite{mehrotra2020bandit}. In certain cases, aptly balancing such varied objectives makes it possible to obtain gains in both complementary and competing objectives.
+    
+    In this dissertation, we have have chose the movie recommendation context due to several reasons. Similar with the case of Kiva, fairness concerns regarding the exposure of the providers arises in these systems as well. We have addressed this issue in Chapter \ref{fairness_postproc} in \cite{sonboli2020opportunistic,liu2019farpfar} \todo{cite dynamic fairness project}.
+    
+    Movie recommendation might not be an obvious candidate for the study of consumer-side fairness in recommendation. Although, we followed the example of \cite{yao2017beyond} and used an approach to construct an artificial equity scenario within both MovieLens-1M and The Movies data for expository purposes only, with the understanding that real scenarios can be approached with a similar methodology. We chose MovieLens datasets due to the other following reasons: (a) MovieLens-1M is among the very few datasets with demographic information which makes it suitable for the use case of consumer-side fairness, (b) MovieLens-1M is a standard and commonly used dataset in the field of recommendation systems, and (c) generally lack of datasets in domains where fairness matters.
+
+    Below we characterize in detail the datasets that we used to test our methods on.
 
 \section{Datasets}
 
@@ -27,7 +50,7 @@ It's worth mentioning that an anonymized data was created based on the proprieta
  \todo{Yelp dataset. do we need that?}
 
 
-The characteristics of the previously mentioned datasets are summarized in Table \todo{create a table for them}.  
+The characteristics of the previously mentioned datasets are described below and summarized in Table \todo{create a table for them}. Below, we will describe the choice of the protected attribute(s) and the transformation methods used to produce them for each dataset.
 % Dataset & #users, #items, #ratings, rating scale, density, consumer, provider, protected attribtue, access (public or private)
 
     \subsection{MovieLens 1M Dataset}
@@ -104,8 +127,10 @@ The characteristics of the previously mentioned datasets are summarized in Table
         % The provider information in this Kiva dataset were collected from Kiva's API in September 2016. It contains approximately 1 million loans funded by approximately 180,000 lenders.
 
     \todo{true?}
-    The final condensed dataset that were used in our experiments includes the pseudo items and the ratings behavior of lenders with them. Loan requests contain information about the borrowers, but the process of pseudo item creation hides and combines that information with the information of many other borrowers, therefore it protects the privacy of the borrowers. Also, no information about the lenders are relieved since their specific rating behavior is eliminated to a great extend. The final rating file essentially consists of the lenders' general lending behavior trends of users. In a way, both of our stakeholders (lenders and loans/borrowers) have now turned into pseudo-items and pseudo-users.
-    As the privacy of the borrowers and the lenders are now protected, with the permission of Kiva, I have made this dataset available to use for the research community. This version of the Kiva dataset, is one of my contributions.\todo{yea?}
+    The final condensed dataset that were used in our experiments includes the pseudo items and the ratings behavior of lenders with them. Loan requests contain information about the borrowers, but the process of pseudo item creation hides and combines that information with the information of many other borrowers, therefore it protects the privacy of the borrowers. 
+    
+    Lender's information such as user id is hashed, and their rating behavior due to the aggregation of the loans, is different to some extent. For example, the transactions are precise, but the amount of the transaction could be different.
+    As the privacy of the borrowers and the lenders are now protected to a great degree, with the permission of Kiva, I have made this dataset available to use for the research community. This version of the Kiva dataset, is one of my contributions in this thesis.
 
 
         \subsubsection{Protected features}
@@ -186,16 +211,11 @@ The characteristics of the previously mentioned datasets are summarized in Table
         \end{equation}
 
         
-        
-        \subsection{Entropy}
-        
         \subsection{Statistical Parity}
         The fairness of lists was evaluated based on protected group exposure, which measures the fraction of the recommendation list that consists of protected group items. This value is related to the fairness concept of ``statistical parity,'' measured relative to items' level of promotion within the recommender system. Because list lengths are fixed (10 in our case), the exposure of unprotected items is just one minus the protected group exposure.
         
-        
         \subsubsection{accuracy-based metrics}
-        calibration, equality of odds/chance, 
-        
+        calibration, equality of odds/chance
         
         \textbf{Consumer-side Risk Ratio}: In evaluating fairness of outcome, we use a variant of what is known in statistics as \textit{risk ratio} or \textit{relative risk} (RR)\cite{romei2014multidisciplinary}. We measure what is effectively \textit{relative opportunity}. In other words, we measure the observed probability of protected class items being recommended divided by the probability of unprotected class items being recommended.
         We construct a consumer-side equity score, $E_c@k$ for recommendation lists of k items, as the ratio between the outcomes for the different groups. Let $P_i@k = {\rho_1, \rho_2, ..., \rho_k}$ be the top $k$ recommendation list for user $i$, and let $\gamma()$ be a function $\rho \rightarrow \{0,1\}$ that maps to 1 if the recommended movie is in a protected genre. Then:
@@ -299,15 +319,13 @@ The characteristics of the previously mentioned datasets are summarized in Table
     recommendation lists of size t = 50 (longer recommendation lists) for each user using each recommendation algorithm. I then extract the final recommendation lists of size n = 10 using the proposed and each reranking method by processing
     the recommendation lists of size 50.
     I used librec-auto and LibRec for running the experiments [67,123,125].
-    
-    
-    
+
+
     
     \subsection{baseline recommendations}
         NMF(non-negative matrix factorization), UserKNN, itemKNN, BPR WRMF, Maxent, RankSGD, SLIM, FAR/PFAR, most-popualr, MMR, variants of ofair
         
         (a) RankSGD \cite{pmlr-v18-jahrer12b} uses stochastic gradient descent to optimize the ranking error; (b) UserKNN \cite{resnick1997recommender}  is a memory-based collaborative algorithm that computes user similarity; (c) Weighted Regularized Matrix Factorization (WRMF) ~\cite{hu2008collaborative} creates a reduced-dimensionality factorization of the rating matrix; (d) Maximum-entropy distribution (Maxent) \cite{choo2014gather} is a loan recommender system specially designed for Kiva. Maxent models lending behaviors by estimating a maximum-entropy distribution based on a set of heterogeneous information regarding micro-financial transactions available at Kiva.
-        
         
         We also used MMR by itself, as a diversity-enhancing re-ranker, a variant of OFAiR that includes only user tolerance weights for each feature, and a variant that includes only the fairness weights for the protected feature dimensions without the tolerance weights. In this way, we can study separately the contribution of each of these aspects of the algorithm.
         
@@ -315,6 +333,15 @@ The characteristics of the previously mentioned datasets are summarized in Table
         The recommendation algorithms for generating the recommendation lists of size 10 in pre-processing solution are Biased Matrix Factorization (BiasedMF) [94], Singular Value Decomposition (SVD++) [93], and List-wise Matrix Factorization (ListRankMF) [160]. The recommendation algorithms for generating the longer recommendation lists of size 50 in post-processing solution are Bayesian Personalized Ranking (BPR) [146], Neural Collaborative Filtering (NCF) [71], User-based Collaborative Filtering (UserKNN) [147]. I chose these algorithms to cover different approaches in recommender systems: matrix factorization, neural networks, and neighborhood models.
         
         Each recommendation algorithm involves several hyperparameters. To identify the best-performing sets of hyperparameters for each algorithms, I performed gridsearch on hyperparameters space and selected the results with the highest precision for the next analysis. Table 5.2 shows the hyperparameter values that gridsearch was performed.
-        
+    
+       
+\section{notations and definitions}
+     
+    \subsection{notations}
+    
+    \subsection{Entropy}
+    
+    \subsection{Fairness Definitions}
+       
 \section{Standardizing and automating Fairness related experiments}
 ????
