@@ -28,6 +28,7 @@ In this chapter, we provide a detailed account of the capabilities of \libauto{}
 
 
 \section{Introduction}
+\label{sec:librec_intro}
 
 \libauto{} is a Python-based tool for recommender systems experimentation\footnote{https://librec-auto.readthedocs.io/en/latest/quickstart.html}. It is designed to support researchers by automating experimental methodology, thereby making experimental results more reproducible, and allowing simplified access to the large collection of algorithm implementations found in the LibRec platform. The system supports off-line batch evaluation in which ratings data (either explicit or implicit) are divided into training and test sets and the algorithm is evaluated on test set performance. Although other evaluation methods are gaining currency, particularly those that support reinforcement learning \cite{joachims2018reveal,joachims2019reveal,joachims2020reveal}, this type of evaluation is still extremely common in research practice and in educational settings. 
 
@@ -39,6 +40,8 @@ We believe that progress towards reproducibility is best supported by providing 
 
 
 \section{LibRec and librec-auto}
+\label{sec:libauto}
+
 \libauto{} was originally designed as an open-source command-line Python package providing a wrapper for the LibRec recommender systems algorithm library\footnote{https://guoguibing.github.io/librec/index.html}. LibRec is a Java-based recommendation generation platform, available under the GPL 3.0 open-source license. It was introduced in 2015 \cite{guo2015librec}, and is maintained by a group led by Professor Guibing Guo at Northeastern University, Shenyang, China. The group has implemented a large library of recommendation algorithms including deep learning algorithms (more than 70 as of this writing) drawn from the recommender systems research literature. In addition to numerous algorithms, the LibRec platform supports a variety of evaluation metrics and evaluation methodologies.
 
 Despite the significant capabilities of LibRec, we found that for practical experimentation and reproducibility research, the system by itself is not sufficient. For example, intermediate computational outputs, such as recommendation results, cannot be reused as input for new evaluation metrics. If an experimenter runs an experiment and then wishes to follow-up and explore additional properties of the results, LibRec would require re-execution of the entire set of recommendation computations. In addition, result re-ranking is not supported because of the close tie between algorithm execution and result evaluation built into LibRec. This makes it difficult to use LibRec as it is to explore the areas of fairness-aware and diversity-enhanced recommendation.
@@ -48,6 +51,7 @@ Despite the significant capabilities of LibRec, we found that for practical expe
 Except for a small chunk of Java wrapper code, \libauto{} is implemented in Python and (because it inherits heavily from LibRec) is available under the same GPL 3.0 license. It can be installed using the \texttt{pip} package manager or by downloading the source package from GitHub\footnote{https://github.com/that-recsys-lab/librec-auto}. Because of its ease of configuration and use, \libauto{} also supports students and teachers in learning about recommendation algorithms and their evaluation. The system has been used for courses at the Technical University of Eindhoven and the University of Colorado, Boulder. 
 
 \section{Key Features}
+\label{sec:libauto_keyfeatures}
 
 A sketch of the functionality of \libauto{} is provided in Figure~\ref{fig:librec-auto}. As the figure indicates, LibRec is encapsulated by \libauto{}, and its various component elements are used to execute particular portions of the experimental workflow. The user experience of the system is organized around the concept of a \textit{study}, which involves experimentation with a single data set and a single recommendation algorithm. Multiple hyperparameters may be investigated as part of a study, either through grid search or black-box optimization as described in Section \ref{sec:opt}. Each combination of hyperparameters is evaluated through an \textit{experiment}, which may entail multiple training / test iterations if cross-validation is used. Although the figure indicates a straight-line of execution, parallelism is built into \libauto{} at the level of experiment execution. Because experiments can have lengthy execution times, the post-processing phase allows for integration with messaging platforms, including Slack, so that experimenters are notified when their tasks are complete. These messages can include visualizations of experimental output, to provide a quick overview of results.
 
@@ -75,6 +79,7 @@ We can follow the workflow of a study through the processes depicted in Figure \
 Note that \libauto{} supports incremental updating of study execution. Later portions of the experimental pipeline can be executed without re-computing earlier steps, a capability not available in vanilla LibRec. For example, a re-ranker implementation can be tweaked and tested or an additional evaluation metric can be applied without having to generate new results.
 
 \subsection{Study structure}
+\label{subsec:study_structure}
 A study is organized in a multi-directory file structure. Some parts of the structure are managed by \libauto{} itself, others are set up by the experimenter. Figure~\ref{fig:study-dir} shows an example of the file layout for a study called ``demo01''. In this case, the data is being used in more than one study, so it is stored in a directory outside of the study structure. As the shaded region in figure indicates, most of the study files are managed by \libauto{} itself. 
 
 \begin{figure}[ht!]
@@ -99,7 +104,8 @@ Key files in the study structure include:
 For reproducibility, it is sufficient for experimenters to distribute their data and configuration files (\texttt{conf} directory). All other aspects of a study can be reproduced by running the \libauto{} application.
 
 \subsection{Fairness-aware recommendation}
-\label{sec:fair}
+\label{subsec:libauto_fair_tools}
+
 With the extensive research in literature focusing on the assessment and mitigation of unfair outcome of algorithms, several toolkits for fair machine learning have recently emerged to make such methods widely accessible.
 
 Examples of such toolkits include: AI Fairness 360 -- an open source toolkit for mitigating bias in AI application lifecycle designed by IBM \cite{bellamy2019ai}, Fairlearn -- a toolkit for assessing and improving fairness in AI designed by Microsoft \cite{bird2020fairlearn}, Aequitas -- an open-source bias audit toolkit that allows auditing machine learning models for discrimination and bias \cite{saleiro2018aequitas}, LinkedIn Fairness Toolkit (LiFT) \cite{SriramLifT2020}, and FairSight: Visual Analytics for Fairness in Decision Making \cite{ahn2019fairsight}, just to name a few.
@@ -112,8 +118,8 @@ With these features, \libauto{} can support a wide range of research activities 
 
 
 \subsubsection{Fairness metrics}
-\label{sec:fairmetrics}
-\todo[inline]{group and individual fairness?}
+\label{subsubsec:libauto_fairmetrics}
+% \todo[inline]{group and individual fairness?}
 
 There are two types of assumptions behind fairness-aware systems \cite{friedler-impossibility-2021}: (1) \textit{What you see is what you get (WYSIWYG)}, and (2) \textit{We're all equal}. Having a WYSIWYG assumption in a system means that the observations of features do not encode bias, therefore the system uses that unbiased information to make decisions about individuals in a way that similar individuals are treated similarly. WYSISYG seeks to achieve fairness for individuals rather than a group of users. However, the second assumption (WAE) acknowledges that the biases in the society are reflected in data which lead to disparate treatment of different groups with different sensitive features. Therefore WAE supports group fairness. In \libauto{}, we have concentrated on fairness-aware metrics that measure group fairness. However, some individual fairness metrics are also included. We intend to extend the coverage of both types of metrics in future releases.
 
@@ -159,6 +165,7 @@ As this discussion suggests, fairness metrics for recommender systems form a fai
 In addition to this set of fairness metrics, we provide an implementation of the \textit{Intra-List Distance (ILD)} measure \cite{ziegler2005improving}, a pairwise distance between all the item features in each user’s recommendation list. This is a user-focused measure of the diversity that a recommender system provides. 
 
 \subsubsection{Item and user metadata}
+\label{subsubsec:libauto_item_user_features}
 LibRec does not directly support algorithms that use item and user metadata: content-based or demographic recommendation. The ability to make use of such data is an enhancement that was made in order to implement fairness-aware algorithms and metrics: it is clear, for example, that you need to know if a user is in a protected group to know how to apply metrics like statistical parity or value unfairness. 
 
 Our enhancements allow the algorithms and metrics to access data stored in user and item feature files. These files have a simple sparse triple format: item id (or user id), feature name, feature value. Because it is a sparse format, rows with zero values can be omitted. If the value for a feature is binary, the feature value can also be omitted and all $ \langle item, feature \rangle$ pairs that appear in the file will have a feature value of 1.
@@ -166,7 +173,8 @@ Our enhancements allow the algorithms and metrics to access data stored in user 
 For the specific case of group fairness algorithms and metrics, the feature file must contain a feature with a binary value that represents the protected / unprotected group distinctions. Items with a value 1 for this feature will be considered protected for the purposes of metrics or algorithms. We plan to generalize this capability in future releases.
 
 \subsubsection{Re-ranking}
-\label{sec:rerank}
+\label{subsubsec:libauto_rerank}
+
 A re-ranking algorithm takes the ranked output of a base system (usually an information retrieval or recommender system) and performs a permutation of the ordering (and usually a truncation) before sending the list to an end user. A typical application of these techniques is to enhance output diversity or fairness when the list of top candidates returned by the base system lacks these properties.
 
 Re-rankers strive to achieve a reasonable balance between accuracy and other output properties, like fairness or diversity, by offering a tunable tradeoff between boosting protected or diverse items and including items ranked highly by the base system. 
@@ -186,7 +194,7 @@ The re-ranking methods are part of \libauto{} and are implemented in Python. A r
 
 
 \subsection{Optimization}
-\label{sec:opt}
+\label{subsec:libauto_opt}
 % \begin{markdown}
 
 As noted above, \libauto{} supports grid search, an exhaustive method of checking each combination of values specified in order to find the optimal value. The number of experiments is determined by a cross-product of the variables. The syntax to run grid-search involves specifying specific values for a given metric. For example,
@@ -202,6 +210,7 @@ While grid search is guaranteed to find the optimal result within the specified 
 In order to use this system, an \texttt{optimize} element must be added to the configuration file (see below), and instead of the \texttt{value} syntax used to indicate possible values for grid search, the experimenter includes \texttt{lower} and \texttt{upper} elements indicating the legal range for each variable. If the metric being used is a LibRec metric then the direction of optimization is automatically determined. For user-defined metrics, the experimenter must specify the direction of optimization.
 
 \section{Study Configuration}
+\label{sec:libauto_study_config}
 
 \libauto{} uses an XML configuration file to specify all aspects of the experimental pipeline. As noted above, a configuration file defines a \textit{study}, which computes evaluation results for a single algorithm and a single data set, possibly over multiple choices of hyperparameters, each combination of which constitutes an \textit{experiment}. The configuration file is divided into sections, some of which are optional. We devote some attention here to this file because a study of its components gives a good overview of the capabilities and flexibility of \libauto{}. A sample configuration file is shown in Figure~\ref{fig:config}.
 
@@ -216,6 +225,7 @@ XML was chosen because configuration files need to be managed both by human expe
 \end{figure}
 
 \subsection{Global elements (all optional)}
+\label{subsec:lib_auto_global_elements}
 The global elements establish conditions under which all aspects of the configuration file interpretation and study execution will take place.
 
 \begin{description}
@@ -227,12 +237,17 @@ The global elements establish conditions under which all aspects of the configur
 In the example file in Figure~\ref{fig:config}, \texttt{<alg ref="alg:biasedmf"/>}` refers to the \texttt{biasedmf} (Biased Matrix Factorization) algorithm as implemented in LibRec with the default hyperparameters given in the library. The library file is also a useful reference for experimenters to see what hyperparameters a given algorithm accepts. These can be overridden by local declarations in the configuration file.
 
 \subsection{Data Section}
+\label{subsec:libauto_data_sec}
+
 The data section indicates where the data for the study can be found. The data can be in any convenient place. However, \libauto{} will need to be able to write to this directory since it will by default add new data split directories here. \footnote{Note that, for LibRec compatibility, there are two different places where the label ``format'' is used. The \texttt{format} element indicates the columns in the ratings file. The \texttt{format} attribute of the \texttt{data-file} element is the file format of the ratings file: LibRec supports text and AIFF file formats.}
 
 \subsection{Feature Section (optional)}
+\label{subsec:libauto_feature_selection}
+
 LibRec is heavily focused on collaborative algorithms, so the basic form for input data is the user/rating matrix. However, as noted above, for content-oriented algorithms and for fairness-aware algorithms and metrics, it may be necessary to have item metadata and/or user demographic data. The \texttt{feature} element allows experimenters to include either item or user features as input to a study's algorithm or metrics. 
 
 \subsection{Splitter Section}
+\label{subsec:libauto_splitter}
 A variety of different evaluation strategies are employed by recommender systems researchers to evaluate algorithms. K-fold cross-validation is a common one, and LibRec supports multiple variants on this approach. 
 
 The example in Figure~\ref{fig:config} directs \libauto{} to perform five-fold cross-validation using 80\% of each user's data for training and 20\% for testing in each fold. The splits will be saved to the data directory, and can be re-used in subsequent experimentation. 
@@ -240,11 +255,13 @@ The example in Figure~\ref{fig:config} directs \libauto{} to perform five-fold c
 The configuration file also supports fixed training and test files supplied by the experimenter and temporal splitting (when dates are available for ratings). 
 
 \subsection{Algorithm Section}
+\label{subsec:libauto_algos}
 LibRec supports more than 70 recommendation algorithms, each linked to a paper from the scientific literature that it implements. A default algorithms library contains a number of the most common algorithms and complete lists of their hyperparameters with default values.
 
 Typically, a study will consist of multiple experiments over different algorithm hyperparameters. As noted in Section~\ref{sec:opt}, \libauto{} supports both grid search and Bayesian black-box optimization In Figure~\ref{fig:config}, the weight for the item regularization term (\texttt{item-reg}) is being varied across two values, 0.01 and 0.05. This information tells the system to conduct two experiments using the given weight values. Any number of hyperparameters can be searched over. The system will conduct an experiment for every combination of values (Cartesian product), so the number of experiments can be quite large.
 
 \subsection{Optimize Section (optional)}
+\label{subsec:libauto_opt}
 The black-box optimization capability requires the use of a separate \texttt{optimize} element to specify what metric is used for optimization and how many iterations are to be performed. For example,
 
 {\small
@@ -262,6 +279,8 @@ This option cannot be combined with grid search. If it is used, instead of provi
 \end{verbatim}}
 
 \subsection{Metrics Section}
+\label{subsec:libauto_metrics}
+
 A study can employ multiple metrics. LibRec supports over 20 different metrics for evaluating recommender system performance. There are two basic types: \textit{error metrics}, which compare the predictions produced by an algorithm with known ratings from the test set, (for example, RMSE), and \textit{ranking metrics}, which evaluate a ranked list of results produced for each user in the training data (for example, Precision@10). Although multiple metrics can be used, only one type of metric can be used at a time since these methodologies are quite different in how they make use of the training data. Ranking metrics (like Precision@10 shown in the example) require the \texttt{ranking} element to be true and a list-size to be specified.
 
 Fairness-aware metrics require a \texttt{protected-feature} element. As described in Section~\ref{sec:fair}, the current release requires this to be a binary feature drawn from the item or user feature file. Items (or users) associated feature value of 1 will be considered protected for the purposes of a fairness metric. This value is also used by fairness-aware algorithms in LibRec.
@@ -271,6 +290,7 @@ Fairness-aware metrics require a \texttt{protected-feature} element. As describe
 If black-box optimization is used, the optimizer needs to know which direction of a metric is considered ``good'': note that large RMSE is bad, but large nDCG is good. This property is pre-defined for built-in metrics, but for custom metrics, a flag must be included in the metric \texttt{script} declaration to indicate whether to optimize for larger or small values of the metric.  
 
 \subsection{Rerank Section (optional)}
+\label{subsec:re-ra}
 For a study that includes re-ranking, the re-ranking script is specified in a \texttt{rerank} element. Note that all re-ranking is done by script resources and these can be easily customized by experimenters. Currently, only Python scripts are supported.
 
 The configuration for a re-ranker indicates the parameters to be passed. In the following example, we see that the \texttt{far-rerank.py} script is being used, which implements the re-ranker described in \cite{liu2019farpfar}. The \texttt{max\_len} parameter tells the script how many items will be returned for each user from the re-ranked set. Other parameters are algorithm-specific controls on the re-ranking process. The FAR algorithm defined in \cite{liu2019farpfar} uses the \texttt{lambda} and \texttt{binary} parameters shown here.
