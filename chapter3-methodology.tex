@@ -324,24 +324,27 @@ The characteristics of the previously mentioned datasets are described below and
         
         \textbf{Consumer-side Risk Ratio}: In evaluating fairness of outcome, we use a variant of what is known in statistics as \textit{risk ratio} or \textit{relative risk} (RR)\cite{romei2014multidisciplinary}. We measure what is effectively \textit{relative opportunity}. In other words, we measure the observed probability of protected class items being recommended divided by the probability of unprotected class items being recommended.
         
-        We construct a consumer-side equity score, $E_c@k$ for recommendation lists of $k$ items, as the ratio between the outcomes for the different groups. Let $P_i@k = {\rho_1, \rho_2, ..., \rho_k}$ be the top $k$ recommendation list for user $i$, and let $\gamma()$ be a function $\rho \rightarrow \{0,1\}$ that maps to 1 if the recommended movie is in a protected genre. Then:
+        We construct a consumer-side equity score, $E_c@k$ for recommendation lists of $k$ items, as the ratio between the outcomes for the different groups. Let $P_i@k = {\rho_1, \rho_2, ..., \rho_k}$ be the top $k$ recommendation list for user $i$, and let $\gamma()$ be a function $\rho \rightarrow \{0,1\}$ that maps to 1 if the recommended item is in a protected group. Then:
 
         \begin{equation}
         E_c@k=\frac{\sum_{i \in U^+}{\sum_{\rho \in P_i@k}{\gamma(\rho)}}/|U^+|}
         {\sum_{i \in U^-}{\sum_{\rho \in P_i@k}{\gamma(\rho)}}/|U^-|}
         \end{equation}
         
-        $E_c@k$ will be less than 1 when the protected group is, on average, recommended fewer movies of the desired genre. It may be unrealistic to imagine that this value should approach 1: the metric does not correct for other factors that might influence this score -- for example, female users may rate a particular genre significantly lower and an equality of outcome should not be expected. While the absolute value of the metric may be difficult to interpret, it is still useful for comparing algorithms. The one with the higher $E_c@k$ is providing more movies in the given genre to the protected group. Note that this is an additive, utilitarian measure of outcome equity and does not take into account variations in user experience. More nuanced measures of distributional equity, including Pareto improvement, we leave for future work.
+        
+        \todo[inline]{should I make the metrics general? or specific as in our cases? for example use item instead of movies?}
+        $E_c@k$ will be less than 1 when the protected group is, on average, recommended fewer items that they desired. It may be unrealistic to imagine that this value should approach 1: the metric does not correct for other factors that might influence this score -- in the case of movie recommendation for example, female users may rate a particular genre significantly lower and an equality of outcome should not be expected.
+        While the absolute value of the metric may be difficult to interpret, it is still useful for comparing algorithms. Higher $E_c@k$ than 1 means that the items which are favorable by the protected group are recommended more than necessary, to the protected group. In other words, we might have reversed the unfairness. Note that this is an additive, utilitarian measure of outcome equity and does not take into account variations in user experience. More nuanced measures of distributional equity, including Pareto improvement, we leave for future work.
         
         
-        \textbf{Provider-side Risk Ratio}: The provider-side equity score, $E_p@k$, is defined on recommendation lists of $k$ items. Let $L^+$ be the set of loans in the test set that are from the protected regions, and $L^-$ be the corresponding set from the unprotected regions. Also, let $\pi^+()$ be an indicator function $\rho \rightarrow \{0,1\}$ that maps to 1 if the recommended loan is from a protected region and $\pi^-$ is a similar function for the unprotected regions. Then:
+        \textbf{Provider-side Risk Ratio}: The provider-side equity score, $E_p@k$, is defined on recommendation lists of $k$ items. Let $L^+$ be the set of items in the test set that are from the protected groups, and $L^-$ be the corresponding set from the unprotected groups. Also, let $\pi^+()$ be an indicator function $\rho \rightarrow \{0,1\}$ that maps to 1 if the recommended item is from a protected group and $\pi^-$ is a similar function for the unprotected groups. Then:
 
         \begin{equation}
         E_p@k=\frac{\sum_{i \in U}{\sum_{\rho \in P_i@k}{\pi^+(\rho)}}/|L^+|}
         {\sum_{i \in U}{\sum_{\rho \in P_i@k}{\pi^-(\rho)}}/|L^-|}
         \end{equation}
         
-        $E_p@k$ will be less than 1 when loans from the protected regions are appearing less often on recommendation lists. As with $E_c$, this is a utilitarian measure, summing over all borrower regions, and does not speak to the the distribution across individual borrowers. Like $E_c$, it does not take the rank of recommended items into account.
+        $E_p@k$ will be less than 1 when items from the protected group are appearing less often on recommendation lists. As with $E_c$, this is a utilitarian measure, summing over all providers, and does not speak to the the distribution across individual providers. Like $E_c$, it does not take the rank of recommended items into account.
 
 
         \textbf{Protected group hit-rate}
@@ -540,6 +543,8 @@ The characteristics of the previously mentioned datasets are described below and
        Where $u_{is}$ is the affinity of user $i$ to concept $s$ and $v_{js}$ is the affinity of item $j$ to concept $s$. 
        Non-negative matrix factorization (NNMF) \cite{lee2001algorithms,zhang2006learning} may be used for rating matrices that are non-negative ($U$ and $V$). The major advantage of this method is its interpretability which helps in understanding the user-item interactions. This property is most useful for cases when the the data consists of implicit feedback data (a unary ratings matrix which only contains positive feedback) such as clicks or likes.
        
+       We chose NNMF as one of our other baseline recommender systems as a well-established collaborative filtering algorithms as a the latent factor model and because of its higher interpretability compared to other matrix factorization models.
+       
        
     %   non-negative matrix factorization model treats missing entries as negative feedback by setting them to 0s. This example is a manifestation of overfitting caused by lack of
 
@@ -556,10 +561,64 @@ The characteristics of the previously mentioned datasets are described below and
         
 
     \subsection{notations}
-        Let U and I be the sets of users and items, respectively. The lists of recommendations is denoted as R. Ru is the recommendation items for user u ∈ U and user profile Iu is the list of items that u has rated
+        % Let U and I be the sets of users and items, respectively. The lists of recommendations is denoted as R. Ru is the recommendation items for user u ∈ U and user profile Iu is the list of items that u has rated
 
         \todo[inline]{needs to be revisited}
        
-       
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % capital X for items and Y for users
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Different recommendation scenarios can be distinguished by differing configurations of interests among the stakeholders. We divide the stakeholders of a given recommender system into three categories: consumers $C$, providers $P$, and platform or system $S$. The consumers are those who receive the recommendations. They are the individuals whose choice or search problems bring them to the platform, and who expect recommendations to satisfy those needs. The providers are those entities that supply or otherwise stand behind the recommended objects, and gain from the consumer's choice.\footnote{In some recommendation scenarios, like on-line dating, the consumers and providers are same individuals.} The final category is the platform itself, which has created the recommender system in order to match consumers with providers and has some means of gaining benefit from successfully doing so. 
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % what is a protected and unprotected group? what are the limitaitons of this categorizations in research.
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % what is collaborative filtering???????
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+    % SLIM learns $\langle user, item \rangle$ regression weights through optimization, minimizing a regularized loss function. Although this is not proposed in the original SLIM paper, it is possible to create a user-based version of SLIM (labeled SLIM-U in~\cite{zheng2014cslim}), which generalizes the user-based algorithm in the same way. 
+    
+    % \todo[inline]{check the notations}
+    % Assume that there are $M$ users (a set $U$), $N$ items (a set $I$), and let us denote the associated 2-dimensional rating matrix by $R$. SLIM is designed for item ranking and therefore $R$ is typically binary. We will relax that requirement in this work, we use $u_i$ to denote user $i$ and $t_j$ to denote the item $j$. An entry, $r_{ij}$, in matrix $R$ represents the rating of $u_i$ on $t_j$.
+    
+    % SLIM-U predicts the ranking score $\hat{s}$ for a given user, item pair $\langle u_i, t_j \rangle$ as a weighted sum:
+    
+    % \begin{equation}
+    %     \hat{s}_{ij} = \sum_{k \in U}{w_{ik}r_{kj}}, 
+    % \end{equation}
+    % where $w_{ii} = 0$ and $w_{ik} >= 0$.
+    
+    % Alternatively, this can be expressed as a matrix operation yielding the entire prediction matrix $\hat{S}$:    
+    % \begin{equation}
+    % \hat{S} = WR,
+    % \end{equation}
+    % where $W$ is an $M \times M$ matrix of user-user weights. For efficiency, it is very important that this matrix be sparse.
+    
+    % The optimal weights for SLIM-U can be derived by solving the following minimization problem:
+    
+    % \begin{equation}
+    % \text{min}_W~\frac{1}{2}\left\Vert R - WR \right\Vert^2 + 
+    %     \lambda_1 \left\Vert W \right\Vert^1 +
+    %     \frac{\lambda_2}{2}\left\Vert W \right\Vert^2,   
+    % \end{equation}
+    % subject to $W > 0$  and $\text{diag}(W) = 0$.
+    
+    % The $\left\Vert W \right\Vert^1$ represents the $\ell_1$ norm and the $\left\Vert W \right\Vert^2$ term represents the $\ell_2$ norm of the $W$ matrix. These regularization terms are present to constrain the optimization to prefer sparse sets of weights. Typically, coordinate descent is used for optimization. Refer to \cite{ning2011slim} for additional details. 
+
+
+
+
+
+    % To describe this term, we will enrich our notation further by indicating $U^+$ to be the subset of $U$ containing users in the protected class with the remaining users in the class $U^-$. Let $W_i^+$ be the set of weights for users in $U^+$ and $W_i^-$ be the corresponding set of weights for the non-protected class. Then the neighborhood balance term $b_i$ for a given user $i$ is the squared difference between the weights assigned to peers in the protected class versus the unprotected class.
+
+    % \begin{equation}
+    %     b_i = (\sum_{w^+ \in W_i^+}{w^+} - \sum_{w^- \in W_i^-}{w^-})^2
+    % \end{equation}
+
+
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
