@@ -57,6 +57,15 @@ The characteristics of the previously mentioned datasets are described below and
     For some of our experiments, we are using the well-known MovieLens 1M dataset~\cite{movielens}. This dataset is a movie rating dataset that was collected by the GroupLens research group. This dataset contains 1,000,209 ratings from 6,000 users on 4,000 movies. The sparsity of MovieLens is 4.47\%. All of the users in the MovieLens data set rated at least 20 movies.
     Besides user ratings, this dataset contains, some additional information on ratings, users and the movies. The rating information consist of ratings (only whole ratings), and the timestap of the ratings (in terms of seconds). The movie information consists of movie titles and 18 movie genre(s) (e.g. "Animation", "Comedy"). It also contains user information such as: gender (binary, represented by F and M), age (split into 7 buckets), 20 occupations (e.g. "academic/educator", "artist") and zip-code.
     
+    
+    \todo[inline]{check the next paragraph (copied from teh dynamic lottery project)}
+     In this dataset, three types of genders were present: 0, 1, 2. And each movie can be directed or written by a group of directors or writers. To capture this diversity, gender was discretized into seven groups. For example if a movie is directed by all the genders, we assign 012 for the gender information and if it is directed only by one gender, a single number was assigned to that movie e.g. 0, 1 or 2. All the categorical features were transformed into dummy variables, resulting in a total of 335 binary features.
+    
+    \todo[inline]{check this next as well}
+    In a fielded application, the choice of sensitive features and protected groups within those features may be determined by legal liability or business model considerations. Lacking this type of insight, we chose to identify protected features as those associated with rarely-recommended items. To determine the protected values of each feature, we performed a trial run of recommendation generation over the data set, and examined the distribution of features in the results. In a live system, historical recommendation data would be available over which to calculate this distribution. The values in the 25th percentile of the distribution were selected as the protected group for that feature.
+
+    
+    
         \subsubsection{protected feature(s)}
         The choice of the protected features firstly depend on the stakeholder for which we are seeking fairness, and secondly it depends on the context and the previously detected unfairness or biases in the dataset. Since, there exists information about both the consumers (of the recommendations) and the providers (of the recommendations), it is possible to propose solutions both for the consumer-side and provider-side fairness.
         
