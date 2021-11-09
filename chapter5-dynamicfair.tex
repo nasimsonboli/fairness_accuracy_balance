@@ -7,8 +7,8 @@ Positive feedback loops are one of the most destructive dynamic changes that hap
 
 In the following section, I propose an adaptive approach to address the problem of multidimensional provider fairness using probabilistic social choice to control feedback loops and adjust the system over time.
 
-
-\subsection{Dynamic Lotteries for Multi-group Fairness-Aware Recommendation}
+\todo[inline]{change the name of the chapter?}
+\subsection{Introduction}
 
 We motivate our problem with an example from Kiva.org, the peer-to-peer micro-lending platform. As we have explained before the users of Kiva are lenders, who support entrepreneurs usually from developing countries by lending small amounts.
 The (item) providers are borrowers who request for loans. We call borrowers or the loans (which consists of the loan information and the borrower information) providers. The organization has the goal of providing equitable access to capital across different regions, economic sectors and borrower demographics.
@@ -50,17 +50,16 @@ From the literature on social choice we will focus on the \emph{allocation} sett
 
 Rather than thinking of integrating the concerns of protected groups into re-ranking decisions indirectly, in the form of weights for particular feature values as in \cite{sonboli-umap-2020}, our approach \textit{Social Choice for Re-ranking Under Fairness} (SCRUF) conceives of both users and protected groups as actors with preferences over the items that may be recommended. The goal is to achieve an integration of these preferences over the whole recommendation history. We explore a class of solutions to this problem that assumes multiple fairness criteria can be persued at the same time by deciding which objectives to address and which users to address them with.  This choice is made non-deterministically and also take into account both the current state of the recommendation history, which we can think of as defining immediate needs, and the user's propensity towards different item categories, which define current opportunities, in the context of providing personalized recommendation results. 
 
-A social choice perspective on recommendation has emerged in recent research as a possible source of methods to integrate the viewpoints of multiple agents  or priorities \cite{burke2020algorithmic}. \citet{chakraborty2019equality} build a recommendation system for finding fair group recommendations through viewing them as elections between various signals of popularity, leading to a shared group recommendation.  This does not take the important aspect of \emph{personalization} into account that we address in SCRUF.  \citet{suhr2019two} explore driver assignment in two sided matching markets with an emphasis on producer and rider fairness. \citet{patro2020fairrec} propose a recommender system for two-sided matching markets with the goal of fair exposure amongst producers.  This differs from our work in that the fairness metrics are fixed and embedded into the matching algorithms themselves.  Finally, \citet{lee2019webuildai} propose a system that uses social choice to embed normative properties for algorithmic governance into the algorithms themselves, as demonstrated on a food bank matching scenario. However, none of this research considers multiple fairness concerns on the provider side of a recommendation system as required in the Kiva case or the dynamic response to historical fairness outcomes as embodied in SCRUF.
+A social choice perspective on recommendation has emerged in recent research as a possible source of methods to integrate the viewpoints of multiple agents  or priorities \cite{burke2020algorithmic}. \cite{chakraborty2019equality} build a recommendation system for finding fair group recommendations through viewing them as elections between various signals of popularity, leading to a shared group recommendation.  This does not take the important aspect of \emph{personalization} into account that we address in SCRUF.  \cite{suhr2019two} explore driver assignment in two sided matching markets with an emphasis on producer and rider fairness. \cite{patro2020fairrec} propose a recommender system for two-sided matching markets with the goal of fair exposure amongst producers.  This differs from our work in that the fairness metrics are fixed and embedded into the matching algorithms themselves.  Finally, \cite{lee2019webuildai} propose a system that uses social choice to embed normative properties for algorithmic governance into the algorithms themselves, as demonstrated on a food bank matching scenario. However, none of this research considers multiple fairness concerns on the provider side of a recommendation system as required in the Kiva case or the dynamic response to historical fairness outcomes as embodied in SCRUF.
 
 
 \subsection{Formal System Specification}
 To leverage the power of recommender systems for personalized fairness we will define a set of choice functions to promote fairness. We first detail the formal notation for our recommender system and how to view it as a social choice problem. We then describe our overall system in terms of choice functions and how these can be used to promote fairness.
 
 \subsubsection{\textbf{Recommendation Systems with Protected Values}}
-\hfill
 
-In a recommendation system setting we have a set of users $\users = \{u_1, \ldots u_n\}$ and a set of items $\items = \{v_1, \ldots, v_m\}$. For each item $v_i \in \items$ we have a $k$-dimensional feature vector $\vec{v_i} = \langle f_{i1}, \ldots f_{ik} \rangle$ over a set of categorical features $\features = \{F_1, \ldots, F_k\}$, where each feature $F_i$ has finite domain $\domain_i$. We assume that all elements in $\items$ share the same set of features. 
-%
+In a recommendation system setting we have a set of users $\users = \{u_1, \ldots, u_n\}$ and a set of items $\items = \{v_1, \ldots, v_m\}$. For each item $v_i \in \items$ we have a $k$-dimensional feature vector $\vec{v_i} = \langle f_{i1}, \ldots, f_{ik} \rangle$ over a set of categorical features $\features = \{F_1, \ldots, F_k\}$, where each feature $F_i$ has finite domain $\domain_i$. We assume that all elements in $\items$ share the same set of features. 
+
 Consider a running example of a funding site that shows micro-loans in emerging markets to potential funders. In this example we have $m=3$ items in the database which share $|\features|=4$ features: $\{$Region, Gender, Sector, Amount$\}$, where each has its own domain.  For example, $\domain_1 = \{$Africa, Middle-East, North America$\}$.  This setting is illustrated in Table \ref{table:user_profile}.
     
 \begin{table}
@@ -124,8 +123,11 @@ While the user preferences are handled by the personalized ranking function $R(u
 \noindent where $P(f|u)$ is computed as the fraction of items in the user's profile that have the feature value $f$. This can be interpreted as the user's likelihood of liking items with that value. The higher the entropy value is for a user on a feature, the higher their tolerance to see diversity within that feature. We assume that we can interpret this as a \emph{preference} in the social choice sense. In our running example, a user may be particularly dedicated to a particular economic sector, agriculture for example, and may only have supported loans in this sector in the past.  Hence, they would have low tolerance for variation in this feature. Note that since these map onto $\reals$ we could both interpret these as ordinal rankings: as a preference order for user $u_i$, $\succsim_i$, over the set of $f_j$; or as cardinal valuations.
 
 
+% \textit{Social Choice for Re-ranking Under Fairness} (SCRUF)
 \subsubsection{\textbf{Overall Framework}}
 %hfill
+% - Overall Framework
+
 
 SCRUF is our framework for explicitly representing the design decisions that enter into trading off between accuracy and fairness across multiply-defined and intersecting protected groups in the setting described above. Figure~\ref{fig:framework} shows the general process that the framework instantiates by looking at a snapshot in time. A user $u_t$ arrives at the system and the base recommender algorithm $R(u_t,\items)$ generates a recommendation list $\ell_t$. 
 
@@ -186,7 +188,7 @@ Specifically, each re-ranker has weight $w_f * UF_i$, thus limiting the amount o
 We then run the PS algorithm and get a fractional allocation for each user for each re-ranker.  We interpret this fractional allocation (normalized into a distribution) as the probability that the user should be assigned that particular re-ranker.
 
 
-\subsection{\textbf{Methodology}}
+\subsection{Methodology}
 \subsubsection{\textbf{Evaluation Metrics}}
 
 As our work here concentrates on ranking performance, we use normalized discounted cumulative gain (nDCG) as our measure of recommendation accuracy. Note that we are only evaluating re-ranking algorithms so nDCG is limited to some extent by the performance of the base algorithm to which the re-ranking is applied. 
@@ -244,7 +246,7 @@ To identify the protected values for each feature, we applied the same method as
 
 
 \subsubsection{\textbf{Experiments}}
-\hfill
+% \hfill
 
 Our experimental methodology is designed to highlight differences between these choice functions. We followed a typical recommendation evaluation process with each user's profile split into 80\% training and 20\% testing. We chose non-negative matrix factorizing (NMF) as our base algorithm~\cite{takacs2008investigation} based on prior experience with these data sets. We plan to explore the interaction between base algorithm and choice functions in future work. The factorization model was built using the training data and then used to generate a recommendation list $\ell$ for each user.
 % \nasim{add mostpop and kNN as another baseline}
