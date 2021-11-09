@@ -1,16 +1,16 @@
-\chapter{Experimental Method Setups}
+\chapter{Experimental Methodology}
 \label{chap:methodology}
 
-Personalized recommendation is domain-specific, in other words algorithms that work in one setting might work poorly in others that might have different characteristics. \cite{}
+Personalized recommendation is domain-specific; in other words algorithms that work in one setting might work poorly in others that might have different characteristics. \todo{\cite{}}
 In this Chapter, I will describe the datasets, data pre-processing, data transformation, as well as recommendation and re-ranking algorithms that were used as baseline to perform experiments on them throughout this dissertation. 
-Additionally, experimental details such as hyper-parameter tuning, the choice of the model and the choice of the protected attribute(s) in each dataset will be explained thoroughly. For my experiments, I have used and/or extended \libauto{}, a recommendation library that I worked on during the course of my PhD. The extended algorithms were added as part of my contribution to \libauto{} or LibRec itself. I will describe \libauto{}'s capabilities and architecture in details in Chapter \ref{librec-auto}.
+Additionally, experimental details such as hyper-parameter tuning, the choice of the models and the choice of the protected attribute(s) in each dataset will be explained thoroughly. For my experiments, I have used and/or extended \libauto{}, a recommendation library that I worked on during the course of my PhD. The extended algorithms were added as part of my contribution to \libauto{} or LibRec itself. I will describe \libauto{}'s capabilities and architecture in details in Chapter \ref{librec-auto}.
 
 
 
 \section{Context}
     \subsection{Philanthropic - loan recommendation}
     
-    Online sites have become a major avenue for people not only for shopping, but for philanthropic activities. Take Kiva.org as an example. Kiva Microloans is a non-profit organization that operates a crowd-sourced microlending platform. Kiva uses crowdsourcing to provide access to capital for individuals and entrepreneurial groups, especially in the developing world, who are otherwise under-capitalized.
+    Online sites have become a major avenue for people not only for shopping, but for philanthropic activities. Kiva Microloans is a non-profit organization that operates a crowd-sourced microlending platform. Kiva uses crowdsourcing to provide access to capital for individuals and entrepreneurial groups, especially in the developing world, who are otherwise under-capitalized.
     % with the goal of financial global inclusion. 
     
     Kiva partners with local organizations in countries across the globe and, since its founding, has lent \$1.46 billion to 3.4 million borrowers in 77 countries with the support of 1.9 million lenders. Information about lending opportunities are listed on Kiva's site for a fixed period and promoted to its lenders through various means. A typical lender will contribute only a fraction of the total amount (as low as \$25) for any one loan, but may support multiple loans at any one time. As with any lending transaction, there is risk that the borrower will not repay, but this is rare in Kiva where the repayment rate is approximately 96\%. Lenders do not get any interest on their investments and so supporting a Kiva borrower is essentially a philanthropic act.
@@ -18,8 +18,9 @@ Additionally, experimental details such as hyper-parameter tuning, the choice of
     The main sides of the interaction, therefore, are the borrowers, generally developing-world entrepreneurs who seek small amounts of capital to enhance their business capacity, and lenders, who are the application's end-users. Note that the borrowers are the providers or the producers of the items/loans, and the lenders are the receivers or users of the recommendations. We will use these words interchangeably throughout this dissertation. Kiva's mission emphasizes equitable access to capital for its borrowers, who generally cannot make use of traditional forms of banking and lending~\cite{Choo_understanding_kiva}.
     
     
-    A loan recommender system in this situation is purposed to lower the search costs of its users (lenders) by finding borrowers whose goals and needs appeal to them. While in this recommendation context, several provider-side fairness concerns arise, no consumer-side fairness has risen as a concern so far. 
-    One key provider-side concern, arising from Kiva's mission of supporting world-wide access to capital, is that the geographic imbalances in users' preferences may manifest themselves in the disproportionate representation of certain countries or regions in recommendation lists. This could give rise to a positive feedback loop, as the recommended items are more likely to be supported, and thus the lending becomes even more highly concentrated. A similar kind of imbalance may arise with respect to different industries or economic sectors. Thus, we can identify at least two fairness concerns within this recommender system: equity in geographic distribution of capital \cite{liu2019personalized}, and equity across economic sectors \cite{Sonboli202Oofair} which are going to be explained in detail in Chapter \ref{fairness_postproc}. Other provider-side fairness concerns might arise in this context, e.g., the loan amount (loans with higher amounts get funded slower). Although we have mainly addressed the first two aspects in this thesis.
+    A loan recommender system in this situation is intended to lower the search costs of its users (lenders) by finding borrowers whose goals and needs appeal to them. In this recommendation context, several provider-side fairness concerns arise, no consumer-side fairness has risen as a concern so far. 
+    
+    One key provider-side concern, arising from Kiva's mission of supporting world-wide access to capital, is that the geographic imbalances in users' preferences may manifest themselves in the disproportionate representation of certain countries or regions in recommendation lists. This could give rise to a positive feedback loop, as the recommended items are more likely to be supported, and thus the lending becomes even more highly concentrated. A similar kind of imbalance may arise with respect to different industries or economic sectors. Thus, we can identify at least two fairness concerns within this recommender system: equity in geographic distribution of capital \cite{liu2019personalized}, and equity across economic sectors \cite{sonboli2020opportunistic} which will be explained in detail in Chapter \ref{fairness_postproc}. Other provider-side fairness concerns might arise in this context, e.g., the loan amount (loans with higher amounts get funded slower). Although we have mainly addressed the first two aspects in this thesis.
     
     
     We situate our research within the organizational context of Kiva Microloans. This is a compelling case study for the exploration of recommendation fairness since its fairness requirements are driven by internal needs surrounding its philanthropic mission, rather than external demands such as regulatory requirements that might be found in financial services or employment, or etc. A regulatory environment is more likely to provoke a defensive response related to fairness questions, which tends to hamper robust discussion of fairness properties in existing systems~\cite{chen2018fair,holstein2019improving}. In addition, because of its philanthropic mission, it is reasonable to expect that Kiva's users will be receptive to fairness-oriented interventions. Finally, as a hybrid organization, embodying the characteristics of a nonprofit with the characteristics of a financial services institution, research embedded with Kiva is well-situated to have a broader and more generalizable impact across genres of institutions and sectors.
@@ -39,8 +40,8 @@ Additionally, experimental details such as hyper-parameter tuning, the choice of
     
     Movie recommendation might not be an obvious candidate for the study of consumer-side fairness in recommendation. Although, we followed the example of \cite{yao2017beyond} and used an approach to construct an artificial equity scenario within both MovieLens-1M and The Movies data for expository purposes only, with the understanding that real scenarios can be approached with a similar methodology. We chose MovieLens datasets due to the other following reasons: (a) MovieLens-1M is among the very few datasets with demographic information which makes it suitable for the use case of consumer-side fairness, (b) MovieLens-1M is a standard and commonly used dataset in the field of recommendation systems, and (c) generally lack of datasets in domains where fairness matters.
 
-    Below we characterize in detail the datasets that we used to test our methods on.
-
+    Below we characterize in detail these datasets.
+    
 \section{Datasets}
 
 The experiments were performed on the following publicly and/or proprietary datasets: MovieLens\cite{movielens}, The Movies dataset\footnote{https://www.kaggle.com/rounakbanik/the-movies-dataset}, and two variations of Kiva dataset: proprietary and publicly accessible data.
@@ -65,7 +66,7 @@ The characteristics of the previously mentioned datasets are described below and
     In a fielded application, the choice of sensitive features and protected groups within those features may be determined by legal liability or business model considerations. Lacking this type of insight, we chose to identify protected features as those associated with rarely-recommended items. To determine the protected values of each feature, we performed a trial run of recommendation generation over the data set, and examined the distribution of features in the results. In a live system, historical recommendation data would be available over which to calculate this distribution. The values in the 25th percentile of the distribution were selected as the protected group for that feature.
 
     
-    
+        \todo[inline]{the slim-u discussion is out of place here!}
         \subsubsection{protected feature(s)}
         The choice of the protected features firstly depend on the stakeholder for which we are seeking fairness, and secondly it depends on the context and the previously detected unfairness or biases in the dataset. Since, there exists information about both the consumers (of the recommendations) and the providers (of the recommendations), it is possible to propose solutions both for the consumer-side and provider-side fairness.
         
@@ -99,7 +100,7 @@ The characteristics of the previously mentioned datasets are described below and
         Since we need to address the unfairness issue in all of these features, we need to select the protected group within each one of them.
         We identified the following protected classes within each category: ``unpopular'' (popularity), ``lower revenue'' (revenue) , ``longer'' (running time), ``before 1990'' (release date), ``Horror'', ``Music'', ``Mystery'', ``History'' (genres), and ``CA'', ``ES'', ``DE'', ``HK'' (countries). These feature categories were chosen because they represented a minority within each category.
     
-        This dataset is rich in movie metadata that one can use for the study of fairness in recommendation. As an example, this dataset contains the metadata about the cast and the crew for each movie: such as the gender (non-binary) information of the director(s) and the writer(s), the number of people from each gender in the director team or the writer team, etc. Although, we didn't use this information in our experiments.
+        This dataset is rich in movie metadata that one can use for the study of fairness in recommendation. As an example, this dataset contains the metadata about the cast and the crew for each movie: such as the gender (non-binary) information of the director(s) and the writer(s), the number of people from each gender in the director team or the writer team, etc. We didnot use this information in our experiments.
 
     \subsection{Kiva dataset}
     \todo[inline]{changing our to my and we to I}
@@ -149,7 +150,7 @@ The characteristics of the previously mentioned datasets are described below and
         
         In some of our research projects we have considered (region) instead of (country). Since these two features are highly correlated they both carry the same information and can be used interchangeably. In Chapter \ref{fairness_postproc} in the FAR/OFAR method and in Chapter \ref{fairness_inproc} in the Balanced neighborhood SLIM approach, we target the (region) feature.
         
-        Kiva.org divides its borrowers into 9 geographic regions. We are defining the protected group as those regions of the world where it appears to be more difficult to fund loans. (In Kiva.org, a loan that does not attract enough lenders over a 30 day period is marked as unfunded and dropped from the system.) Therefore, we are promoting the loans that have not grabbed the lenders attention so far and help them get funded faster. Note that the assumption behind this method is that all the loan requests are equal regardless of all their information, in other words the more popular loans are not better than the less popular ones.
+        Kiva.org divides its borrowers into 9 geographic regions. We are defining the protected group as those regions of the world where it appears to be more difficult to fund loans. (In Kiva.org, a loan that does not attract enough lenders over a 30 day period is marked as unfunded and dropped from the system.)\todo{redundant?} Therefore, we are promoting the loans that have not grabbed the lenders attention so far and help them get funded faster. Note that the assumption behind this method is that all the loan requests are equally worthy regardless of all their information, in other words the more popular loans are not inherently better than the less popular ones.
         
         In our dataset, we find that there are some geographic regions with a higher than average number of unfunded loans. In these regions, borrowers have a lower probability of getting the desired capital. As shown in Table~\ref{tab:unfunded}, the regions of North America, Eastern Europe, South America, and Asia have proportionately more funded loans than the regions of Africa, Middle East, and Central America\footnote{Our data set had only a single loan request from Australia.}. These regions where borrowers have lower funding percentages are treated as the protected group in our experiments.
         
@@ -173,7 +174,7 @@ The characteristics of the previously mentioned datasets are described below and
 
     \subsection{Yelp dataset}
     \todo[inline]{in the Hypertext paper we used this data for mis-calibaration analysis}
-    The original Yelp.com data included 6.7 million reviews from 1.6 million users on 192,609 businesses from different industries. We used a filtered subset, Yelp\_core40 \cite{mansoury2019bias}, which includes users who rated at least 40 businesses and businesses which were rated by at least 40 users. In the Yelp\_core40, there are many business categories  (e.g. car dealers, airports, or different types of restaurants, etc.). We limited the data set to restaurant/food establishments, using both "restaurant" and "food" labels for filtering. After pre-processing, the data set included 85,041 ratings by 1,355 users over 1,077 restaurants, covering 231 categories. The sparsity of Yelp is 5.83\%. The categories are defined by the labels provided in the original Yelp data set. Some of the categories are very popular (e.g. "American (New)", "Breakfast \& Brunch", etc.), while some of them are extremely specific (e.g. "Pretzels", "Shaved snow", etc.). There were also many establishments with multiple labels, which meant that they belonged to different item categories.
+    The original Yelp.com data included 6.7 million reviews from 1.6 million users on 192,609 businesses from different industries. We used a filtered subset, Yelp\_core40 \cite{mansoury2019bias}, which includes users who rated at least 40 businesses and businesses which were rated by at least 40 users. In the Yelp\_core40, there are many business categories  (e.g. car dealers, airports, or different types of restaurants, etc.). We limited the data set to restaurant/food establishments, using both "restaurant" and "food" labels for filtering. After pre-processing, the data set included 85,041 ratings by 1,355 users over 1,077 restaurants, covering 231 categories. The sparsity of Yelp is 5.83\%. The categories are defined by the labels provided in the original Yelp data set. Some of the categories are very popular (e.g. "American (New)", "Breakfast \& Brunch", etc.), while some of them are extremely specific (e.g. "Pretzels", "Shaved snow", etc.). There were also many establishments with multiple labels, which meant that they belonged to different item categories.\todo{protected features?}
 
 
 
@@ -185,19 +186,19 @@ The characteristics of the previously mentioned datasets are described below and
     In user studies, test subjects are recruited and are asked for their feedbacks about the system and about their interaction with it. Then this data is used to infer the likes and dislikes of users. 
     In an online system, we measure user reactions with respect to the presented recommendation lists such as conversion rate of users. Such testing methods are referred to as A/B testing and they measure the direct impact of recommendations on the end users. In this type of testing active user participation is essential although it is not always feasible to have access to this data from online systems in various domains, especially in academia. In such cases, offline methods with historical data, such as ratings, are used. Since we lack access to real-time user interaction data, offline evaluation in this dissertation which is the most common approach to evaluate recommender systems in this situation. We have also made use of the user-study based evaluation to investigate \todo[inline]{user-study fairness} how users perceive fairness in recommender systems.
     
-    In order to obtain an understanding of the effectiveness of recommender systems, we need to make use of proper evaluation metrics. Especially because the evaluation of recommender systems is often multifaceted, and a single criterion cannot capture all of the goals of a designer. As an example, accuracy-based metrics show the quality of the recommendations that users receive on average, but it can't reflect whether we have a diverse set of providers in the recommendations or not. 
+    In order to obtain an understanding of the effectiveness of recommender systems, we need to make use of proper evaluation metrics. Multiple metrics are needed because the evaluation of recommender systems is often multifaceted, and a single criterion cannot capture all of the goals of a designer. As an example, accuracy-based metrics show the quality of the recommendations that users receive on average, but it can't reflect whether we have a diverse set of providers in the recommendations or not. 
     
     Our goal in this dissertation is to design methods that increase the tradeoff between accuracy and fairness, therefore we need to use metrics that assess both the accuracy and the unfairness of the output. We describe these two categories below.
     
-    Since all of the proposed metrics were either ranking or re-ranking approaches, we used the following ranking metrics to measure the accuracy of our approaches: nDCG, Precision, Recall, Miscalibration Unfairness.
+    Since all of the proposed metrics were either ranking or re-ranking approaches, we used the following ranking metrics to measure the accuracy of our approaches: nDCG, Precision, and Recall.
     
-    To estimate the unfairness of the output, we used the following fairness metrics and fairness inducing diversity metrics: Statistical Parity@k (Equal Chance), Intra-list distance(ILD), Average Coverage Rate (ACR) for Provider-side fairness, provider-side Risk Ratio, protected item exposure, and equality of odds/chance
+    To estimate the unfairness of the output, we used the following fairness metrics and fairness inducing diversity metrics: Statistical Parity@k (Equal Chance), Intra-list distance(ILD), Average Coverage Rate (ACR) for Provider-side fairness, provider-side Risk Ratio, protected item exposure, equality of odds/chance, and Miscalibration error.
     \todo[inline]{check the list again}
     
     
     \subsection{Accuracy metrics}
     
-    Accuracy metrics are the single most important component in the evaluation of recommender systems. Although, secondary metrics such as fairness play a key role in understanding the social aspects of a recommendation system, accuracy metrics are still prioritized. Accuracy measures the precision at which a recommender system is able to either predict the ratings or the correctness of ranking the items in users' recommendation lists. We evaluate the ranking accuracy of our algorithms using the following common metrics below. Assume that one selects the top-$k$ set of ranked items to recommend to the user.
+    Accuracy metrics are the single most important component in the evaluation of recommender systems. Although, secondary metrics such as fairness play a key role in understanding the social aspects of a recommendation system, accuracy metrics are still prioritized. Accuracy measures the ability of a recommender system to either predict the ratings or the correctness of ranking the items in users' recommendation lists. We evaluate the ranking accuracy of our algorithms using the following common metrics below. Assume that one selects the top-$k$ set of ranked items to recommend to the user.
     
         \textbf{Precision}: For any given value $k$ of the size of the recommended list, the set of recommended items is denoted by $\mathcal{S}(t)$. Note that $\mathcal{S}(t)=k$. So, as $k$ changes, the size of $\mathcal{S}(t)$ changes too.
         
@@ -240,6 +241,7 @@ The characteristics of the previously mentioned datasets are described below and
     
         % it's essential that we consider the target stakeholders, the definition of harm or unfairness and the specific metrics for measuring harm or integrating in the system to avoid harm.
         
+        \todo[inline]{robin says concepts will be in chapter 2?}
         \todo[inline]{needs an intro}
         I have introduced some of the following metrics.: ACR, DPF
         mostly provider-side fairness.
@@ -291,7 +293,7 @@ The characteristics of the previously mentioned datasets are described below and
         The weights can be a hyper-parameter and can be defined according to the popularity of each group, the system preferences on who deserves to have a higher weight, or any other method.
         
         % dividing it by the max utility or ideal utility when the weights and the utilities are the same.
-        We have implemented this metric in \libauto{} (explained in Chapter \ref{librec-auto}) for both the providers and the consumers.
+        We have implemented this metric in \libauto{} (explained in Chapter \ref{librec-auto}) for both providers and the consumers.
         
         
         
@@ -357,11 +359,13 @@ The characteristics of the previously mentioned datasets are described below and
 
 
         \textbf{Protected group hit-rate}
-        The fairness of lists were evaluated based on protected group hit rate, which measures the ratio of the protected group to appear in a recommendation list. This value is related to the fairness concept of ``statistical parity,'' measured relative to items' level of promotion within the recommender system. Because list lengths are fixed ($k$ is set in our experiements), the hit rate for unprotected items is just one minus the protected group hit rate. We will calculate this metric for every 1\% accuracy loss to have a better understanding about the accuracy / fairness trade off.
+        The fairness of lists were evaluated based on protected group hit rate, which measures the ratio of the protected group to appear in a recommendation list. This value is related to the fairness concept of ``statistical parity,'' measured relative to items' level of promotion within the recommender system. Because list lengths are fixed ($k$ is set in our experiements), the hit rate for unprotected items is just one minus the protected group hit rate. 
+        \todo[inline]{add the following section to the paper itself}
+        % We will calculate this metric for every 1\% accuracy loss to have a better understanding about the accuracy / fairness trade off.
         
     
         \textbf{Misalibration error}
-        \todo[inline]{do we need this part ?}
+        \todo[inline]{do we need this part? drop?}
         
         The concept of miscalibration in recommendations is introduced in \cite{steck2018calibrated} by Steck. This metric measures whether recommender systems reflect the various interests of users relative to their initial preference proportions or not. The greater the difference between a user initial preferences and her recommendations, the higher the error. In other words the users with high miscalibration error, are not receiving the recommendations that match what they want.
         
@@ -415,12 +419,14 @@ The characteristics of the previously mentioned datasets are described below and
             \text{ILD}(\mathcal{L}) = \frac{1} {|\mathcal{L}|(|\mathcal{L}|-1)} \sum_{i \in \mathcal{L}}\sum_{j \in \mathcal{L}}d(i,j)
         \end{equation}
         Higher values in this metric means a more comprehensive coverage of the items that are different in their features, yet still desirable.
+        \todo[inline]{why is this a fairness metric?}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         \textbf{Shannon Entropy}:
+        \todo[inline]{robin says what is going on here?}
         
         The concept of information entropy was introduced by Claude Shannon in his 1948 paper \cite{entropy1948} and is also referred to as Shannon entropy. In information theory, the entropy of a random variable is the average level of "information", "uncertainty" or, "impurity" inherent in the variable's possible outcomes. The entropy measures the “amount of information” present in a variable. That is, the more certain or the more deterministic an event is, the less information it will contain. In a nutshell, the information is an increase in uncertainty or entropy. 
         
@@ -538,7 +544,7 @@ The characteristics of the previously mentioned datasets are described below and
        
         \textbf{Non-negative matrix factorization (NNMF)}:
        
-       Matrix factorization models \cite{koren20009mf} are also in the collaborative filtering family of methods. In a basic matrix factorization model, the rating matrix $R$ of size $m\times n$ is approximately factorized into $m\times k$ matrix $U$ and and $n\tiems k$ matrix $V$, as below:
+       Matrix factorization models \cite{koren20009mf} are also in the collaborative filtering family of methods. In a basic matrix factorization model, the rating matrix $R$ of size $m\times n$ is approximately factorized into $m\times k$ matrix $U$ and and $n\times k$ matrix $V$, as below:
        \begin{equation}
            R\approx UV^T
        \end{equation}

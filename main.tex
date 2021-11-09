@@ -7,19 +7,58 @@
 \usepackage{hyperref}		% PDF hyperreferences??
 \usepackage{todonotes}
 \usepackage{comment}
-\usepackage{threeparttable}
 \usepackage{booktabs} 
 \usepackage{bbm}
+
+%% Math Macros
+\newcommand{\reals}{\ensuremath{\mathbb{R}}}
+\newcommand{\users}{\mathcal{U}}
+\newcommand{\items}{\mathcal{V}}
+\newcommand{\features}{\mathcal{F}}
+\newcommand{\domain}{\mathcal{D}}
+\newcommand{\pro}{\mathcal{P}}
+\newcommand{\sensitive}{\mathcal{S}}
+\newcommand{\rerankers}{\mathcal{K}}
+\newcommand{\metrics}{\mathcal{M}}
 
 
 \newtheorem{definition}{Definition}
 \newcommand{\libauto}{\texttt{librec-auto}}
+
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{enumerate}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{mathrsfs} % needed for mathscr
+\usepackage{color}
+\usepackage{balance}
+\usepackage[bottom]{footmisc}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\usepackage[para,online,flushleft]{threeparttable}
+\usepackage{verbatim}
+\usepackage{dsfont}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,spy,positioning,decorations,decorations.pathreplacing}
+
+
+
+
+
+
 %%%%%%%%%%%%   All the preamble material:   %%%%%%%%%%%%
 
 % \newcommand{\dtitle}{Controlling the Fairness Accuracy Tradeoff in Recommender Systems}
 % \begin{document}
 
-\title{Controlling the Fairness Accuracy Tradeoff in Recommender Systems}
+\title{Controlling the Fairness / Accuracy Tradeoff in Recommender Systems}
 
 
 \author{Nasim}{Sonboli}
@@ -91,12 +130,12 @@
 %%%%%%%%%   then the Bibliography, if any   %%%%%%%%%
 \bibliographystyle{plain}	% or "siam", or "alpha", etc.
 \nocite{*}		% list all refs in database, cited or not
-\bibliography{refs,refs_libauto,proposal_refs}		% Bib database in "refs.bib"
+\bibliography{refs,refs_libauto}		% Bib database in "refs.bib"
 
 %%%%%%%%%   then the Appendices, if any   %%%%%%%%%
-\appendix
-\input appendixA.tex
-\input appendixB.tex
+% \appendix
+% \input appendixA.tex
+% \input appendixB.tex
 
 
 \end{document}
