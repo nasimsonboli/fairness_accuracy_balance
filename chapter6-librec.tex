@@ -42,8 +42,8 @@ A sketch of the functionality of \libauto{} is provided in Figure~\ref{fig:libre
 
 \begin{figure*}[ht!]
     \centering
-    % \includegraphics[width=5.25in]{figs/chapter6-librecauto/librec-auto-diagram2.png}
-    \includegraphics[width=0.95\linewidth]{figs/chapter6-librecauto/workflow.pdf}
+    % \includegraphics[width=5.25in]{imgs/la/librec-auto-diagram2.png}
+    \includegraphics[width=0.95\linewidth]{imgs/la/workflow.pdf}
     \caption{Schematic of experimentation workflow with \libauto{}. The LibRec library (Java, shown in grey) is encapsulated by \libauto{} (Python, shown in purple), which manages configuration, experimental outputs and post-processing. Added from \cite{mansoury2018automating} is the new re-ranking module shown in red.}
     \label{fig:librec-auto}
     \vspace{-0.15in}
@@ -77,7 +77,7 @@ A study is organized in a multi-directory file structure. Some parts of the stru
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/chapter6-librecauto/study-dir-labeled2.png}
+    \includegraphics[width=0.8\linewidth]{imgs/la/study-dir-labeled2.png}
     \caption{Directory structure for a \libauto{} study. The shaded directories are experiment outputs managed by the system.}
     \label{fig:study-dir}
     \vspace{-0.15in}
@@ -219,12 +219,13 @@ In order to use this system, an \texttt{optimize} element must be added to the c
 \label{sec:libauto_study_config}
 
 \libauto{} uses an XML configuration file to specify all aspects of the experimental pipeline. As noted above, a configuration file defines a \textit{study}, which computes evaluation results for a single algorithm and a single data set, possibly over multiple choices of hyperparameters, each combination of which constitutes an \textit{experiment}. The configuration file is divided into sections, some of which are optional. We devote some attention here to this file because a study of its components gives a good overview of the capabilities and flexibility of \libauto{}. A sample configuration file is shown in Figure~\ref{fig:config}.
+\todo[inline]{go to the 2021 demo examples and change the config file based on that}
 
 XML was chosen because configuration files need to be managed both by human experimenters and by the system itself. The unstructured key-value properties format used by LibRec was found to be difficult for experimenters to manage as it does not impose a natural structure on the different aspects of the configuration and makes it difficult to re-use and adapt configurations. JSON was also considered, but XML is more self-describing, which is important when the configuration must provide documentation for what experiments were performed. XML enables configuration files to be easily modularized, so that, for example, multiple studies can share the same methodology elements, preventing inadvertent misconfiguration. XML also provides facilities for validating configuration files against an XML schema, which in future versions will allow us to provide error checking of configuration files before processing them.
 
 \begin{figure}[ht!]
     \centering
-    \include{figs/chapter6-librecauto/config_xml}
+    \include{imgs/la/config_xml}
     \caption{Sample configuration file}
     \label{fig:config}
     \vspace{-0.15in}
@@ -323,7 +324,7 @@ Note that a re-ranking step can participate in the optimization aspects of \liba
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/chapter6-librecauto/sample-output.png}
+    \includegraphics[width=0.8\linewidth]{imgs/la/sample-output.png}
     \caption{Sample auto-generated study output visualizations. These simple plots support experimenters in providing a quick analysis of study outcomes.}
     \label{fig:viz}
     \vspace{-0.15in}
@@ -331,7 +332,7 @@ Note that a re-ranking step can participate in the optimization aspects of \liba
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.6\linewidth]{figs/chapter6-librecauto/slack-post.png}
+    \includegraphics[width=0.6\linewidth]{imgs/la/slack-post.png}
     \caption{Sample auto-generated Slack posts. Such notifications provide experimenters and research teams with asynchronous notifications of study progress.}
     \label{fig:slack}
     \vspace{-0.15in}
@@ -451,12 +452,12 @@ Finally, we are seeking to make \libauto{} more accessible to new users through 
 
 \libauto{} has been presented in multiple conferences. The system was introduced through a demo at the ACM Recommender Systems conference in 2018 \cite{mansoury2018automating}, was presented at the Algorithm Selection and Meta-Learning Workshop (AMIR) at the European Conference on Information Retrieval (ECIR) in 2019 \cite{mansoury2019algorithm}. It was also presented to the audience of the ACM Conference on Fairness, Accountability and Transparency as a tutorial in 2020 \cite{burke2020facct_libauto} and presented as a demo at the ACM Recommender Systems conference in 2020 \cite{Sonboli2020FARLA}. Finally \libauto{} was presented as a resource paper at the ACM International Conference on Information and Knowledge Management (CIKM) in 2021. You can refer to the evolution timeline of \libauto{} in Figure \ref{fig:librec-auto-evolution}.
 
-\todo[inline]{LIBFM??}
+\todo[inline]{replace LIBFM with Optuna}
 
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.95\linewidth]{figs/chapter6-librecauto/librec-auto-revolution.pdf}
+    \includegraphics[width=0.95\linewidth]{imgs/la/librec-auto-revolution.pdf}
     \caption{The evolution timeline of \libauto{} (2018-2021). Every extension of \libauto{} is shown in pink and the release of LibRec itself is shown in Orange. Additional libraries that were added to the current release are shown in green}
     \label{fig:librec-auto-evolution}
     \vspace{-0.15in}

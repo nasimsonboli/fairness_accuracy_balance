@@ -1,17 +1,22 @@
 \chapter{Fairness}
 \label{fairness}
 
+In recent years, the increased adoption of algorithmic systems into many realms of society has raised concerns about the harms and unfairness that such systems cause. Among these concerns, the issue of fairness in computing systems in the decision support context, especially the ones that rely on machine learning and statistical tools, has gained a significant attention\cite{mitchell2021algorithmic}. This is particularly evident where high stakes decisions are made, ones that have significant real-world impact on individuals’ lives and livelihoods such as healthcare, public policy, and law enforcement.
+
+The discussion of fairness, justice and equity is only one of the social aspects that is being investigated and criticized in machine learning systems. Such problems have gained the attention of a multidisciplinary community from computer scientists in different fields (e.g. artificial intelligence, machine learning, etc. to social scientists and legal scholars that have started to study "Fairness, Accountability, and Transparency", and "AI ethics" in their fields.
+
+In this chapter, we provide a short overview on algorithmic fairness including fundamental concepts, definitions, potential sources of unfairness and different family of solutions that can be used to reduce fairness in machine learning systems based on the work in \cite{mitchell2021algorithmic,barocas2016big,barocas2018fairness}.
+
 
 \section{Fairness \& Justice}
-% There are two types of assumptions behind fairness-aware systems \cite{friedler-impossibility-2021}: (1) \textit{What you see is what you get (WYSIWYG)}, and (2) \textit{We're all equal}. Having a WYSIWYG assumption in a system means that the observations of features do not encode bias, therefore the system uses that unbiased information to make decisions about individuals in a way that similar individuals are treated similarly. WYSISYG seeks to achieve fairness for individuals rather than a group of users. However, the second assumption (WAE) acknowledges that the biases in the society are reflected in data which lead to disparate treatment of different groups with different sensitive features. Therefore WAE supports group fairness.
+
+
 
 \section{Fairness in Machine Learning}
 
 
 \section{Fairness in Recommender Systems}
-% \subsection{Calibration?}
 
-% There has been considerable research in the area of diversity-aware recommendation~\cite{Vargas:2011:RRN:2043932.2043955,adomavicius2012improving} where these systems treat recommendation as a multi-objective optimization problem where the goal is to maintain a certain level of accuracy, while also ensuring that recommendation lists are diverse with respect to some representation of item content. These techniques can be re-purposed for P-fairness recommendation by treating the items from the protected group as a different class and then optimizing for diverse recommendations relative to this definition.
 
 \section{Dynamic fairness}
 

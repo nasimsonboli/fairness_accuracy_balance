@@ -7,6 +7,7 @@
     % the result of the arguments should be the research questions
     % some alternatives of the research questions
 
+\todo[inline]{should I talk about information need of users and the fundamentals why recommender systems are a service and what they are? I don't do that here at all.}
 
 \todo{research context}
 
@@ -15,7 +16,7 @@ After a period of substantially fast development in creating "smarter" digital s
 Recommender systems are one of the most pervasive applications of machine learning in industry. They play a pivotal role in  connecting users to relevant items or content throughout the web while not only users rely heavily on them but also content producers, sellers or information providers. % in satisfying user's information needs
 Although they are intended to assist people in different tasks, they can pose the risk of implicit or explicit discrimination against individuals or groups especially marginalized groups.
 
-\subsection{Running example}
+\section{Running example}
 % \todo{change it to an example from Kiva}
 Consider a loan recommender system that suggests loans to lenders to support. There are many online platforms attempting to connect small businesses or entrepreneurs who have requested for a loan to lenders or donors in some way. 
 
@@ -34,7 +35,7 @@ Since recommender systems are multi-stakeholder settings, discrimination in thes
 
 \todo[inline]{should i talk about the presentation bias instead of filter bubble?}
 
-\subsection{Unfairness in recommender systems}
+\section{Unfairness in recommender systems}
 
 % potntial underlying reasons for recsys to be unfair
 There are multiple underlying reasons that cause the recommendation algorithms to be discriminatory. For example, if recommender systems are trained on biased data, the outcomes might get biased a.k.a. "garbage in, garbage out". 
@@ -59,7 +60,7 @@ Ignoring the societal and ethical consequences of recommendation algorithms in d
 % For example, in the microlending case, if the system doesn't recommend loans from a specific geographical region because on average the requested loans from this region are risky (their borrowers are less likely to return the loan), not only the current good borrowers (the borrowers who are more likely to return the loan) from that region are affected, but also the future good borrowers. This positive feedback loop re-enforces over time until that region is completely ignored by the system.
     
 
-\subsection{Fairness-aware recommender systems}
+\section{Fairness-aware recommender systems}
 
 In the recent years, the topic of unfairness in machine learning algorithms, has gained the attention of a multidisciplinary community from computer scientists, social scientists to legal scholars. Thus as a response, recent research has shifted from design of algorithms that pursue purely optimal outcomes with respect to an objective function (e.g. accurate outcomes) into ones that also consider algorithms' social impacts such as unfairness, discrimination, etc.
 
@@ -67,7 +68,7 @@ The problem of mitigating unfairness in recommender systems has its unique chall
 
 The multi-stakeholder nature of these systems, and the centrality of personalization and its conflict with accuracy-based goals are among the core issues that we try to address here while proposing solutions.
 
-\subsection{Accuracy / fairness tradeoff}
+\section{Accuracy / fairness tradeoff}
 
 Traditionally, the main goal of a recommender system is personalization. In order to achieve satisfactory personalization, these systems optimize for the accuracy.
 % what accuracy is? and what word should we replace it with?
@@ -76,7 +77,7 @@ Traditionally, the main goal of a recommender system is personalization. In orde
 In fact, what recommender systems are seeking for, is the ability to predict the items that a user will like in the future, or in other words, the ability to present the items that are more likely to be interacted with by the user. Although, achieving optimum accuracy by itself is impossible or in some cases it might not be the only desirable goal.
 \todo[inline]{why?}
 
-\textbf{Impossibility of ideal accuracy}
+\subsection{Impossibility of ideal accuracy}
 So, recommender systems recognize the more general patterns in the data and use this information for recommendation generation. This general pattern is based on the log history of user rating behavior in the system. So, these general patterns might not satisfy the short term interests of users or the evolution of their taste over time. These changes are in fact hard to predict as there are many underlying confounding factors re-shaping them.
 
 % In practice, it is hard to predict the information need of users at each point in time. 
@@ -89,13 +90,13 @@ Increasing accuracy more than a threshold might even be undesirable or unsatisfa
 \todo[inline]{check all the biases mentioned before..}
 
 
-\textbf{Accuracy \& data imbalance}
+\subsection{Accuracy \& data imbalance}
 Accuracy-based metrics can hide consumer unfairness in their outcomes. Accuracy mostly reflects the quality of the recommendations that the majority of the user base experiences regardless of what other minority user groups are experiencing. Therefore, minority groups might not receive a high quality service from the system. 
 
 That is because these metrics are usually averaged over all the user base. And usually, the previously collected data is not reflective of the diversity in the society due to various reasons such as bias in data collection or simply lack of online participation from the minority groups. Therefore, the data imbalance can create accuracy imbalance between the majority user group(s) on whom we have more data and minority groups with less data. So, having a discrepancy in recommendation quality for different user groups is a type of unfairness  in recommender systems and reaching to balance it, is of interest for the research community \todo{cite the people who have done this}.
 
 
-\textbf{Accuracy \& popularity bias}
+\subsection{Accuracy \& popularity bias}
 Recommendation datasets are usually inter-weaved with popularity bias. Striving to reach a high accuracy, will lead to reinforcing this bias as well. Over time, this bias gets even worse due to effect of positive feedback loops in the system.
 
 As a result, popular items will gain more popularity and will be recommended more often. 
@@ -104,12 +105,15 @@ Therefore users will receive more and more homogeneous recommendations over time
 Not only the consumers of recommendations will be affected, but the item providers might also suffer. Popularity bias pushes the less popular item-providers away and leaves them with less consumer exposure opportunities. This unjust exposure can affect their livelihoods.
 
 
-\textbf{Balancing accuracy and fairness}
+\subsection{Balancing accuracy and fairness}
 
 In spite of all the previously mentioned issues about accuracy, reaching a high accuracy is still at the core of personalization. Because accuracy is known to be strongly tied with user satisfaction (satisfying users' information need) of the system and also because compared to other goals like fairness or diversity, accuracy is financially more beneficial therefore necessary for the survival of the commercial recommendation systems (e-commerce websites).
 
 Although, since the end goal for the recommender system is to serve its users (any stakeholder group), any potential harm in the system should be prevented and the biases towards its users should be mitigated. Integrating and operationalizing a goal such as fairness to the system is essential but challenging especially because it has major tradeoffs with accuracy.
 
+
+\todo[inline]{add this => However, optimizing recommendation accuracy often comes at the expense of provider fairness, due to various biases present in recommender systems, including popularity bias \cite{celma2008hits,lee2014fairness}, and user-base composition \cite{lin2019crank, yao2017beyond}. Research in provider fairness is therefore generally concerned with improving the tradeoff between fairness and accuracy, or in other words, increasing the amount of fairness that can be gained for a given degree of accuracy loss.
+}
 % \begin{comment}
 % % bit and pieces
 % Although increasing accuracy for better personalization can be a double edged sword. 
@@ -154,43 +158,33 @@ We run our experiments and analyze our results in the e-commerce and philanthrop
 % Several provider-side fairness concerns might arise in this recommendation context.\footnote{Consumer-side fairness has not arisen so far as a concern in this application.} One key concern, arising from Kiva's mission of supporting world-wide access to capital, is that the geographic imbalances in users' preferences may manifest themselves in the disproportionate representation of certain countries or regions in recommendation lists. This could give rise to a positive feedback loop, as the recommended items are more likely to be supported, and thus the lending becomes even more highly concentrated. A similar kind of imbalance may arise with respect to different industries or economic sectors. Thus, we can identify at least two fairness concerns within this recommender system: equity in geographic distribution of capital \cite{liu2019personalized}, and equity across economic sectors \cite{sonboli2020opportunistic}.
 
 
-\subsection{Research questions}
+\section{Research questions}
 
 %incomplete.. question and brief solution and the problems that it follows
 The research questions that we seek to answer are as follows:
 
 \begin{itemize}
     \item How can we characterize the fairness/accuracy trade-off in different algorithms?
-    \todo[inline]{not clear}
+    \todo[inline]{how does different algorithms compare (all rerankers), which algorithm should I use?}
     \item How can we incorporate fairness objectives into recommendation generation or post-processing to achieve better trade-offs? % far/pfar, ofair
     \item How can we extend these ideas to more complex scenarios involving multiple fairness concerns or requiring dynamic assessment of fairness opportunities? %dynamic fairness, multiple fairness concerns
     \item How can we ensure the reproducibility of the results and widen availability of fairness-aware techniques in recommendation? %librec
 \end{itemize}
 
+\section{Summary of contributions}
+\todo[inline]{which chapter answers these research questions.}
 
 
+% 1) Can we maintain a high level of accuracy for the user base while increasing provider fairness? Or consumer fairness?
 
+% 2) How can we control the accuracy trade-off better for providers? How to preserve accuracy while doing that? 
 
+% 3) How can we control the accuracy fairness trade-off better for providers when addressing multiple fairness concerns? And can we use user propensities towards different categories to preserve accuracy as much as possible?
 
+% 4) how can we achieve this balance dynamically?
 
-
-
-
-
-
-
-
-
-1) Can we maintain a high level of accuracy for the user base while increasing provider fairness? Or consumer fairness?
-
-2) How can we control the accuracy trade-off better for providers? How to preserve accuracy while doing that? 
-
-3) How can we control the accuracy fairness trade-off better for providers when addressing multiple fairness concerns? And can we use user propensities towards different categories to preserve accuracy as much as possible?
-
-4) how can we achieve this balance dynamically?
-
-5) What if we have data constraints? data minimization
-6) Who controls the trade-off between accuracy and fairness? Should users have some agency over it? Should it be transparent to the users? Will re-rankers provide more transparency?
+% 5) What if we have data constraints? data minimization
+% 6) Who controls the trade-off between accuracy and fairness? Should users have some agency over it? Should it be transparent to the users? Will re-rankers provide more transparency?
 
 
 %%%%% incomplete
