@@ -9,6 +9,7 @@ In the following section, I propose an adaptive approach to address the problem 
 
 \todo[inline]{change the name of the chapter?}
 \subsection{Introduction}
+\label{subsec:dyn_intro}
 
 We motivate our problem with an example from Kiva.org, the peer-to-peer micro-lending platform. As we have explained before the users of Kiva are lenders, who support entrepreneurs usually from developing countries by lending small amounts.
 The (item) providers are borrowers who request for loans. We call borrowers or the loans (which consists of the loan information and the borrower information) providers. The organization has the goal of providing equitable access to capital across different regions, economic sectors and borrower demographics.
@@ -20,13 +21,13 @@ In general, we may anticipate that a fairness-aware recommender system will need
 We believe that social choice is a more flexible and realistic framework for representing fairness-aware issues in machine learning than the optimization frameworks typically employed. Social choice is inherently multi-agent, and therefore, the idea of the integration of multiple fairness concerns naturally emerges, rather than being a complex add-on. Importantly for recommendation problems, social choice naturally allows for heterogeneity and hence personalization across decision instances since a user is just another agent with preferences over the outcome. Finally, fairness is inherently a social and political construct, and a social choice formalization allows the preferences of different actors to be foregrounded, rather than relegated to the black box of machine learning optimization. The study of fairness has a long history in the social choice literature \cite{Young:Equity,Zwicker:Voting}.
 
 \todo[inline]{is the following paragraph repetition?}
-\noindent\paragraph{Contribution} In this project we propose a novel framework for recommender systems we call \textit{Social Choice for Re-ranking Under Fairness} (SCRUF). SCRUF uses multiple fairness metrics to evaluate the history of recommendation delivery and determine whether and how to adjust its performance. It uses feature-specific re-rankers to improve fairness, selecting one re-ranker (possibly non-deterministically) at each time point. We use a set of social choice inspired algorithms to allocate re-rankers to users based on the user preferences. This framework abstracts the particular fairness metrics away from the recommendation algorithm design, an approach that becomes unwieldy when attempting to incorporate multiple fairness concerns. It also supports a dynamic balance between the interplay between personalization and fairness and is therefore sensitive to context and individual differences. We demonstrate the efficacy of our design on two recommendation domains.
+\noindent\textit{Contributions} In this project we propose a novel framework for recommender systems we call \textit{Social Choice for Re-ranking Under Fairness} (SCRUF). SCRUF uses multiple fairness metrics to evaluate the history of recommendation delivery and determine whether and how to adjust its performance. It uses feature-specific re-rankers to improve fairness, selecting one re-ranker (possibly non-deterministically) at each time point. We use a set of social choice inspired algorithms to allocate re-rankers to users based on the user preferences. This framework abstracts the particular fairness metrics away from the recommendation algorithm design, an approach that becomes unwieldy when attempting to incorporate multiple fairness concerns. It also supports a dynamic balance between the interplay between personalization and fairness and is therefore sensitive to context and individual differences. We demonstrate the efficacy of our design on two recommendation domains.
 
 
-\subsubsection{\textbf{Fairness-Aware Recommendation}}
+\noindent \paragraph{Fairness-Aware Recommendation} \newline
 \todo[inline]{is this repeated in the ofair section?}
 
-Both in the machine learning and the recommender systems formulation of fairness, there has been little recognition of the intersection of multiple fairness definitions and dimensions, although recent work has noted the benefits of combining multiple fairness definitions~\cite{beutel2019fairness}. Most existing research considers only a single protected class, and even in cases where multiple groups are considered as in~\cite{buolamwini2018gender,hebert2018multicalibration,kearns2017preventing,zhu2018fairness}, fairness is conceived the same way for all groups. In recognition of the complexity of the fairness concept, we seek to accommodate different definitions of fairness put forward by different stakeholders, all of which must be integrated in a single framework. This nuanced understanding of the value of fairness is essential for capturing the richness of this social construct in real-world settings such as those studied by scholars of organizational justice, anti-discrimination law, and social justice.
+\indent Both in the machine learning and the recommender systems formulation of fairness, there has been little recognition of the intersection of multiple fairness definitions and dimensions, although recent work has noted the benefits of combining multiple fairness definitions~\cite{beutel2019fairness}. Most existing research considers only a single protected class, and even in cases where multiple groups are considered as in~\cite{buolamwini2018gender,hebert2018multicalibration,kearns2017preventing,zhu2018fairness}, fairness is conceived the same way for all groups. In recognition of the complexity of the fairness concept, we seek to accommodate different definitions of fairness put forward by different stakeholders, all of which must be integrated in a single framework. This nuanced understanding of the value of fairness is essential for capturing the richness of this social construct in real-world settings such as those studied by scholars of organizational justice, anti-discrimination law, and social justice.
 
 As discussed in before, two standard approaches have emerged to integrating fairness concerns into recommender systems discussed in Chapter \ref{fairness_inproc} and Chapter \ref{fairness}.
 
@@ -42,8 +43,8 @@ In addition, this and similar methods are list-wise approaches, which aim to inc
 Analyzing user characteristics enables the system to determine which users constitute good opportunities to pursue different fairness goals. However, there is another side of the problem. At any point in time, the system's historical performance may have been more favorable to one protected group than another. If we only look at the users, we ignore the signal from past performance about where fairness needs are most critical.
 
 
-\subsubsection{\textbf{Computational Social Choice for Fair Recommendations}}
-Fairness has been extensively studied in the economic field of social choice including work focusing on the division of continuous resources such as land or water \cite{Moulin:FairDivision}, on more discrete, indivisible settings such as goods and services \cite{Thomson:FairRules,Thomson:IntroFairAllocation} and more fundamentally in the areas of political economy having to do with justice and fair distribution of resources to individuals \cite{Young:Equity,Rawls:Justice,Rescher:Justice}. In its classical formulation, \emph{social choice} concerns itself with the study of how groups, where each member is endowed with their own preferences, make decisions that must be then shared by that group \cite{Sen:CollectiveChoice}. To these considerations the field of computational social choice adds computational tools including algorithms, complexity, and big data \cite{BCELP16a,DBLP:conf/ijcai/Mattei20}.
+\noindent \paragraph{Computational Social Choice for Fair Recommendations} \newline
+\indent Fairness has been extensively studied in the economic field of social choice including work focusing on the division of continuous resources such as land or water \cite{Moulin:FairDivision}, on more discrete, indivisible settings such as goods and services \cite{Thomson:FairRules,Thomson:IntroFairAllocation} and more fundamentally in the areas of political economy having to do with justice and fair distribution of resources to individuals \cite{Young:Equity,Rawls:Justice,Rescher:Justice}. In its classical formulation, \emph{social choice} concerns itself with the study of how groups, where each member is endowed with their own preferences, make decisions that must be then shared by that group \cite{Sen:CollectiveChoice}. To these considerations the field of computational social choice adds computational tools including algorithms, complexity, and big data \cite{BCELP16a,DBLP:conf/ijcai/Mattei20}.
 
 
 From the literature on social choice we will focus on the \emph{allocation} setting (which is a generalization of the classical matching setting) \cite{BCELP16a}. In allocation, the items within $A$ are to be distributed or \emph{allocated} to the set of agents in $N$.  Hence, the social part of social choice reinforces the idea that a set of preferences need to be considered and combined since the outcome of a social choice process will affect all the agents.  There have been many practical applications of matching and allocations from kidney allocation \cite{Roth:Kidney} to conference paper reviewing \cite{LiMaNoWa18}.  There are extensive studies of algorithms for a variety of settings \cite{Manlove:MatchingPrefs} and the study of fair allocations in multi-agent systems is a popular topic in the broad area of artificial intelligence \cite{Aziz:FairAllocation}. Equity and other concerns, formalized as economic axioms have a long history in social choice both in allocation \cite{Young:Equity} and voting \cite{Zwicker:Voting}. It is this long history of study of the axioms, or properties, of the algorithms and aspects including \emph{fairness} we hope to leverage.
@@ -56,13 +57,13 @@ A social choice perspective on recommendation has emerged in recent research as 
 \subsection{Formal System Specification}
 To leverage the power of recommender systems for personalized fairness we will define a set of choice functions to promote fairness. We first detail the formal notation for our recommender system and how to view it as a social choice problem. We then describe our overall system in terms of choice functions and how these can be used to promote fairness.
 
-\subsubsection{\textbf{Recommendation Systems with Protected Values}}
-
-In a recommendation system setting we have a set of users $\users = \{u_1, \ldots, u_n\}$ and a set of items $\items = \{v_1, \ldots, v_m\}$. For each item $v_i \in \items$ we have a $k$-dimensional feature vector $\vec{v_i} = \langle f_{i1}, \ldots, f_{ik} \rangle$ over a set of categorical features $\features = \{F_1, \ldots, F_k\}$, where each feature $F_i$ has finite domain $\domain_i$. We assume that all elements in $\items$ share the same set of features. 
+\noindent \paragraph{Recommendation Systems with Protected Values} \newline
+\indent In a recommendation system setting we have a set of users $\users = \{u_1, \ldots, u_n\}$ and a set of items $\items = \{v_1, \ldots, v_m\}$. For each item $v_i \in \items$ we have a $k$-dimensional feature vector $\vec{v_i} = \langle f_{i1}, \ldots, f_{ik} \rangle$ over a set of categorical features $\features = \{F_1, \ldots, F_k\}$, where each feature $F_i$ has finite domain $\domain_i$. We assume that all elements in $\items$ share the same set of features. 
 
 Consider a running example of a funding site that shows micro-loans in emerging markets to potential funders. In this example we have $m=3$ items in the database which share $|\features|=4$ features: $\{$Region, Gender, Sector, Amount$\}$, where each has its own domain.  For example, $\domain_1 = \{$Africa, Middle-East, North America$\}$.  This setting is illustrated in Table \ref{table:user_profile}.
     
 \begin{table}
+    \centering
     \begin{tabular}{|c|c|c|c|c|}
     \hline
             & $F_{1}$ : Region & $F_{2}$ : Gender & $F_{3}$ : Sector & $F_{4}$ : Amount \\
@@ -82,11 +83,8 @@ Though our items are comprised of a set of features, we start with the view that
 
 For our recommender system we have a personalized ranking function $R(u_i, \items) \rightarrow \sigma_i(\items)$, which given user $u_i$ and set of items $\items$ produces a permutation, i.e., a ranking, over the set of items for that user, i.e. a recommendation. As a practical matter, the recommendation results will always contain a subset of the total set of items, typically the head (prefix) of the permutation $\sigma_i$ up to some cutoff number of items.
 
-\subsubsection{\textbf{Re-Ranking Functions}}
-% \hfill
-
-
-In order to promote fairness, we assume that we are also given a set of re-ranking functions $\rerankers = \{\kappa_1, \ldots, \kappa_{|\sensitive|}\}$, which are a set of functions, one for each sensitive feature. For feature $j$, the re-ranking function $\kappa_j(\sigma) \rightarrow \sigma^{\prime}$ will take a permutation $\sigma$ and produce a new permutation $\sigma'$ of the set of items that is more ``fair'' towards the particular protected feature values associated with $\sensitive_j$. In real applications, the final recommendation slate is a short list of the most preferred items from this final, re-ranked permutation. 
+\noindent \paragraph{Re-Ranking Functions} \newline
+\indent In order to promote fairness, we assume that we are also given a set of re-ranking functions $\rerankers = \{\kappa_1, \ldots, \kappa_{|\sensitive|}\}$, which are a set of functions, one for each sensitive feature. For feature $j$, the re-ranking function $\kappa_j(\sigma) \rightarrow \sigma^{\prime}$ will take a permutation $\sigma$ and produce a new permutation $\sigma'$ of the set of items that is more ``fair'' towards the particular protected feature values associated with $\sensitive_j$. In real applications, the final recommendation slate is a short list of the most preferred items from this final, re-ranked permutation. 
 
 For our system we assume a common form of all re-ranking functions, where the permutation is achieved by sorting items based on a score, and the score is a linear combination of the score from the recommender system (the determiner of the original $\sigma$ ranking) and a score based on the presence of the protected feature, such that protected group items are moved up in the ranking list~\cite{adomavicius2009improving}. The scoring function $\rho$ for user $u$, an item $v$, and a sensitive feature $j$ is defined as follows:
 
@@ -97,9 +95,8 @@ For our system we assume a common form of all re-ranking functions, where the pe
 
 \noindent The indicator function $\mathds{1}_{\{v \in \sensitive_j\}}$ has the value 1 if the item $v$ has a protected value of sensitive feature $\sensitive_j$, and 0 otherwise. $\lambda_j$ is a feature-specific parameter that controls the trade-off between accuracy (as represented by the original $\sigma$ ranking) and fairness (as represented by the boost given to protected items). All of the items in the list $\sigma$ are re-scored using $\rho$, sorted in decreasing order, and truncated to produce the final $\sigma^{\prime}$ recommendation list.
 
-\subsubsection{\textbf{Metrics for Fair Recommendation}}
-% \hfill
-There are a wide variety of metrics that have been proposed for measuring the fairness of a recommendation result or set of recommendation results.  In our setting we are not concerned with the fairness of a particular recommendation but rather the \emph{history of recommendations} the system has generated over within some time window.  Hence we track the prior history of recommendations lists that have been generated $\vec{L} = [\ell_1, \ldots, \ell_{t-1}]$ for the users (with a slight abuse of notation) $\vec{U} = [u_1, \ldots, u_{t-1} ]$ that have appeared to the system.  
+\noindent \paragraph{Metrics for Fair Recommendation} \newline
+\indent There are a wide variety of metrics that have been proposed for measuring the fairness of a recommendation result or set of recommendation results.  In our setting we are not concerned with the fairness of a particular recommendation but rather the \emph{history of recommendations} the system has generated over within some time window.  Hence we track the prior history of recommendations lists that have been generated $\vec{L} = [\ell_1, \ldots, \ell_{t-1}]$ for the users (with a slight abuse of notation) $\vec{U} = [u_1, \ldots, u_{t-1} ]$ that have appeared to the system.  
 
 Rather than commit to one particular metric in our system, we assume a family of functions $\metrics_j: \vec{L} \times \vec{U} \rightarrow \reals$, one for each sensitive feature $\sensitive_j$, mapping from a set of recommendation results $L$ and the set of users $U$ to whom each of those results have been delivered to a value indicating the degree of fairness in the total set of results. We assume that a higher $\metrics_j$ values indicate a fairer result. Without loss of generality, we assume that each metric has values in the range $[0,1]$.
 
@@ -107,9 +104,8 @@ We will assume that the re-ranking functions have a non-decreasing impact on the
 
 Note that the inclusion of $\vec{U}$ as an argument to the $M_j$ functions allows us to include a family of fairness metrics that are sensitive to the user's level of interest in items that vary on different feature dimensions. Each recommendation result is then evaluated relative to the user to whom it is delivered. For example, even if our recommendation history tells us we should be favoring loans in the textile sector, it may not be as valuable to recommend such loans to the agriculture-focused user, as opposed to a user that has proved to be more flexible in which sectors they support.
 
-\subsubsection{\textbf{User Preferences for Fairness}}
-
-To incorporate the social choice aspects of the problem, user preferences over both the overall set of items as well as preferences about the \emph{re-ranking functions themselves} need to be taken into account. In a traditional social choice setting we have a finite set of agents $N = \{1, \ldots, n\}$ and a finite set of alternatives $A = \{1, \ldots, m\}$. Each agent $i \in N$ has a preference $\succsim_i$ over the alternatives. Typically these preference are expressed as a binary relation (weak or linear order) over the set of alternatives $A$.  
+\noindent \paragraph{User Preferences for Fairness} \newline
+\indent To incorporate the social choice aspects of the problem, user preferences over both the overall set of items as well as preferences about the \emph{re-ranking functions themselves} need to be taken into account. In a traditional social choice setting we have a finite set of agents $N = \{1, \ldots, n\}$ and a finite set of alternatives $A = \{1, \ldots, m\}$. Each agent $i \in N$ has a preference $\succsim_i$ over the alternatives. Typically these preference are expressed as a binary relation (weak or linear order) over the set of alternatives $A$.  
 
 While the user preferences are handled by the personalized ranking function $R(u_i, \cdot)$ we will also incorporate the preference over the fairness functions themselves. To this end, replacing the preferences $\succsim_i$ above, we assume that for each user we are also given a vector of real numbers, $\vec{\tau}_{u_i} = \{\tau_1, \ldots, \tau_k\}$ of length $k$, which indicates the tolerance (preference) of $u_i$ for variation relative to feature $F_k$.  We can then view our problem as one of allocating re-ranking functions to users based both on the their preferences and on the current fairness status.
  
@@ -122,14 +118,9 @@ While the user preferences are handled by the personalized ranking function $R(u
 
 \noindent where $P(f|u)$ is computed as the fraction of items in the user's profile that have the feature value $f$. This can be interpreted as the user's likelihood of liking items with that value. The higher the entropy value is for a user on a feature, the higher their tolerance to see diversity within that feature. We assume that we can interpret this as a \emph{preference} in the social choice sense. In our running example, a user may be particularly dedicated to a particular economic sector, agriculture for example, and may only have supported loans in this sector in the past.  Hence, they would have low tolerance for variation in this feature. Note that since these map onto $\reals$ we could both interpret these as ordinal rankings: as a preference order for user $u_i$, $\succsim_i$, over the set of $f_j$; or as cardinal valuations.
 
-
 % \textit{Social Choice for Re-ranking Under Fairness} (SCRUF)
-\subsubsection{\textbf{Overall Framework}}
-%hfill
-% - Overall Framework
-
-
-SCRUF is our framework for explicitly representing the design decisions that enter into trading off between accuracy and fairness across multiply-defined and intersecting protected groups in the setting described above. Figure~\ref{fig:framework} shows the general process that the framework instantiates by looking at a snapshot in time. A user $u_t$ arrives at the system and the base recommender algorithm $R(u_t,\items)$ generates a recommendation list $\ell_t$. 
+\noindent \paragraph{Overall Framework} \newline
+\indent SCRUF is our framework for explicitly representing the design decisions that enter into trading off between accuracy and fairness across multiply-defined and intersecting protected groups in the setting described above. Figure~\ref{fig:framework} shows the general process that the framework instantiates by looking at a snapshot in time. A user $u_t$ arrives at the system and the base recommender algorithm $R(u_t,\items)$ generates a recommendation list $\ell_t$. 
 
 \begin{figure}[tb]
     \centering
@@ -142,10 +133,8 @@ SCRUF is able to accommodate different metrics, one for possibly each sensitive 
 
 Note the arrows from the user $u_t$ point both to the recommendation algorithm $R$ where the algorithm takes into account the user's inferred preferences over items in attempting to predict the user's preferences, and also to the choice function $C$ that may take into account the user's inferred preferences from their tolerance scores $\vec{\tau}_{u_i}$ over item features in choosing a re-ranking algorithm. 
 
-\subsubsection{\textbf{Choice}}
-% \hfill
-
-As noted above, we are investigating both deterministic and non-deterministic mechanisms for selecting, at each point when a recommendation is generated, a single $\kappa_j$ function to use to re-rank those recommendation to a specific user $u_j$. The choice function $C$ uses the current state of the recommendation history, as defined by the $M_j$ metrics over the recommendation history so far and optionally the identity of the current user, to compute a feature $c \in \sensitive$  whose corresponding re-ranking function $\kappa_c$ will be applied to the recommendations for this user, i.e., $\kappa_c(R(u_j, \items))$. We prefer this simple uni-dimensional re-ranking scheme over one that attempts to incorporate multiple fairness dimensions are considered at once because it creates independence between re-ranking operations and avoids complex parameter interactions that might occur in attempting to compute a single re-ranking incorporating multiple fairness dimensions.
+\noindent \paragraph{Choice} \newline
+\indent As noted above, we are investigating both deterministic and non-deterministic mechanisms for selecting, at each point when a recommendation is generated, a single $\kappa_j$ function to use to re-rank those recommendation to a specific user $u_j$. The choice function $C$ uses the current state of the recommendation history, as defined by the $M_j$ metrics over the recommendation history so far and optionally the identity of the current user, to compute a feature $c \in \sensitive$  whose corresponding re-ranking function $\kappa_c$ will be applied to the recommendations for this user, i.e., $\kappa_c(R(u_j, \items))$. We prefer this simple uni-dimensional re-ranking scheme over one that attempts to incorporate multiple fairness dimensions are considered at once because it creates independence between re-ranking operations and avoids complex parameter interactions that might occur in attempting to compute a single re-ranking incorporating multiple fairness dimensions.
 
 One issue that may arise, and we discuss in the next section, is that we need to decide when to \emph{stop} running the re-rankers for a particular feature. If the historical data at time $t$ shows that we have been fair towards a particular feature, we do not need to promote it in this iteration. In the following we will describe how we select which features to consider.
 
@@ -160,24 +149,21 @@ Also, for operational reasons, we are given an $\epsilon$ which represents a non
 Let the \emph{unfairness vector} be (point-wise) $\vec{UF} = 1 - (\metrics - \epsilon)$.  Intuitively, this captures how unfair we are being towards a particular feature.  The following discussion will treat this vector as a probability distribution, and so it will be normalized to unit length, $\vec{UF} = UF / \sum_i(UF_i)$. Note that this will implicitly assume that our target each element of $UF = 1/|UF|$, i.e., that we want unfairness to be equal across all aspects.  This is a byproduct of our metrics taking values in $[0.0,1.0]$ since if all metrics were $1.0$ then our normalization would be undefined, hence the $\epsilon$.  Normatively, this makes sense in that if we are being unfair the same amount to all sensitive features then we want an equal probability distribution over all features.
 
 
-\subsubsection{\textbf{Baselines}}
-
-We employ two simple baseline techniques to contrast with the more dynamic options discussed below. The simplest is the \textit{Fixed Lottery}, in which each re-ranker is chosen with equal probability for each set of recommendations delivered. This method has the benefit of great simplicity and does not require any bookkeeping about the historical fairness of the system. 
+\noindent \paragraph{Baselines} \newline
+\indent We employ two simple baseline techniques to contrast with the more dynamic options discussed below. The simplest is the \textit{Fixed Lottery}, in which each re-ranker is chosen with equal probability for each set of recommendations delivered. This method has the benefit of great simplicity and does not require any bookkeeping about the historical fairness of the system. 
 
 If we want to use the information in the $UF$ vector, another simple alternative is a deterministic \textit{Least Misery} algorithm, in which we identify the feature in the $UF$ with the highest value (most unfair) and chose the associated re-ranker. This method directs the system's attention to the dimensions with the worst historical performance and attempts to correct that. It will be dynamic in the sense that as the performance improves in one dimension, another may be chosen.
 
 \todo[inline]{check if we used these baselines or we removed them?}
 
 
-\subsubsection{\textbf{Dynamic Lottery}}
-
-We have found that it is typical for some dimensions to be more difficult to achieve fairness for than others. In particular, some types of items are rarely retrieved by the base recommendation algorithm and therefore only small improvements can be had through re-ranking. Applying the least misery algorithm in such a setting could lead the system to concentrate all of its effort on one of these intractable dimensions and miss opportunities to achieve fairness in other parts of the item space. 
+\noindent \paragraph{Dynamic Lottery} \newline
+\indent We have found that it is typical for some dimensions to be more difficult to achieve fairness for than others. In particular, some types of items are rarely retrieved by the base recommendation algorithm and therefore only small improvements can be had through re-ranking. Applying the least misery algorithm in such a setting could lead the system to concentrate all of its effort on one of these intractable dimensions and miss opportunities to achieve fairness in other parts of the item space. 
 
 To avoid this problem, we can use $UF$ as a lottery over the re-rankers and select a re-ranker with probability proportional to its weight, so that the poorest performing dimensions (most unfair) would have highest probabilities of being chosen. This is a \textit{Dynamic Lottery} as opposed to the fixed version above, because the probability associated with each re-ranker will change as a function of system performance. 
 
-\subsubsection{\textbf{Allocation Lottery}}
-
-While the above method is sensitive to the dynamic properties of the system, it is not sensitive to each user's particular propensity or interest towards different dimensions. In prior work, the ability to re-rank selectively based on user characteristics was found to yield a better tradeoff between accuracy and fairness~\cite{liu2019personalized,sonboli-umap-2020}. For this reason we consider in this section \emph{randomized allocation mechanisms} that consider both users and fairness concerns.  In a such a mechanism we compute a fractional allocation that we can then sample from in order to compute an assignment.  So, for a given set of $n$ agents and $m$ objects, we compute a bi-stochastic matrix of size $n \times m$ which represents the fraction of a particular item is allocated to an agent.
+\noindent \paragraph{Allocation Lottery} \newline
+\indent While the above method is sensitive to the dynamic properties of the system, it is not sensitive to each user's particular propensity or interest towards different dimensions. In prior work, the ability to re-rank selectively based on user characteristics was found to yield a better tradeoff between accuracy and fairness~\cite{liu2019personalized,sonboli-umap-2020}. For this reason we consider in this section \emph{randomized allocation mechanisms} that consider both users and fairness concerns.  In a such a mechanism we compute a fractional allocation that we can then sample from in order to compute an assignment.  So, for a given set of $n$ agents and $m$ objects, we compute a bi-stochastic matrix of size $n \times m$ which represents the fraction of a particular item is allocated to an agent.
 
 We use a modification of the \emph{probabilistic serial (PS)} mechanism \cite{bogomolnaia2001new}.  In PS, also known as the simultaneous eating algorithm, each object is considered to have an infinitely divisible probability weight of one.  To find the allocation every agent, simultaneously and at the same speed, begins ``eating'' their most preferred object that has not been completely consumed already.  Once an object is consumed, the agents move to their next most preferred object until all objects have been consumed. The random allocation of an agent by PS is the amount of each object he has eaten. PS satisfies a number of important fairness and efficiency criteria \cite{Aziz:EqulibriaPS,Aziz:EgalRandom} and has been used in real allocation settings such as course selection at universities \cite{budish2013designing}.
 
@@ -189,9 +175,9 @@ We then run the PS algorithm and get a fractional allocation for each user for e
 
 
 \subsection{Methodology}
-\subsubsection{\textbf{Evaluation Metrics}}
 
-As our work here concentrates on ranking performance, we use normalized discounted cumulative gain (nDCG) as our measure of recommendation accuracy. Note that we are only evaluating re-ranking algorithms so nDCG is limited to some extent by the performance of the base algorithm to which the re-ranking is applied. 
+\noindent \paragraph{Evaluation Metrics} \newline
+\indent As our work here concentrates on ranking performance, we use normalized discounted cumulative gain (nDCG) as our measure of recommendation accuracy. Note that we are only evaluating re-ranking algorithms so nDCG is limited to some extent by the performance of the base algorithm to which the re-ranking is applied. 
 
 % Provider-side fairness metrics come in two basic varieties. There are those that respond to the appearance of protected items in a recommendation list: \textit{exposure} metrics, and those that take into account the suitability of the target user as \textit{hit-based} metrics~\cite{abdollahpouri-umuai-2020}. 
 
@@ -212,30 +198,31 @@ where $L$ is the list of recommendation $L = [\ell_{t-w_b},...,\ell_{t-1}] $. No
 
 Each metric has a maximum fairness of 1 and therefore it is possible to calculate regret $\omega_j$ as the difference between this ideal $\metrics_j^*$ and the current state of the metric $\metrics_j$. For reasons of space, we report only on the average regret over all metrics, and leave more detailed analysis for future work. To understand the consistency of algorithm performance, we also compute the variance of the average regret across time periods.
 
-\subsubsection{\textbf{Dataset}}
-
 \todo[inline]{should i mention the section as well?}
-We tested our model on two datasets. The first is The Movies Dataset explained in Chapter \ref{chap:methodology}. We use this dataset as a well-known example with a rich set of provider-side features. Additionally, we extracted two features that contain demographic information on the movie directors and screenplay writers.
+\noindent \paragraph{Dataset} \newline
+\indent We tested our model on two datasets. The first is The Movies Dataset explained in Chapter \ref{chap:methodology}. We use this dataset as a well-known example with a rich set of provider-side features. Additionally, we extracted two features that contain demographic information on the movie directors and screenplay writers.
 
-In a fielded application, the choice of sensitive features and protected groups within those features may be determined by legal liability or business model considerations. Lacking this type of insight, we chose to identify protected features as those associated with rarely-recommended items. To determine the protected values of each feature, we performed a trial run of recommendation generation over the data set, and examined the distribution of features in the results. In a live system, historical recommendation data would be available over which to calculate this distribution. The values in the 25th 
-percentile of the distribution were selected as the protected group for that feature.
+In a fielded application, the choice of sensitive features and protected groups within those features may be determined by legal liability or business model considerations. Lacking this type of insight, we chose to identify protected features as those associated with rarely-recommended items. To determine the protected values of each feature, we performed a trial run of recommendation generation over the data set, and examined the distribution of features in the results. In a live system, historical recommendation data would be available over which to calculate this distribution. The values in the 25th percentile of the distribution were selected as the protected group for that feature.
 
-\begin{table}
-    \begin{tabular}{|c|c|c|c|}
-    \hline
+
+\begin{table}[!hbt]
+\small
+\centering
+    \begin{tabularx}{\textwidth}{!{\vrule width 0.8pt}X!{\vrule width 0.8pt}X!{\vrule width 0.8pt}X!{\vrule width 0.8pt}X!{\vrule width 0.8pt}}
+    \noalign{\hrule height 0.8pt}
         Dataset & Features & Protected Values & Unprotected Values \\
-    \hline
+    \noalign{\hrule height 0.8pt}
         \multirow{3}{*}{Kiva} & 
-        Activity & Bicycle Repair, Gardening, Souvenir Sales & Taxi, Fishing, Vehicle Repairs \\ 
-        & Country & Indonesia, Nigeria, Yemen & Cameroon, Armenia, Lebanon \\
+        Activity & Bicycle Repair, Gardening, Souvenir Sales & Taxi, Fishing, Vehicle Repairs \\ \cline{2-4} 
+        & \cellcolor{lightgray} Country & \cellcolor{lightgray} Indonesia, Nigeria, Yemen & \cellcolor{lightgray} Cameroon, Armenia, Lebanon \\\cline{2-4}
         & Gender & Male & Female \\
         
-    \hline
-        \multirow{3}{*}{MovieLens} & Genres & Documentary, Foreign, War, Western & Adventure, Crime, Action, Comedy\\
-        & Writer Gender & \{'01', '012'\} & \{'0', '02', '12', '2', '1'\} \\
-        & Director Gender & \{'01', '1'\} & \{'0', '12', '012', '02', '2'\} \\
-    \hline
-    \end{tabular}
+    \noalign{\hrule height 0.8pt}
+        \multirow{3}{*}{MovieLens} & \cellcolor{lightgray} Genres & \cellcolor{lightgray} Documentary, Foreign, War, Western & \cellcolor{lightgray} Adventure, Crime, Action, Comedy\\ \cline{2-4}
+        & Writer Gender & \{'01', '012'\} & \{'0', '02', '12', '2', '1'\} \\ \cline{2-4}
+        & \cellcolor{lightgray}Director Gender & \cellcolor{lightgray}\{'01', '1'\} & \cellcolor{lightgray} \{'0', '12', '012', '02', '2'\} \\
+    \noalign{\hrule height 0.8pt}
+    \end{tabularx}
     \caption{Examples of sensitive features and their values.}
     \label{table:sensitive_features_table}
 \end{table}
@@ -244,11 +231,8 @@ Our algorithm is also evaluated on a proprietary dataset obtained from Kiva.org 
 After preparing the data, the final features for each loan reduced to borrower's gender, borrower's country, loan purpose, loan amount (binned to 10 equal-sized buckets), and loan's percentage funding rate. 
 To identify the protected values for each feature, we applied the same method as for the MovieLens data set. We assigned the values that their frequencies are in the 25 percentile of the distribution to the protected group for each feature. The final number of features are 231 for this dataset.
 
-
-\subsubsection{\textbf{Experiments}}
-% \hfill
-
-Our experimental methodology is designed to highlight differences between these choice functions. We followed a typical recommendation evaluation process with each user's profile split into 80\% training and 20\% testing. We chose non-negative matrix factorizing (NMF) as our base algorithm~\cite{takacs2008investigation} based on prior experience with these data sets. We plan to explore the interaction between base algorithm and choice functions in future work. The factorization model was built using the training data and then used to generate a recommendation list $\ell$ for each user.
+\noindent \paragraph{Experiments} \newline
+\indent Our experimental methodology is designed to highlight differences between these choice functions. We followed a typical recommendation evaluation process with each user's profile split into 80\% training and 20\% testing. We chose non-negative matrix factorizing (NMF) as our base algorithm~\cite{takacs2008investigation} based on prior experience with these data sets. We plan to explore the interaction between base algorithm and choice functions in future work. The factorization model was built using the training data and then used to generate a recommendation list $\ell$ for each user.
 % \nasim{add mostpop and kNN as another baseline}
 Arrival time was simulated in our experiments. Users were shuffled randomly and grouped into batches of size 0.5\% of all the users, where each batch was considered to be a single time step. For each batch, we computed fairness metrics $\metrics$ over the previous 20 batches, so that the backward window $w_b$ equals approximately 10\% of the test data. \footnote{For the first batch, when no backward window exists, the Fixed Lottery was performed.} The experiment was run for each of the four choice functions described above: Fixed Lottery, Deterministic Least Misery, Dynamic Lottery, and Allocation Lottery. For the choice functions dependent on $\metrics$, we computed the lottery probabilities once per batch. 
 % \nasim {choosing shorter forward and backward windows, looking at extreme cases basically}
@@ -261,8 +245,6 @@ The results of the different algorithms were compared in summary and over the co
 Table~\ref{tab:overall-ML} shows the overall results for the MovieLens data set. The first point to notice is that fairness is greatly improved (5x) over the base algorithm for all of the re-ranking methods, which is to be expected. Interestingly, the Fixed choice function, which chooses among the re-rankers with equal probability has the best fairness over all experiment iterations taken as a whole. The other re-rankers are similar. All of the re-rankers show a reduction in ranking accuracy, around 25\% of nDCG. We did not seek to minimize nDCG loss in these experiments as doing so would reduce the impact of any given re-ranking operation and require a longer experiment to tease out differences.
 
 \begin{table}[htb]
-\setlength\tabcolsep{0pt}
-    \begin{subtable}{.5\textwidth}
     \centering
     \begin{tabular}{c|l|l|l}
        Algorithm  & \ nDCG \ & \ Fairness \  & \ Fairness Variance \ \\
@@ -274,10 +256,12 @@ Table~\ref{tab:overall-ML} shows the overall results for the MovieLens data set.
     %   Sampling         & \ 0.108 & \ 0.167 & \ 1.9e-3 \ \\
        Allocation       & \ 0.109 & \ 0.171 & \ 2.3e-4 \ \\
     \end{tabular}
-    \caption{MovieLens data set}
+    \caption{MovieLens data set. Fairness measured by percentage of protected item exposure in recommendation lists.}
     \label{tab:overall-ML}
- \end{subtable}%
-   \begin{subtable}{.5\textwidth}
+\end{table}
+
+
+\begin{table}[htb]
     \centering
     \begin{tabular}{c|l|l|l}
        Algorithm  \ & \ nDCG \ & \ Fairness \ & \ Fairness Variance \ \\
@@ -289,11 +273,46 @@ Table~\ref{tab:overall-ML} shows the overall results for the MovieLens data set.
     %   Sampling     \ & \ 0.048 & \ 0.326 & \ 6e-4\\
        Allocation   \ & \ 0.048 & \ 0.327 & \ 1e-4\\
     \end{tabular}
-    \caption{Kiva data set}
+    \caption{Kiva data set. Fairness measured by percentage of protected item exposure in recommendation lists.}
     \label{tab:overall-Kiva}
-    \end{subtable}
-    \caption{Summary results. Fairness measured by percentage of protected item exposure in recommendation lists.}
 \end{table}
+
+
+% \begin{table}[htb]
+% \setlength\tabcolsep{0pt}
+%     \begin{subtable}{.5\textwidth}
+%     \centering
+%     \begin{tabular}{c|l|l|l}
+%       Algorithm  & \ nDCG \ & \ Fairness \  & \ Fairness Variance \ \\
+%       \hline
+%       Base (NMF)       & \ 0.143 & \ 0.039 & \ 5.3e-6 \  \\
+%       Fixed            & \ 0.107 & \ 0.179 & \ 3.8e-3 \ \\
+%       Least Misery \   & \ 0.106 & \ 0.178 & \ 1.3e-3 \ \\
+%       Dynamic          & \ 0.104 & \ 0.170 & \ 1.5e-3 \ \\
+%     %   Sampling         & \ 0.108 & \ 0.167 & \ 1.9e-3 \ \\
+%       Allocation       & \ 0.109 & \ 0.171 & \ 2.3e-4 \ \\
+%     \end{tabular}
+%     \caption{MovieLens data set}
+%     \label{tab:overall-ML}
+%  \end{subtable}%
+%   \begin{subtable}{.5\textwidth}
+%     \centering
+%     \begin{tabular}{c|l|l|l}
+%       Algorithm  \ & \ nDCG \ & \ Fairness \ & \ Fairness Variance \ \\
+%       \hline
+%       Base (NMF)   \ & \ 0.057 & \ 0.214 & \ 2e-4\\
+%       Fixed        \ & \ 0.045 & \ 0.323 & \ 1.1e-3\\
+%       Least Misery \ & \ 0.043 & \ 0.322 & \ 9e-4\\
+%       Dynamic      \ & \ 0.045 & \ 0.325 & \ 1e-3\\
+%     %   Sampling     \ & \ 0.048 & \ 0.326 & \ 6e-4\\
+%       Allocation   \ & \ 0.048 & \ 0.327 & \ 1e-4\\
+%     \end{tabular}
+%     \caption{Kiva data set}
+%     \label{tab:overall-Kiva}
+%     \end{subtable}
+%     \caption{Summary results. Fairness measured by percentage of protected item exposure in recommendation lists.}
+% \end{table}
+
 
 Table~\ref{tab:overall-Kiva} shows similar results for the Kiva data set. Here we do not see as much accuracy loss. The Allocation algorithm, which here has the best nDCG, is only 5.5\% below the original base algorithm. For this data set, the re-rankers also improve fairness, although not as dramatically as in the MovieLens case. The Allocation method has the highest fairness score in addition to the best nDCG.
 % \todo{Re-plot, removing sampling lottery} 

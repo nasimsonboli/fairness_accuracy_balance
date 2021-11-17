@@ -1,0 +1,96 @@
+\chapter{Fairness}
+\label{ch:fairness}
+
+In recent years, the increased adoption of algorithmic systems into many realms of society has raised concerns about the harms and unfairness that such systems cause. Among these concerns, the issue of fairness in computing systems in the decision support context, especially the ones that rely on machine learning and statistical tools, has gained a significant attention\cite{mitchell2021algorithmic}. This is particularly evident where high stakes decisions are made, ones that have significant real-world impact on individuals’ lives and livelihoods such as healthcare, public policy, and law enforcement.
+
+The discussion of fairness, justice and equity is only one of the social aspects that is being investigated and criticized in machine learning systems. Such problems have gained the attention of a multidisciplinary community from computer scientists in different fields (e.g. artificial intelligence, machine learning, etc. to social scientists and legal scholars that have started to study "Fairness, Accountability, and Transparency", and "AI ethics" in their fields.
+
+In this chapter, we provide a short overview on algorithmic fairness including fundamental concepts, definitions, potential sources of unfairness and different family of solutions that can be used to reduce fairness in machine learning systems based on the work in \cite{mitchell2021algorithmic,barocas2016big,barocas2018fairness}.
+
+
+\section{Fairness \& Justice}
+\todo[inline]{missing}
+
+
+\section{Fairness in Machine Learning}
+\todo[inline]{missing}
+
+
+\section{Fairness in Recommender Systems}
+\todo[inline]{missing}
+
+
+\todo[inline]{do they belong under the fairness in recommender systems?}
+\section{Consumer fairness}
+
+Recommender systems exist to facilitate transactions between all the stakeholders such as consumers of recommendations, and the providers of the items that were recommended (content providers), etc. Many recommendation applications involve multiple stakeholders and therefore may give rise to fairness issues for more than one group of participants~\cite{burke_multisided_2017}. Among all these stakeholders consumers and providers have the highest stake. 
+Here we  define consumer fairness and discuss the literature that has addresses the consumer unfairness problem.\todo[inline]{in recsys?}
+
+Consumer fairness (C-fairness) is concerned with the ways recommender systems impacts consumers / users or subgroups of users and whether or not those impacts are fair and equitable. These impacts are specifically important for marginalized groups and are sometimes required by law. For example, it is required by law that job recruitment systems don't discriminate based on race, gender, age, and other demographic information. 
+% Therefore they all the subgroups of users are receiving quality recommendations not only certain groups. 
+
+    \subsection{Individual fairness}
+    If the goal of a system for consumers is individual fairness, then the system needs to make sure that similar individuals have similar experiences or quality of service within the system. This similarity can be calculated based on any user characteristics that the system might have been discriminating against such as gender, location, user profile, etc. Previous literature has used the accuracy of the recommendation outcomes to compare the quality of the service that individual users are experiencing. 
+    
+    In offline experiments, typical evaluation measures such as nDCG or recall can be used to measure accuracy. Another evaluation approach is to measure the distribution of utility for all the users. (Hashimoto et al.,2018 \cite{hashimoto2018fairness})\todo{write the names of all the papers you cited and put in parenthesis} develop an approach based on distributionally robust optimization (DRO), which minimizes the worst case risk over all distributions close to the empirical distribution. They try to control the discrepancy in accuracy across users by constraining the performance for all of the users within a particular error region. This method hasn't been utilized in recommender systems due to some reasons. This method assumes that users are all the same and thus we can ensure a minimum quality of service for all of them. Whereas in recommender systems (all the information access systems) users might not be considered equal due to some reasons. For example, we do not have enough data about the users who recently joined a system yet (cold-start users) and this lack of data on this group of users will lead to a worse accuracy for them. Therefore performance discrepancy between the cold-start users and the users with denser profiles becomes inevitable. Applying the previous method here means to lessen the quality of recommendations for users with denser profiles in order to achieve equal accuracy between these user groups which is undesirable.
+    
+    \subsection{Group fairness}
+    Group fairness in a system means to ensure that the system provides the same (or comparable) quality of service or utility to different consumer groups within the system. For example, if in a job recommendation scenario, if on average women receive lower-paying job recommendations than the rest of the users, this could be considered unfair.
+    One way of detecting any potential performance discrepancy between the consumer groups is to compute the utility that is used to evaluate system's general performance such as offline accuracy evaluation or an online A/B test, and then break down that utility by consumer groups. In other words, we calculate the average utility per consumer group. Utility can be operationalized based on the general measures that assess system's general effectiveness including ranking accuracy measures such as nDCG, and ERR, click through rates (CTR), or any online or offline measures.  
+    
+    Yao and Huang \cite{yao_huang_fatml-2017} discuss different kinds of error-based unfairness metrics for collaborative filtering that captures different types of disparate prediction errors for protected and unprotected groups. They both calculate the overall disparate errors and over- and under- estimations of predictions. Ekstrand et al. \cite{ekstrand2018all} disaggregated off-line top-N evaluation of several collaborative filtering algorithms (measured by nDCG) and compared the results for different user demographics. They found statistically significant differences in utility between gender and some age groups. This disparity in utility is similar to the disparate impact concept because we observe a discrepancy in the outcomes for different groups. Ekstrand et al. \cite{ekstrand2021fairness} discusses that since information access systems (including recommender systems) don't directly make a decision about the users based on their differences in a protected attribute, disparate impact can be translated to \textit{disparate effectiveness} instead where the system is more or less effective for different user groups. 
+    
+    \subsection{Accuracy-based Fairness}
+    Different approaches have been offered to correct inequitable distributions of system utility. Yao and Huang \cite{yao2017beyond} introduce regularizers to mitigate discrepancies in rating prediction errors. Re-ranking recommendations to improve their fairness is also a post-processing approach that can be used for this goal. This method is mostly used to mitigate provider-side fairness, but there are examples of its usage for consumer fairness in Abdollahpouri \cite{abdollahpouri2020popularity}. In their research, user groups are defines based on their level of interests towards popular items and then it is showed that there is a utility discrepancy between users who like popular items versus the users who like niche less popular items. The latter group experiences lower quality recommendations. \cite{abdollahpuri20} also presents a re-ranking approach based on idea of calibration in Steck \cite{steck2018calibrated} to improve the fairness for these consumer groups.
+    
+    While using algorithmic interventions to reduce disparate effectiveness, we should cautiously bear in mind the difference between consumer side fairness and provider side fairness. In consumer fairness, users is not a rivalrous good therefore increasing the utility for one group doesn't corrupt the utility for the other users. However, in provider fairness, the recommendation spots are limited and providers compete to get those slot. 
+    
+    \subsection{Beyond accuracy Fairness}
+    
+    Another way of assessing a system to see whether its users are experiencing discrimination or harm is to look at their experiences from other perspectives besides utility such as stereotyping. Ali et al.\cite{Ali2019Facebook} studied the implications of Facebook's ad delivery process. They observed significant skew in ad delivery along gender and racial lines for employment and housing opportunity ads, despite neutral ad targeting parameters. They demonstrate that unknown market mechanisms in combination with relevance optimization results in this disparate ad distribution. Nasr and Tschantz \cite{nasr2020bidding} propose a bidding strategy to ensure a fair ad distribution. 
+    kamishima and Akaho \cite{kamishima2017considerations, kamishima2018recommendation} proposes to use a probabilistic test of independence to see whether the results are independent of the protected group attribute. They incorporate this idea to the loss function of matrix factorization to obtain results that are uncorrelated with the protected attribute. This method can be used when the protected users should not be recommended certain types of items. \todo[inline]{example?}
+    Beutel et al.\cite{beutel2017data} approach learns fair representations (such as user embeddings or item embeddings in recommender systems) in an adverserial setting that has been set up to minimize the ability to predict users' sensitive attributes. By using this method in recommender systems, the stereotype effects can be prevented.
+    
+    \subsection{Complex scenarios}
+    Most of the work on consumer fairness to date has focused on simpler settings such as considering a fairness as a concept that entails only a single protected attribute, or a single dimension of the sensitive attributes. And even when multiple sensitive attributes are considered such as gender and age and race, and etc., they are considered separately. In reality a series of protected attributes might need to be considered simultaneously as determined by laws or organizational requirements. Crenshaw \cite{crenshaw1989demarginalizing} explains about the complexities of multiple protected groups under the framework of intersectionality. In fair machine learning, Kearns et al. \cite{kearns2019empirical} defines this concept as rich subgroup fairness and in recommender systems this issue has been studied for providers by Sonboli et al. 2020 \cite{sonboli2020opportunistic}  (explained in Chapter \ref{fairness_postproc} in Section \ref{sec:ofair}). There are no other existing work to date, that addresses this problem in depth.
+    
+    Another simplification in modeling consumer-side fairness is to assume fairness concerns are binary (protected vs unprotected) rather than multiple attributes that might include continuous features. There is not any work in recommender systems that considers this nuances for fairness concepts.
+
+
+\section{Provider fairness}
+\todo[inline]{missing}
+
+\section{Dynamic fairness}
+
+    It is important to consider fairness in recommender systems as a dynamic property, because, recommender systems operate in dynamic environments where it continuously makes new decisions based on the recent changes in the system such as: gaining or losing consumers, gaining or losing (item) providers and the different items that they provide based on the current needs of the market, seasonal changes, and etc.
+
+    Some of these dynamic changes can introduce biases into a system that might have been "de-biased" recently or they can even re-enforce the existing biases. 
+    
+    \textbf{Positive feedback loops} are among the most destructive dynamic changes that happen in recommender systems \cite{o2016weapons} that are caused by presentation bias.
+    
+    This type of bias occurs because users are more likely to interact with items that the system presents to them. 
+    
+    The first issue here is the item selection by the recommender system here and whether it will contribute to unfairness to any of the stakeholders. We have addressed how to mitigate this issue in Chapter \ref{fairness} in the pre-processing section \todo[inline]{preprocessing section}. 
+    
+    The second issue is that presentation bias, can lead to a form of positive feedback loop, in which presented items gain more popularity since they are more likely to be interacted with. This leads to greater bias towards presenting the items when the popular items are promoted more at the cost of other items. Presentation bias and the created feedback loop not only magnifies the initial differences between items' popularity but also it makes it hard for new providers to attract the attention of users to their products/items in a system with this type of bias.
+    
+    For example, in the microlending case, if the system doesn't recommend loans from a specific geographical region because on average the requested loans from this region are risky (their borrowers are less likely to return the loan), not only the current good borrowers (the borrowers who are more likely to return the loan) from that region are affected, but also the future good borrowers. This positive feedback loop re-enforces over time until that region is completely ignored by the system.
+    
+    \cite{Chaney2018Homo} shows that in an iterative environment, recommender systems increase the inequity in item exposure and homogenize the recommendation lists across different users which is undesirable. \cite{pmlr-v80-hashimoto18a} shows in a systems where users engage with it iteratively, machine learning models that are trained on average loss, suffer from representation disparity (presentation bias) which over time these systems lose their minority groups. To mitigate this bias, they develop an approach based on distributionally robust optimization (DRO) that achieves a more balanced performance between the dominant subgroups and minority ones. \cite{NEURIPS2019_7690dd4d} study this idea in a sequential framework and show that representation disparity gets worse under the natural user dynamics model, resulting in some groups diminishing entirely from the sample pool in the long run. to mitigate feedback loops in the context of predictive policing, \cite{pmlr-v81-ensign18a} develop a mathematical model of predictive policing that proves why this feedback loop occurs, show empirically that this model exhibits such problems, and demonstrate how to change the inputs to a predictive policing system so the feedback loop does not occur, leading to better decision-making systems.
+    
+    To detect and evaluate dynamic biases in systems, It is necessary to have dynamic evaluation methodologies as well.
+    
+    \textbf{Dynamic Evaluation} methodologies therefore, are required to evaluate such biases in a dynamic system.
+    
+    Here instead of using batch training and then batch testing, we need to incorporate a cycle which starts with user arrival, training the model, recommendation generation, and then collection of user feedback on those recommendations and continues with periodically re-training the system and generating new sets of recommendations at every iteration.
+    
+    This evaluation methodology has become common in recommendation approaches that use reinforcement learning where the environment is dynamic \cite{Lihong2010bandit,Zheng2018DRN}. Evaluation of this cycle can also be simulated in off-line settings.  
+    
+    To appropriately evaluate the fairness properties of recommender systems, in practice we might need to look at unfairness in a particular time interval. And then we might have to consider the evolution of unfairness mitigation and/or aggravation through multiple evaluation cycle.
+    
+    I have made use of this evaluation methodology in reranking \cite{sonboli2020dynm}. I propose an adaptive recommendation approach to address the problem of multidimensional fairness using probabilistic social choice to control feedback loops and adjust the system over time. I compute deviations from fairness in a particular time window and then compensate it over the next batch of generated recommendations by adjusting the fairness objective. For more details please refer to Chapter \ref{fairness_postproc}.
+
+    \cite{biega2018equity} uses time in their re-ranking as well. They consider past rankings so that the ranking at a particular time $t$, improves the aggregate fairness of the system through time $t$.
+    
+    
+    In the following chapter, I will introduce baseline recommendations, data sets, the approached we adopted to define the protected group(s) and the unprotected group(s) and all the details of the experimental design to increase reproducibility.

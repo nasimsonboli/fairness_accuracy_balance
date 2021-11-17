@@ -1,11 +1,11 @@
 \chapter{Experimental Methodology}
-\label{chap:methodology}
+\label{ch:methodology}
 
 Personalized recommendation is domain-specific; in other words algorithms that work in one setting might work poorly in others that might have different characteristics. \todo{\cite{}}
 In this Chapter, I will describe the datasets, data pre-processing, data transformation, as well as recommendation and re-ranking algorithms that were used as baseline to perform experiments on them throughout this dissertation. 
 Additionally, experimental details such as hyper-parameter tuning, the choice of the models and the choice of the protected attribute(s) in each dataset will be explained thoroughly. For my experiments, I have used and/or extended \libauto{}, a recommendation library that I worked on during the course of my PhD. The extended algorithms were added as part of my contribution to \libauto{} or LibRec itself. I will describe \libauto{}'s capabilities and architecture in details in Chapter \ref{librec-auto}.
 
-
+\todo[inline]{what do we mean by protected and unprotected groups?}
 
 \section{Context}
     \subsection{Philanthropic - loan recommendation}
@@ -300,6 +300,7 @@ The characteristics of the previously mentioned datasets are described below and
         
         \textbf{Normalized Discounted Proportional Fairness ($NDPF$)}
 
+        \todo[inline]{look at Weiwen's latest paper that uses a version of this measure}
         % Here we introduce the discounted proportional fairness metric which we adopted based on the well-accepted and axiomatically justified metric of fairness, the proportional fairness \cite{kelly1998rate}. Proportional fairness is a generalized Nash solution for multiple groups.
         Ideal Discounted proportional fairness is achieved when
         \begin{equation}
@@ -446,7 +447,6 @@ The characteristics of the previously mentioned datasets are described below and
         
         We have also used entropy to learn more about the users and to increase personalization. By calculating the entropy of the items that a user has interacted with (user's profile) we can learn the level of diversity she prefers in her list. We can also measure the variability of recommendations made to a user as the user profile changes. 
         As an example, if the items in a user's profile are more alike (e.g. same genres of movies like Romance), the entropy will be lower. In other words the user's preference for specific movie genres is more intense or more deterministic, hence she might not like the system to diversify her recommendation list.
-        
         
         On the other hand, when a user interacts with various dissimilar items (e.g. different movie genres such as Romance, Historical, Children, etc.), the entropy is higher which indicates that the preferences of the user over different categories are more equally distributed. Therefore the entropy
         
