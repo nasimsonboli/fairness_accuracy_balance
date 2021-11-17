@@ -223,7 +223,7 @@ In order to use this system, an \texttt{optimize} element must be added to the c
 
 XML was chosen because configuration files need to be managed both by human experimenters and by the system itself. The unstructured key-value properties format used by LibRec was found to be difficult for experimenters to manage as it does not impose a natural structure on the different aspects of the configuration and makes it difficult to re-use and adapt configurations. JSON was also considered, but XML is more self-describing, which is important when the configuration must provide documentation for what experiments were performed. XML enables configuration files to be easily modularized, so that, for example, multiple studies can share the same methodology elements, preventing inadvertent misconfiguration. XML also provides facilities for validating configuration files against an XML schema, which in future versions will allow us to provide error checking of configuration files before processing them.
 
-\begin{figure}[ht!]
+\begin{figure}[ht]
     \centering
     \include{imgs/la/config_xml}
     \caption{Sample configuration file}
@@ -237,7 +237,7 @@ The global elements establish conditions under which all aspects of the configur
 
 \begin{description}
 \item[random-seed]: An integer that will be used as the seed for any randomized actions that the platform takes. This ensures repeatability for experiments.
-\item[thread-count]: If this is greater than zero, librec-auto will spawn multiple threads for various tasks, including parallel execution of experiments.
+\item[thread-count]: If this is greater than zero, \libauto{} will spawn multiple threads for various tasks, including parallel execution of experiments.
 \item[library]: There can be multiple \texttt{library} elements, from which algorithms, metrics and other elements can be imported. There is a default system library for algorithms (referenced in the example). An element from the library can be imported using the \texttt{ref} attribute.
 \end{description}
 

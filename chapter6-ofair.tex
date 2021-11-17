@@ -1,11 +1,11 @@
-\label{ch:ofair}
+\label{sec:ofair}
 
 % subsect:ofair_expp
 % Recommender systems are designed to assist users to find items of interest. Such systems model users' historical behaviors and generate personalized recommendations tailored to users' interests or needs. Recent research has identified a key limitation in a user-focused approach to recommender systems development, namely that it ignores multistakeholder aspects of the systems in which recommendation is embedded\cite{abdollahpourimulti2020}.
 
 In this section we focus on the \textit{provider fairness} again where it concerns the impact of recommendation delivery on the providers of items being recommended and the questions of fair treatment that may arise\cite{burke2017multisided}.
 
-Recent research has sought to alleviate this concern as we have discussed in chapter \ref{fairness}, including the work in this chapter, using a variety of approaches. See, for example, \cite{yao2017beyond,burke2018balanced,ekstrand2018exploring,liu2019personalized,kamishima2016model,beutel2019fairness}. Although most of these approaches focus on a \emph{single dimension} over which fairness is sought: a single protected group among the providers, and except for \cite{liu2019personalized,sonboli2020opportunistic} which are also explained in this chapter, they do not take user preferences in item features into account. In the following method, we to use user preferences in item features into account which provides a higher level of personalization.
+Recent research has sought to alleviate this concern as we have discussed in chapter \ref{ch:fairness}, including the work in this chapter, using a variety of approaches. See, for example, \cite{yao2017beyond,burke2018balanced,ekstrand2018exploring,liu2019personalized,kamishima2016model,beutel2019fairness}. Although most of these approaches focus on a \emph{single dimension} over which fairness is sought: a single protected group among the providers, and except for \cite{liu2019personalized,sonboli2020opportunistic} which are also explained in this chapter, they do not take user preferences in item features into account. In the following method, we to use user preferences in item features into account which provides a higher level of personalization.
 
 The problem of promoting provider fairness while maintaining recommendation accuracy can be generally characterized as a multi-objective optimization problem. If optimal fairness and optimal recommendation accuracy could be achieved simultaneously, there would be no need for research in this area. 
 
@@ -63,7 +63,7 @@ This paper addresses the following research questions:
     \item [RQ2:] Can these patterns be exploited to improve the recommendation fairness / accuracy trade-off using re-ranking?
 \end{description}
 
-\subsection{\textbf{Background}}
+\subsection{Background}
 \label{subsec:ofair_backgroundd}
 
 This line of research has much in common with work that seeks to enhance diversity in recommendation \cite{zhang2008MonotonyDiv, vargas2011rankRelDiv, carbonell1998use, eskandanian2017clustering}. However, the key differences have to do with the concerns being addressed and, accordingly, the way in which success is measured. Usually when diversity is invoked as a desirable property of a recommender system, it is in the service of some user-oriented goal. Diverse recommendations can help a system cope with a diverse range of user intents and contexts. For example, a restaurant recommender might know that a user sometimes goes to family-style pizzerias 70\% of the time and fancy French restaurants 30\% of the time. Rather than present just pizzerias in a recommendation list, even though that is likely to be the right answer statistically, it might be better to include one or two fine dining establishments on the list, just in case the user is looking for a ``date night'' recommendation this time around. 
@@ -79,7 +79,7 @@ From the user perspective, the effect of these considerations is more or less th
 
 % The choice of which type of  in which the items vary  It is only in looking at the recommendations in aggregate and considering the system's objectives that they can be readily distinguished. 
 \todo[inline]{for the sections, put all of the titles in \textbf{} as well}
-\subsection{\textbf{Problem formulation}}
+\subsection{Problem formulation}
 \label{subsec:ofair_prob_formu}
 
 Given a set of users $\mathcal U=\{u_1,\ldots,u_n\}$, a set of items $\mathcal V=\{v_1,\ldots,v_m\}$, and initial ranking lists $R(u)$ for users $u\in \mathcal U$, our task is to re-rank $R(u)$ and generate a list of $k$ distinct items $S(u)$ that is both accurate and fair similar to the FAR/PFAR method's goal \cite{liu2019personalized} described in the previous section.
@@ -189,7 +189,7 @@ where $v_{a}$ is the a-th element of the feature vector $\vec{v}$.
 Note that PFAR inherits the limitation of xQuAD that it assumes binary inclusion as a sufficient definition of fairness and it is therefore difficult to tune it to improve the representation of protected groups in a proportional way. 
 
 
-\subsection{\textbf{Opportunistic fairness}}
+\subsection{Opportunistic fairness}
 \label{subsec:ofair_opp_fair}
 
 We are now ready to describe \textit{OFAiR} (\textbf{O}pportunistic \textbf{F}airness-\textbf{A}ware \textbf{R}eranking), which incorporates personalization at the feature level into the re-ranking process and also allows fine-grained control of protected group promotion by using per-feature weights. 
@@ -219,12 +219,12 @@ This weighting scheme interacts with our aggregate difference alteration of the 
 Various schemes for the weighting function were considered in our experimentation. In this paper, we report on a simple scheme where protected features receive a fixed high weight $\alpha$ and unprotected features a fixed low weight $\alpha/100$. In our experiments, the results were not sensitive to the magnitude of these values as long as protected features have a lower weighting. Additional exploration of feature weighting will be considered in future work. 
 
 
-\subsection{\textbf{Experiments}}\label{subsect:ofair_expp}
+\subsection{Experiments}\label{subsect:ofair_expp}
 \label{subsec:ofair_experiemtns}
 
 \noindent\paragraph{\textbf{Evaluation Metrics}}
 \newline
-\indent The accuracy of the following methods was evaluated based on Precision, Recall, normalized discounted cumulative gain (nDCG), and to calculate their feature-based diversity both intra-list distance (ILD) and entropy of the recommendation lists were used. The fairness of lists was evaluated based on protected group exposure, which measures the fraction of the recommendation list that consists of protected group items. This value is related to the fairness concept of ``statistical parity,'' measured relative to items' level of promotion within the recommender system. Because list lengths are fixed (10 in our case), the exposure of unprotected items is just one minus the protected group exposure. For more details please refer to Chapter \ref{chap:methodology}.
+\indent The accuracy of the following methods was evaluated based on Precision, Recall, normalized discounted cumulative gain (nDCG), and to calculate their feature-based diversity both intra-list distance (ILD) and entropy of the recommendation lists were used. The fairness of lists was evaluated based on protected group exposure, which measures the fraction of the recommendation list that consists of protected group items. This value is related to the fairness concept of ``statistical parity,'' measured relative to items' level of promotion within the recommender system. Because list lengths are fixed (10 in our case), the exposure of unprotected items is just one minus the protected group exposure. For more details please refer to Chapter \ref{ch:methodology}.
 
 \todo[inline]{if you have a paragraph, add the noindent command so it pushes it back for other chapters!}
 \noindent\paragraph{\textbf{Dataset}}
@@ -251,7 +251,7 @@ Our algorithms are also evaluated on a proprietary dataset obtained from Kiva.or
 
 % To generate a denser dataset with greater potential for user profile overlap, we applied a content-based technique creating \textit{pseudo-items} that represent groups of items with shared features. We applied agglomerative hierarchical clustering \cite{rokach2005clustering} using the features of borrower gender, borrower country, loan purpose, loan amount (binned to 10 equal-sized buckets), and percentage funding rate (4 equal-sized buckets). We chose the cluster with the highest Silhouette Coefficient \cite{rousseeuw1987silhouettes} of around 0.69 which indicates a reasonable cohesion of the clusters. Then we applied a 10-core transformation, selecting pseudo-items with at least 10 lenders who had funded at least 10 pseudo-items. 
 
-After preparing the data (refer to Chapter \ref{chap:methodology}) which included creating pseudo items, deanonymize user identifications, densifying it, and etc., the retained dataset has 2,673 pseudo-items, 4,005 lenders and 110,371 ratings / lending actions.
+After preparing the data (refer to Chapter \ref{ch:methodology}) which included creating pseudo items, deanonymize user identifications, densifying it, and etc., the retained dataset has 2,673 pseudo-items, 4,005 lenders and 110,371 ratings / lending actions.
 
 In this dataset, we observed an imbalance within the following feature values/dimensions: (percentage funding rate), (country), (economic sector), (loan amount), (borrower gender). In keeping with Kiva's mission of providing equal access to capital across regions and economic sectors, we designate the items from the sectors and countries that have less than 1\% frequency in the training data as the protected group. More specifically 5 loan purposes in the economic sectors and 23 countries were selected to be the protected group. 
 Although in both datasets we chose two features to achieve fairness within their multiple dimensions, our method supports choosing any number of such features.
@@ -285,7 +285,7 @@ We note that different features have different baseline entropy values in each d
 
 \noindent\paragraph{\textbf{Comparing re-ranking algorithms}}
 \newline
-\indent We use non-negative matrix factorization as our baseline recommendation component. Refer to Chapter \ref{chap:methodology} for more details. The algorithm was tuned on each dataset separately to achieve the best nDCG. The algorithm was trained on 80\% of the data and tested on the remaining 20\%. The nDCG of NMF was around 0.11 on the ML dataset and 0.076 on the Kiva dataset.
+\indent We use non-negative matrix factorization as our baseline recommendation component. Refer to Chapter \ref{ch:methodology} for more details. The algorithm was tuned on each dataset separately to achieve the best nDCG. The algorithm was trained on 80\% of the data and tested on the remaining 20\%. The nDCG of NMF was around 0.11 on the ML dataset and 0.076 on the Kiva dataset.
 For each algorithm, we retrieve $k=200$ top items for each user and re-rank the list retaining the top $k'=10$ items.  
 
 In our experiments, we compared our OFAiR algorithm with FAR and PFAR, as our baseline methods. We also used MMR by itself, as a diversity-enhancing re-ranker, a variant of OFAiR that includes only user tolerance weights for each feature, and a variant that includes only the fairness weights for the protected feature dimensions without the tolerance weights. In this way, we can study separately the contribution of each of these aspects of the algorithm.
@@ -376,12 +376,13 @@ However, a key objective of this work was to ensure distribution of fairness enh
     \label{fig:ML_category_heatmap}
 \end{figure}
 
-In Figure \ref{fig:kiva_category_heatmap} and \ref{fig:ML_category_heatmap}, we can see the performance of all the algorithms in terms of improvement in the exposure of the protected items in each protected dimension in a more fined-grained manner. Recall that in the Kiva dataset, country and economic sector (shown as activity) were the sensitive features with 23 countries and 5 sectors labeled as protected. It is also worth mentioning that in both of these features, users had a high general entropy as well. The lighter colors show an improvement in fairness. As it is shown, the colors are darker in NMF and MMR. The right side of the heat-map contains lighter colors indicating more inclusion of protected items in recommendation lists. Lightest colors might belong to MMR with fairness weights, and after we add the tolerance weights to the algorithm it becomes slightly darker. This is due to the fairness/accuracy tradeoff noted above. For some feature values in \ref{fig:kiva_category_heatmap}, fairness is not improved by any algorithm. This is because the reranker can only improve the fairness of the results if these dimensions are present in the recommendation list of users and in these cases they rarely are. A similar trend is found in the Movies dataset, with the OFAiR algorithm, showing the best exposure across all of the protected dimensions. 
+In Figure \ref{fig:kiva_category_heatmap} and \ref{fig:ML_category_heatmap}, we can see the performance of all the algorithms in terms of improvement in the exposure of the protected items in each protected dimension in a more fined-grained manner. Recall that in the Kiva dataset, country and economic sector (shown as activity) were the sensitive features with 23 countries and 5 sectors labeled as protected. It is also worth mentioning that in both of these features, users had a high general entropy as well. The lighter colors show an improvement in fairness. As it is shown, the colors are darker in NMF and MMR. The right side of the heat-map contains lighter colors indicating more inclusion of protected items in recommendation lists. Lightest colors might belong to MMR with fairness weights, and after we add the tolerance weights to the algorithm it becomes slightly darker. This is due to the fairness/accuracy tradeoff noted above. For some feature values in Figure \ref{fig:kiva_category_heatmap}, fairness is not improved by any algorithm. This is because the reranker can only improve the fairness of the results if these dimensions are present in the recommendation list of users and in these cases they rarely are. A similar trend is found in the Movies dataset, with the OFAiR algorithm, showing the best exposure across all of the protected dimensions. 
 
+\todo[inline]{add the ILD pictures and add explanations to that as well.}
 
-\subsection{\textbf{Related work}}
+\subsection{Related work}
 \label{subsec:ofair_related_work}
-In examining prior work on re-ranking, it is important to note the distinction introduced in Section~\ref{sec:backgroundd} above between user-oriented results diversification and fairness/provider-oriented re-ranking, which is the objective of our work. A user-oriented method will measure success by the diversity of individual lists, whereas a provider fairness approach will be measuring outcomes for providers, especially protected ones.
+In examining prior work on re-ranking, it is important to note the distinction introduced in Sub-section~\ref{subsec:ofair_backgroundd} above between user-oriented results diversification and fairness/provider-oriented re-ranking, which is the objective of our work. A user-oriented method will measure success by the diversity of individual lists, whereas a provider fairness approach will be measuring outcomes for providers, especially protected ones.
 
 One of the first efforts to increase diversity in recommendations was \cite{Ziegler:2005:IRL:1060745.1060754}, which used a taxonomic content-based similarity metric to re-rank recommendation lists. This method did not attempt to personalize its ranking goal relative to different users. The taxonomic item similarity measure used in this work may be appropriate to adapt to OFAiR, which currently uses a one-dimensional representation of item features. A steady stream of user-oriented diversification research followed, as summarized in \cite{kunaver2017diversity}.
 
@@ -391,20 +392,22 @@ Another approach to fair ranking is the FA*IR algorithm proposed in \cite{zehlik
 
 Fairness for multiple groups has been addressed in classification settings under the idea of \textit{rich sub-group fairness}~\cite{kearns2017preventing,kearns2019empirical}. In this work, the emphasis is on extending fairness guarantees to all possible combinations of protected groups in a dataset. The SUBGROUP algorithm alternately optimizes for a particular group's fairness and then seeks the group for whom fairness is most violated. In recommendation, we are not seeking a single decision rule, so we have a different solution in OFAiR: to distribute the optimization ``cost'' across different users in a personalized way.
 
-\subsection{\textbf{Conclusion and Future Work}}
+\subsection{Conclusion and Future Work}
 \label{subsec:ofair_conclusion}
 
-The results of our experiments show that OFAiR works as intended. Its proportion-based MMR model provides a much better tradeoff between ranking accuracy and fairness for the protected-unprotected case than the FAR/PFAR models explored in prior work. In the datasets under study, we show that users' tolerance for diversity varies across features, which justifies our approach of differentiating users based on the opportunities they represent for enhancing provider-side fairness. 
+The results of our experiments show that OFAiR works as intended. Its proportion-based MMR model provides a much better trade-off between ranking accuracy and fairness for the protected-unprotected case than the FAR/PFAR models explored in prior work. In the datasets under study, we show that users' tolerance for diversity varies across features, which justifies our approach of differentiating users based on the opportunities they represent for enhancing provider-side fairness. 
 
 We show that the combination of personalized, feature-specific, weights together with weights identifying protected feature values is effective with the feature-specific tolerance helping maintain accuracy and the feature weight promoting protected group items. As we showed, our method can be applied across multiple protected groups at the same time and can ensure fairness with respect to system's designed fairness goal for each feature.
 
-One of the challenges in this work is the lack of proper datasets that have user features and these datasets are specifically lacking in domains where fairness matters. Due to this issue, we chose the Movies dataset to show the capabilities of our method.
+% One of the challenges in this work is the lack of proper datasets that have user features and these datasets are specifically lacking in domains where fairness matters. Due to this issue, we chose the Movies dataset to show the capabilities of our method.
 
 As our future work in this section, we intend to run a more thorough experimentation with weights of the weighted cosine similarity and capture the influence of these weights on the final results. We also intend to use different recommendation algorithms as the base recommendation.
 
 A more general method to use is the metric learning approach, that assumes different dimensions and assigns weights to these dimensions accordingly. This is useful as it automatically assigns weights to dimensions not manually.
 The other approach to explore is to use voting methods in the fair resource allocation literature in the computational social choice field. Specifically, the cake cutting problem, where we want to allocate cake slices fairly where we assume users have different preferences for different layers of the cake which is similar to our research problem here, where users have different preferences over different dimensions.
 
-The results of this experimentation is intended to be submitted to the ACM FAcct 2021 conference.
+% The results of this experimentation is intended to be submitted to the ACM FAcct 2021 conference.
 
-In our next work, we intend to explore further the idea of ``opportunity'' in subgroup-fairness-aware recommendation. In particular, when recommendations are delivered over time, prior outcomes relative to different protected groups may dictate what opportunities should be most salient at any given moment. We intend to publish this work later this year in The ACM Series on Recommender Systems.
+In our next work, we intend to explore further the idea of ``opportunity'' in subgroup-fairness-aware recommendation. In particular, when recommendations are delivered over time, prior outcomes relative to different protected groups may dictate what opportunities should be most salient at any given moment. 
+% We intend to publish this work later this year in The ACM Series on Recommender Systems.
+
