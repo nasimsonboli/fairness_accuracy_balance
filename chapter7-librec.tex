@@ -2,6 +2,7 @@
 \chapter{Standardizing and automating recommendation experiments}
 \label{ch:librec-auto}
 
+\todo[inline]{make sure the descriptions for the config file and the new config file match}
 Comparative experimentation is important for studying reproducibility in recommender systems. This is particularly true in areas without well-established methodologies, such as fairness-aware recommendation. 
 
 To address these issues and based on our internal research needs we created \libauto{}, a Python wrapper for LibRec that is an existing standard Java-based library for recommender systems. In this chapter, we describe the enhancements we made to LibRec.\todo[inline]{too modest from we describe...} These enhancements include metrics for various classes of fairness definitions, extension of the experimental model to support result re-ranking and a library of associated re-ranking algorithms, and additional support for experiment automation and reporting, capability of parallelization, optimization, and etc.
@@ -227,8 +228,20 @@ XML was chosen because configuration files need to be managed both by human expe
     \include{imgs/la/config_xml}
     \caption{Sample configuration file}
     \label{fig:config}
-    \vspace{-0.15in}
+    \vspace{-0.5in}
+    % \linespread{0.1}
 \end{figure}
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[height=\textheight,width=\textwidth]{imgs/la/config_screenshot.png}
+%     \caption{Sample configuration file}
+%     \label{fig:config}
+%     \vspace{-0.5in}
+%     % \linespread{0.1}
+% \end{figure}
+
+
+
 
 \subsection{Global elements (all optional)}
 \label{subsec:lib_auto_global_elements}
