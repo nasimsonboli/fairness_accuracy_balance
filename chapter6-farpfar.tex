@@ -1,15 +1,21 @@
+\label{sec:farpfar}
 
-\subsection{Fair-Aware Re-ranking/Personalized Fair-Aware Re-ranking}
+In this section we propose a post-processing approach to mitigate provider unfairness in the context of microlending. Provider unfairness here is defined as mitigating the presentation bias for the minority groups and it is calculated over a single dimension (region). Since the recommendation slots are limited, utility becomes rivalrous for providers. Recommendation systems contain popularity bias that contributes to presentation bias. And the utility is calculated as an average utility over all the users. Therefore, this value is skewed towards the majority group and any attempt to increase the exposure of the minority group, by allocating some of the recommendation slots to them, will lead to loss of accuracy. 
 
-Microlending is the provision of small and low-interest loans (as little as \$25) to low-income individuals or small-scale entrepreneurs from under-developed countries  \cite{yunus1998banker}. The extremely poor people in rural areas often lack collateral, steady employment, or a verifiable credit history, hence they cannot get access to financial services. Under such circumstances, microlending has attracted an increased attention in the last decade \cite{chen2017microfinance}, providing impoverished entrepreneurs an opportunity to start their own businesses as well as avoid the vicious cycle of debt.
 
-One of the leading international microlending organizations, Kiva Microfunds (Kiva.org), has crowd-funded about 3 million borrowers with \$1.27 billion USD as of February 2019 \cite{kiva}. Kiva does not collect interest but provides an intermediary service for lenders and borrowers, as illustrated in Figure \ref{fig:kiva_process}. Borrowers from over 80 countries, divided into 8 regions by Kiva, post their applications for loans on the website for lenders to support. Lenders browse and crowd-fund the loans in the increments of \$25 or more. 
-%After 
+The goal in this project is to achieve a reasonable accuracy / fairness balance. In other words, we intend to maximize lenders' interests, while ensuring a "fairer" allocation of recommendation opportunities across the borrower side. Our method has the capability of controlling between fairness and accuracy, so it can be tuned according to the application that it is going to be used for.
 
-% % recommender systems, personalization
-Loan recommender systems \cite{choo2014gather,choo2014understanding} are designed to assist lenders in looking for promising borrowers. Such systems model lenders' historical behaviors and generate personalized recommendations to meet the lenders' interests or needs. While these recommender systems aim to provide efficient and personalized services, two issues are largely overlooked.
+% Microlending is the provision of small and low-interest loans (as little as \$25) to low-income individuals or small-scale entrepreneurs from under-developed countries \cite{yunus1998banker}. The extremely poor people in rural areas often lack collateral, steady employment, or a verifiable credit history, hence they cannot get access to financial services. Under such circumstances, microlending has attracted an increased attention in the last decade \cite{chen2017microfinance}, providing impoverished entrepreneurs an opportunity to start their own businesses as well as avoid the vicious cycle of debt.
 
-\begin{figure}
+% One of the leading international microlending organizations, Kiva Microfunds (Kiva.org), has crowd-funded about 3 million borrowers with \$1.27 billion USD as of February 2019 \cite{kiva}. Kiva does not collect interest but provides an intermediary service for lenders and borrowers, as illustrated in Figure \ref{fig:kiva_process}. Borrowers from over 80 countries, divided into 8 regions by Kiva, post their applications for loans on the website for lenders to support. Lenders browse and crowd-fund the loans in the increments of \$25 or more. 
+
+\subsection{Introduction}
+
+Microlending is a form of financing that provides small and low-interest loans to small-entrepreneurs usually from impoverished countries. Today, microlending has become a big business with many for-profit and non-profit companies offering micro-financing options to businesses worldwide. Kiva Microfunds (Kiva.org) is one of the leading international microlending organizations which we use as a case study in this paper and throughout my dissertation.
+
+To assist lenders in looking for promising (low-risk) borrowers, loan recommender systems \cite{choo2014gather,choo2014understanding} are designed and utilized. Such systems model lenders' historical behaviors and generate personalized recommendations to meet the lenders' interests or needs. While these recommender systems aim to provide efficient and personalized services, two issues are largely overlooked: unfairness in recommendations, and lenders propensity/tolerance to diversity. We will describe them in details below. 
+
+\begin{figure}[htb]
 %\vspace{-0.25cm}
 \includegraphics[width=0.98\columnwidth]{imgs/far/microlending.png}
 %\vspace{-0.25cm}
@@ -17,7 +23,7 @@ Loan recommender systems \cite{choo2014gather,choo2014understanding} are designe
 \label{fig:kiva_process}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[htb]
 %\vspace{-0.25cm}
 \includegraphics[width=0.98\columnwidth]{imgs/far/kiva.png}
 %\vspace{-0.25cm}
@@ -25,22 +31,22 @@ Loan recommender systems \cite{choo2014gather,choo2014understanding} are designe
 \label{fig:recom_result}
 \end{figure}
 
+\todo[inline]{we are mitigating provider presentation bias! make sure all the definitions align everywhere}
 
-(i) \textit{Unfair recommendation.} The existing recommender systems for microlending are all lender-centered. These recommender systems have been demonstrated to favor popular items \cite{celma2008hits,lee2014fairness}, resulting in extremely unbalanced recommendation results --- majority groups are usually over-represented, thereby holding a higher proportion of opportunities and resources, while minority groups barely receive exposure. For example, it is observed that certain geographical regions such as Asia and Africa dominate the recommendation in a designed loan recommender system for Kiva~\cite{choo2014gather}; whereas, others like Oceania and Eastern Europe barely receive recommendations, as shown in Figure \ref{fig:recom_result}. Less exposure means the borrowers from these regions are less likely to be funded.
+(i) \textbf{Unfair recommendation} The existing recommender systems for microlending are all lender-centered. These recommender systems have been demonstrated to favor popular items \cite{celma2008hits,lee2014fairness}, resulting in extremely unbalanced recommendation results --- majority groups are usually over-represented, thereby holding a higher proportion of opportunities and resources, while minority groups barely receive exposure. For example, it is observed that certain geographical regions such as Asia and Africa dominate the recommendation in a designed loan recommender system for Kiva~\cite{choo2014gather}; whereas, others like Oceania and Eastern Europe barely receive recommendations, as shown in Figure \ref{fig:recom_result}. Less exposure means the borrowers from these regions are less likely to be funded.
 
 %Moreover, the recommender system will learn the pattern from the historical data that loans from certain regions are less interested, thereby increasing the unfairness.
 
-(ii) \textit{Lender's diversity tolerance.} Another noticeable phenomenon is that lenders' tolerance of diversity varies greatly.  Thus, the diversity of recommended lists should be compatible with the level of each lender's interest in diverse recommendations. For instance, some lenders may highly prefer offering loans to certain regions (such as their home countries), while others may be open to diverse regions. In such scenarios, assuming lenders' diversity tolerance is constant and increasing diversity uniformly for all lenders 
-%to improve fairness 
-will result in poor recommendations \cite{eskandanian2017clustering}. Therefore, a well-designed recommender system should be personalized by both lenders' interests and the degree of loan diversity in recommended lists.
+(ii) \textbf{Lender's diversity tolerance} Another noticeable phenomenon is that lenders' tolerance of diversity varies greatly.  Thus, the diversity of recommended lists should be compatible with the level of each lender's interest in diverse recommendations. For instance, some lenders may highly prefer offering loans to certain regions (such as their home countries), while others may be open to diverse regions. In such scenarios, assuming lenders' diversity tolerance is constant and increasing diversity uniformly for all lenders will result in poor recommendations \cite{eskandanian2017clustering}. Therefore, a well-designed recommender system should be personalized by both lenders' interests and the degree of loan diversity in recommended lists.
 
-We aim to design a fairness-aware re-ranking algorithm on top of the existing recommendation algorithms. Our algorithm achieves a balance between recommendation accuracy and borrower-side fairness, and also considers lenders' preferences for diversity. This post-processing step does not depend on any specific recommendation algorithm, and therefore can be widely applied.
+We aim to design a fairness-aware re-ranking algorithm on top of the existing recommendation algorithms. Our algorithm achieves a balance between recommendation accuracy and borrower-side (provider) fairness, and also considers lenders' preferences for diversity. This post-processing step does not depend on any specific recommendation algorithm, and therefore can be widely applied.
 
 % \todo{?}
 % \citet{surer2018multistakeholder} suggest a constrained optimization-based method at the post-processing level to enhance fairness for multiple provider groups. This approach is generalizable to multiple constraints, such as a) the inclusion of items from different provider groups, b) ensuring a minimum degree of item diversity for each consumer, and, c) avoiding unfairness towards providers from underrepresented populations.
 
-% \section{The Proposed Algorithm}\label{sect:algorithm}
-In this section, we first propose to formulate this recommendation scenario as a Multi-sided Recommender System (MRS) \cite{burke2017multisided, burke2017patterns}.  Then, we design a personalized re-ranking algorithm to achieve a fair recommendation for microlending.
+\subsection{The Proposed Algorithm}
+\label{subsec:far_algorithm}
+In this section, we first propose to formulate this recommendation scenario as a Multi-sided Recommender System (MRS) \cite{burke2017multisided, burke2017patterns}. Then, we design a personalized re-ranking algorithm to achieve a fair recommendation for microlending.
 
 % \begin{figure}
 % %\vspace{-0.25cm}
@@ -50,16 +56,7 @@ In this section, we first propose to formulate this recommendation scenario as a
 % \label{fig:mrs}
 % \end{figure}
 
-\subsubsection{\textbf{Problem Formulation}}
-\hfill
-%Besides maximizing the lenders' interests, we also consider the allocation of recommendation opportunities across the borrower side. 
-
-% The concepts of personalization and fairness are conflicting to some extent \cite{modani2017fairness}. On the one hand, the main goal of personalization is to break the absolute fairness so that the recommended loans can best match the lenders' interests and needs. On the other hand, to obtain the ideal fairness, one could simply divide the recommendation opportunities equally to each region.
-
-% In Kiva.org, different stakeholders are involved, including lenders, borrowers, and the system (Kiva), which can be modeled by an MRS. Borrowers post their loan applications onto the system from which lenders receive loan recommendations. Besides maximizing the lenders' interests, Kiva also aims to consider the allocation of borrower side recommendation opportunities. 
-
-% As we described before, the concepts of personalization and fairness are conflicting to some extent \cite{modani2017fairness}. On the one hand, the main goal of personalization is to break the absolute fairness so that the recommended loans can best match the lenders' interests and needs. On the other hand, to obtain the ideal fairness, one could simply divide the recommendation opportunities equally to each region.
-
+\subsubsection{Problem Formulation}
 
 Based on the MRS model, different stakeholders are involved in the loan recommendation setting including lenders, borrowers, and the system (Kiva) where each stakeholder might have a different goal or a different fairness concern. In this system, borrowers post their loan requests on Kiva.org and lenders receive loan recommendations from the system, as depicted in Figure \ref{fig:mrs}. 
 Besides maximizing the lenders' interests (personalization), Kiva also aims to consider the allocation of borrower side recommendation opportunities. In other words, Kiva wants to ensure that every loan request (borrower) gets an equal chance of being funded.
@@ -307,3 +304,5 @@ FAR/PFAR is extremely strict in its requirement that each possible provider grou
 Finally, we note that, in real-world recommendation applications, managing the tradeoff between accuracy and coverage of provider groups is not a single-shot process. Rather it is an online process, where a current lack of coverage can be compensated for at a later time, and where results are evaluated temporally. This would require making the algorithm sensitive to historical patterns of coverage, rather than just the results obtained in the current list. We intend to explore this type of algorithm design and evaluation in our future work.
 
 This project currently is an on-going project and we intend to develop a method using probabilistic serial allocation and submit it to the ACM Conference Series on Recommender Systems 2021.
+
+\todo[inline]{remove conclusion and add a transition paragraph}
