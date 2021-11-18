@@ -3,9 +3,13 @@
 % subsect:ofair_expp
 % Recommender systems are designed to assist users to find items of interest. Such systems model users' historical behaviors and generate personalized recommendations tailored to users' interests or needs. Recent research has identified a key limitation in a user-focused approach to recommender systems development, namely that it ignores multistakeholder aspects of the systems in which recommendation is embedded\cite{abdollahpourimulti2020}.
 
+\todo[inline]{clean the writing of this section, unclear and messy}
+
 In this section we focus on the \textit{provider fairness} again where it concerns the impact of recommendation delivery on the providers of items being recommended and the questions of fair treatment that may arise\cite{burke2017multisided}.
 
-Recent research has sought to alleviate this concern as we have discussed in chapter \ref{ch:fairness}, including the work in this chapter, using a variety of approaches. See, for example, \cite{yao2017beyond,burke2018balanced,ekstrand2018exploring,liu2019personalized,kamishima2016model,beutel2019fairness}. Although most of these approaches focus on a \emph{single dimension} over which fairness is sought: a single protected group among the providers, and except for \cite{liu2019personalized,sonboli2020opportunistic} which are also explained in this chapter, they do not take user preferences in item features into account. In the following method, we to use user preferences in item features into account which provides a higher level of personalization.
+\subsection{Introduction}
+
+Recent research has sought to alleviate provider unfairness as we have discussed in chapter \ref{ch:fairness}, including the work in this chapter, using a variety of approaches. See, for example, \cite{yao2017beyond,burke2018balanced,ekstrand2018exploring,liu2019personalized,kamishima2016model,beutel2019fairness}. Although, most of these approaches focus on a \emph{single dimension} over which fairness is sought: a single protected group among the providers, and except for \cite{liu2019personalized,sonboli2020opportunistic} which are also explained in this chapter, they do not take user preferences in item features into account. In the following method, we to use user preferences in item features into account which provides a higher level of personalization.
 
 The problem of promoting provider fairness while maintaining recommendation accuracy can be generally characterized as a multi-objective optimization problem. If optimal fairness and optimal recommendation accuracy could be achieved simultaneously, there would be no need for research in this area. 
 
