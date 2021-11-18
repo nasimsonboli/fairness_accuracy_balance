@@ -10,6 +10,7 @@ Additionally, experimental details such as hyper-parameter tuning, the choice of
 \section{Context}
     \subsection{Philanthropic - loan recommendation}
 
+    \todo[inline]{One important characteristic of this dataset, and the micro-finance domain in general, is there is rapid turn-over in recommendable items. Loans are only available to lenders for a short period until they are fully funded or dropped from the system. Subsequent visitors will not see or be able to support these loans, limiting the maximum item profile size significantly. For example, at a minimum loan amount of \$25, a \$200 loan can have a maximum of only 8 lenders. Contrasting with a consumer taste domain such as MovieLens \cite{movielens}, where a popular movie might be rated by hundreds or thousands of consumers, the Kiva.org dataset is extremely sparse (with a sparsity of $4.19\times 10^{-5}$) and exhibits a significant item cold-start problem.}
     % Microlending is the provision of small and low-interest loans (as little as \$25) to low-income individuals or small-scale entrepreneurs from under-developed countries \cite{yunus1998banker}. The extremely poor people in rural areas often lack collateral, steady employment, or a verifiable credit history, hence they cannot get access to financial services. Under such circumstances, microlending has attracted an increased attention in the last decade \cite{chen2017microfinance}, providing impoverished entrepreneurs an opportunity to start their own businesses as well as avoid the vicious cycle of debt.
     
     % One of the leading international microlending organizations, Kiva Microfunds (Kiva.org), has crowd-funded about 3 million borrowers with \$1.27 billion USD as of February 2019 \cite{kiva}. Kiva does not collect interest but provides an intermediary service for lenders and borrowers, as illustrated in Figure \ref{fig:kiva_process}. Borrowers from over 80 countries, divided into 8 regions by Kiva, post their applications for loans on the website for lenders to support. Lenders browse and crowd-fund the loans in the increments of \$25 or more. 
@@ -225,6 +226,7 @@ The characteristics of the previously mentioned datasets are described below and
         
         Similarly to precision, these values can be described as percentages.
         
+        \todo[inline]{delete this totally?}
         \textbf{Normalized Discounted Cumulative Gain (nDCG)}: Proposed in~\cite{jarvelin2002cumulated}, nDCG is a commonly-used measure of ranking quality, defined as Eq.~\eqref{eq:ndcg}. In this measure, an item appearing on a recommendation list accrues ``gain'' according to its position on the list -- thus the discount. The measure is normalized by comparing the algorithm's performance to the best ranking that could have been achieved. 
 
         \begin{equation}

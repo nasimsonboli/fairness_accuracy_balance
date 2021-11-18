@@ -1,47 +1,87 @@
 \small{
 \begin{verbatim}
+
+
+
 <librec-auto>
     <random-seed>202001</random-seed>
     <thread-count>1</thread-count>
     <library src="system">default-algorithms.xml</library>
 	
+	<!-- DATA SECTION -->
 	<data>
         <data-dir>../data</data-dir>
         <format>UIR</format>
         <data-file format="text">ratings.csv</data-file>
 	</data>
 	
+	<!-- FEATURES SECTION -->
+	<features>
+		<appender-class>net.librec.data.convertor.appender.ItemFeatureAppender</appender-class>
+		<item-feature-file>item-features.csv</item-feature-file>
+		<protected-feature name="fea:new" type="item">new</protected-feature>
+		<user-feature-file>user-features.csv</user-feature-file>
+		<protected-feature name="fea:female" type="user">F</protected-feature>
+	</features>
+	
+	<!-- SPLITTER SECTION -->
 	<splitter>
         <model count="3">kcv</model>
-        <dim>userfixed</dim>
-        <ratio>0.8</ratio>
         <save>true</save>
 	</splitter>
 	
+	<!-- ALGORITHM SECTION -->
 	<alg ref="alg:biasedmf">
         <similarity type="item">pcc</similarity>
         <iterator-max>25</iterator-max>
-        <item-reg><value>0.01</value>
-                  <value>0.05</value></item-reg>
+        <item-reg>
+            <value>0.01</value>
+            <value>0.05</value>
+        </item-reg>
+        <user-reg>
+            <lower>0.000</lower>
+            <upper>0.1</upper>
+        </user-reg>
         <num-factors>20</num-factors>
 	</alg>
 
+
+    <!-- RERANK SECTION -->
+	<rerank>
+		<script lang="python3" src="system">
+			<script-name>far_rerank.py</script-name>
+			<param name="max_len">10</param>
+			<param name="lambda">
+			    <value>0.0</value>
+			    <value>0.3</value>
+			</param>
+			<param name="binary">False</param>
+			<param ref="fea:new"/>
+		</script>
+	</rerank>
+    
+    
+    <!-- METRICS SECTION -->
 	<metric>
         <ranking>true</ranking>
         <list-size>10</list-size>
-        <class>precision</class>
+        <class>ndcg,precision,psp</class>
         <script lang="python3" src="system">
             <script-name>ndcg_metric.py</script-name>
             <param name="list_size">10</param>
         </script>
+        <protected-feature ref="fea:new"/>
 	</metric>
-	
+
+    <!-- POST-PROCESSING SECTION -->	
 	<post>
         <script lang="python3" src="system">
-            <script-name>results_to_csv.py</script-name>
-            <param name="option">all</param>
+            <script-name>result_graphics.py</script-name>
+            <param name="browser">true</param>
         </script> 
 	</post>
 </librec-auto>
+
+
 \end{verbatim}
 }

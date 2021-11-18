@@ -1,7 +1,6 @@
 
 \chapter{Standardizing and automating recommendation experiments}
-\label{librec-auto}
-
+\label{ch:librec-auto}
 
 Comparative experimentation is important for studying reproducibility in recommender systems. This is particularly true in areas without well-established methodologies, such as fairness-aware recommendation. 
 
@@ -405,10 +404,10 @@ The \libauto{} project is driven by the needs of recommender systems experimenta
 We note that \libauto{} does not directly support all popular methodologies for recommender systems evaluation. In particular, it supports only batch evaluation, and not iterative and dynamic evaluation as required by bandit and reinforcement learning paradigms. There are other platforms, for example RecoGym \cite{rohde2018recogym} and RecSim NG \cite{mladenov2021recsim}, that support this type of methodology and we do not anticipate the need to evolve our system in this direction. 
 
 \subsection{Algorithm integration}
-One of the key requirements for future releases is that the platform makes it easy to experiment with algorithms other than those implemented in LibRec. By the time of publication, we expect to have released interfaces to two popular recommendation libraries:  LibFM~\cite{rendle2012factorization} and Microsoft's Recommenders library~\cite{argyriou2020microsoft}. 
+One of the key requirements for future releases is that the platform makes it easy to experiment with algorithms other than those implemented in LibRec. By the time of publication, we expect to have released interfaces to a popular recommendation library: Microsoft's Recommenders library~\cite{argyriou2020microsoft}. 
 
-LibFM\cite{rendle2012factorization} is a factorization machine (FM) software tool written in C++, that features stochastic gradient descent (SGD) and alternating least-squares (ALS) optimization, as well as Bayesian inference using Markov Chain Monto Carlo (MCMC) for regression and classification tasks. It also contains methods for optimizing an FM model with respect to ranking. 
-
+% LibFM~\cite{rendle2012factorization}
+% LibFM\cite{rendle2012factorization} is a factorization machine (FM) software tool written in C++, that features stochastic gradient descent (SGD) and alternating least-squares (ALS) optimization, as well as Bayesian inference using Markov Chain Monto Carlo (MCMC) for regression and classification tasks. It also contains methods for optimizing an FM model with respect to ranking. 
 
 As noted above, Microsoft Recommenders \cite{MicrosoftRecommenders} is an open-source platform for recommender systems development and evaluation. This Python-based tool includes 31 recommendation algorithms including some recent deep learning algorithms, for example, Neural Recommendation with Multi-Head Self-Attention (NRMS) \cite{wu2019neural}. While the platform includes many capabilities for data handling and evaluation, these are handled by \libauto{} in our integration. We draw only from the algorithm implementations. 
 
@@ -457,7 +456,7 @@ Finally, we are seeking to make \libauto{} more accessible to new users through 
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.95\linewidth]{imgs/la/librec-auto-revolution.pdf}
+    \includegraphics[width=0.95\linewidth]{imgs/la/librec-auto-evolution.pdf}
     \caption{The evolution timeline of \libauto{} (2018-2021). Every extension of \libauto{} is shown in pink and the release of LibRec itself is shown in Orange. Additional libraries that were added to the current release are shown in green}
     \label{fig:librec-auto-evolution}
     \vspace{-0.15in}
