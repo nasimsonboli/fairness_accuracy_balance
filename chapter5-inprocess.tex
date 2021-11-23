@@ -8,11 +8,11 @@
 
 As we discussed in \ref{fairness}, there are three main approaches to integrate fairness notions into recommender systems: pre-processing, in-processing and post-processing.
 
-In-processing approaches for fairness interactions, are among the topics of considerable research interest in recommender systems\todo{cite} where they treat recommendations as multi-objective optimization problems where the goal is to maintain a certain level of accuracy, while ensuring fairness in recommendation lists. One of the main challenges in doing so, is the inherent trade-off between personalization and non-accuracy metrics such as fairness or diversity that is incorporated in their objective function.
+In-processing approaches for fairness interaction, are a topic of considerable research interest in recommender systems\todo{cite}. Such algorithms treat recommendations as multi-objective optimization problems where the goal is to maintain a certain level of accuracy, while ensuring fairness in recommendation lists. One of the main challenges in doing so, is the inherent trade-off between personalization and non-accuracy metrics such as fairness or diversity that is incorporated in their objective function.
 
 Personal preference is the essence of recommendation where individual taste is paramount. And as we have explained in \ref{fairness}, personalization and fairness are competing goals due to various reasons. On the other hand, many recommendation applications involve multiple stakeholders and each one may have fairness concerns of its own that might as well oppose each other. Therefore, in order for the multisided platforms to thrive, it is important to satisfy the fairness concerns of different stakeholders while maintaining personalization as a promised service to users.
 
-In-processing methods are one approach that can be used to negotiate between fairness and accuracy. In this section, we examine applications in which fairness with respect to consumers (C-fairness) and to the providers (P-fairness) is important. We show that variants of the well-known sparse linear method (SLIM) can be used to achieve a reasonable balance between fairness and accuracy in collaborative filtering while being in control of this balance. In order to make the recommendations "fair", in the proposed method, we generate neighborhoods (i.e. all the users or items that are similar to each other in some way) for collaborative recommendations in such a way to have \textit{balanced representation} of the opinions across groups. Note that, our goal is to achieve group fairness (consumer or provider) and will measure fairness of the results accordingly.
+In-processing methods are one approach that can be used to negotiate between fairness and accuracy. In this section, we examine applications in which fairness with respect to consumers (C-fairness) and to the providers (P-fairness) is important. We show that variants of the well-known sparse linear method (SLIM) can be used to achieve a reasonable balance between fairness and accuracy in collaborative filtering while being in control of this balance. In order to improve "fair", in the proposed method, we generate neighborhoods (i.e. all the users or items that are similar to each other in some way) for collaborative recommendations in such a way to have \textit{balanced representation} of the opinions across groups. Note that, our goal is to achieve group fairness (consumer or provider) and will measure fairness of the results accordingly.
 
 % One option that we explore in this paper is to design a recommender system following the approach of \cite{zemel2013learning} in generating fair classification.
 
@@ -139,6 +139,7 @@ In Kiva, the operators of this site have the goal of providing equal exposure to
 
 \section{Methodology}
 
+\todo[inline]{review and shrink as already discussed}
 In order to evaluate our balanced neighborhood approach, we conducted separate sets of experiments for both consumer- and provider- fairness cases. It is very difficult to find data sets that contain the kind of features that would be necessary to evaluate fairness-aware recommendation algorithms, especially related to user demographics in sensitive application areas such as employment. 
 
 For the purposes of this paper, we are using the well-known MovieLens 1M dataset~\cite{movielens}, which contains gender information for each user, as well as ratings of 4,000 movies by 6,000 users. For more details refer to \ref{chap:methodology}.\todo{label the sections in methodology}
@@ -157,6 +158,7 @@ Our goal, then, is to reduce or eliminate genre discrepancies with minimal accur
 
 In evaluating fairness of outcome, here we measure \textit{relative opportunity}, explained in \ref{chap:methodology} which is the observed probability of protected class items being recommended divided by the probability of unprotected class items being recommended. 
 
+\todo[inline]{refer to the methodology section again}
 Based on this concept we create consumer-side equity score $E_c@k$ for recommendation lists of k items, as the ratio between the outcomes for the different consumer groups. In our MovieLens experiments, we measure the number of movies in protected and unprotected genres included in recommendation lists as the measure of outcome quality. 
 
 
@@ -193,6 +195,7 @@ To evaluate our approach for provider fairness, we are using the Kiva\footnote{h
 
 % a dataset extracted from the Kiva.org microlending site using the site's API\footnote{http://build.kiva.org/}. Again, we have constructed our own scenario using this data, focusing on geographic region. In our dataset, we find that there are some geographic regions with a higher than average number of unfunded loans. In these regions, borrowers have a lower probability of getting the desired capital. See Table~\ref{tab:unfunded}.
 
+\todo[inline]{remove since it's in the methodology section}
 \begin{table}
     \centering
 \begin{tabular}{l|l|r}
@@ -228,7 +231,7 @@ $E_p@k$ will be less than 1 when loans from the protected regions are appearing 
 
 \section{Results}
 
-We implemented the SLIM-U, BN-SLIM, and BN-SLIM-U algorithms using LibRec 2.0~\cite{guo2015librec} and incorporated it in \libauto{} explained in \ref{librec-auto}, and used its existing implementation of SLIM. We used 5-fold cross-validation as implemented within the library.
+We implemented the SLIM-U, BN-SLIM, and BN-SLIM-U algorithms using LibRec 3.0~\cite{guo2015librec} and incorporated it in \libauto{} explained in \ref{librec-auto}, and used its existing implementation of SLIM. We used 5-fold cross-validation as implemented within the library.
 
 \subsection{Consumer fairness: MovieLens}
 
@@ -256,7 +259,7 @@ In terms of accuracy, there was only a small loss of NDCG@10 between the two con
 \label{tab:ndcg}
 \end{table}
 
-Because the balanced neighborhood algorithm is applied across all users, it also has the effect of showing male users movie genres that occur more frequently for female users. To see this effect, we examined the five genres with the highest $E_c@10$ values: ``Fantasy'', ``Animation'', ``War'', ``Romance'', and ``Western'' using the same parameter values as above. The results appear in Figure~\ref{fig:inverse-equity} and show a similar result. ``War'' is something of an anomaly here, both because it is perhaps unexpected to see it as a one of the more female-recommended genres and because the genre-balance algorithm pushes it to become more skewed rather than less. We are investigating the cause of this phenomenon. Overall, the BN-SLIM-U algorithm produces a recommendation experience in which the occurrence of gender-specific genres is more closely equalized, with small loss in ranking accuracy. 
+Because the balanced neighborhood algorithm is applied across all users, it also has the effect of showing male users movie genres that occur more frequently for female users. To see this effect, we examined the five genres with the highest $E_c@10$ values: ``Fantasy'', ``Animation'', ``War'', ``Romance'', and ``Western'' using the same parameter values as above. The results appear in Figure~\ref{fig:inverse-equity} and show a similar result. ``War'' is something of an anomaly here, both because it is perhaps unexpected to see it as a one of the more female-recommended genres and because the genre-balance algorithm pushes it to become more skewed rather than less. We investigated the cause of this phenomenon. Overall, the BN-SLIM-U algorithm produces a recommendation experience in which the occurrence of gender-specific genres is more closely equalized, with small loss in ranking accuracy. 
 
 \begin{figure}[bth]
     \centering
@@ -271,7 +274,8 @@ Because the balanced neighborhood algorithm is applied across all users, it also
 
 \todo{add the word Chapter before ref tags}
 To be able to apply the SLIM algorithm on Kiva, we densified the data set using the methodology as explained in Chapter \ref{chap:methodology} by clustering the loans with similar characteristics and accounting each cluster as a pseudo item. This clustering was based on the following characteristics in this project: borrower gender, borrower country, loan sector, loan purpose, and loan amount. Then a 5-core transformation was applied to the dataset. The retained dataset has 3,593 psuedo-items, 29,342 users and 393,035 ratings.
-\todo{dataset or data set?}
+\todo{dataset or data set? =dataset}
+\todo[inline]{the previous paragraph in methodology already}
 
 
 % , we used a hybrid recommendation technique incorporating content data in the form of loan characteristics. We characterized each loan using five characteristics available from Kiva: borrower gender, borrower country, loan sector, loan purpose, and loan amount. Each of the original 1 million loan identifiers in the database was replaced with a psuedo-item identifier corresponding to the appropriate combination of loan characteristics. A 5-core transformation was then applied to the dataset, retaining only those users who had funded at least 5 psuedo-items and those psuedo-items with at least 5 funders. The retained dataset has 3,593 psuedo-items, 29,342 users and 393,035 ratings.

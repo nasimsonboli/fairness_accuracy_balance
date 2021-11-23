@@ -162,13 +162,13 @@ The algorithm FAR/PFAR is formally given in Algorithm \ref{alg:main}. For a lend
 \subsection{Experiments}
 \label{subsect:exp}
 
-In this section, we test our proposed algorithms on a real-world dataset from Kiva.org (explained in Chapter \ref{ch:methodology}). The performance of our proposed re-ranking algorithms on top of different base recommenders is evaluated in terms of accuracy and fairness. Our implementation is built upon the LibRec 2.0 \cite{guo2015librec} and integrated into \libauto{} (for detailed explanation please refer to Chapter \ref{ch:lib_auto}), and all results are averages from five-fold cross-validation.
+In this section, we test our proposed algorithms on a real-world dataset from Kiva.org (explained in Chapter \ref{ch:methodology}). The performance of our proposed re-ranking algorithms on top of different base recommenders is evaluated in terms of accuracy and fairness. Our implementation is built upon the LibRec 3.0 \cite{guo2015librec} and integrated into \libauto{} (for detailed explanation please refer to Chapter \ref{ch:lib_auto}), and all results are averages from five-fold cross-validation.
 
 % \paragraph{\textbf{Dataset}}
 \vspace{0.25cm}
 \noindent \textbf{(\romannum{1})~Dataset}
 \vspace{0.25cm}
-
+\todo[inline]{make sure you don't repeat it in the methodology}
 
 Our algorithms are evaluated on a proprietary dataset obtained from Kiva.org, including all lending transactions over an 8-month period. For more details please refer to Chapter \ref{ch:methodology}.
 % Each loan is specified by features including borrower's name, gender, borrower's country, loan purpose, funded date, posted date, loan amount, loan sector, and geographical coordinates.
@@ -183,14 +183,16 @@ Due to the rapid turn-over in the recommended loans, the data remains very spars
 \noindent \textbf{(\romannum{2})~Comparative Recommenders}
 \vspace{0.25cm}
 
+\todo[inline]{the follwoing paragraph could be discussed in the recysys chapter}
 % As of this writing, Kiva.org does not offer recommendation functionality. 
-In our experiments, we assume a context in which the site provides short lists of recommended loans to lenders for their review. We set the protected attribute as the geographical region, because part of Kiva.org's mission is to achieve equitable access to capital across regions. In order to set up the recommendation scenario for Kiva, we select four representative base recommenders to study their performance in accuracy and fairness, as well as how our proposed algorithms can influence the recommendation results: (a) RankSGD \cite{pmlr-v18-jahrer12b} uses stochastic gradient descent to optimize the ranking error; (b) UserKNN \cite{resnick1997recommender} is a memory-based collaborative algorithm that computes user similarity; (c) Weighted Regularized Matrix Factorization (WRMF) ~\cite{hu2008collaborative} creates a reduced-dimensionality factorization of the rating matrix; (d) Maximum-entropy distribution (Maxent) \cite{choo2014gather} is a loan recommender system specially designed for Kiva. Maxent models lending behaviors by estimating a maximum-entropy distribution based on a set of heterogeneous information regarding micro-financial transactions available at Kiva.
+In our experiments, we assume a context in which the Kiva site provides short lists of recommended loans to lenders for their review. We set the protected attribute as the geographical region, because part of Kiva.org's mission is to achieve equitable access to capital across regions. In order to set up the recommendation scenario for Kiva, we select four representative base recommenders to study their performance in accuracy and fairness, as well as how our proposed algorithms can influence the recommendation results: (a) RankSGD \cite{pmlr-v18-jahrer12b} uses stochastic gradient descent to optimize the ranking error; (b) UserKNN \cite{resnick1997recommender} is a memory-based collaborative algorithm that computes user similarity; (c) Weighted Regularized Matrix Factorization (WRMF) ~\cite{hu2008collaborative} creates a reduced-dimensionality factorization of the rating matrix; (d) Maximum-entropy distribution (Maxent) \cite{choo2014gather} is a loan recommender system specially designed for Kiva. Maxent models lending behaviors by estimating a maximum-entropy distribution based on a set of heterogeneous information regarding micro-financial transactions available at Kiva.
 
 
 % \paragraph{\textbf{Evaluation Metrics}}
 \vspace{0.25cm}
 \noindent \textbf{(\romannum{3})~Evaluation Metrics}
 \vspace{0.25cm}
+\todo[inline]{details in methodology}
 
 We propose to utilize Normalized Discounted Cumulative Gain (nDCG)~\cite{jarvelin2002cumulated} and Average Coverage Rate (ACR) to evaluate recommendation accuracy and borrower-side fairness, respectively. ACR is defined by the average number of borrower groups covered by the ranked list,
 
@@ -285,7 +287,7 @@ Comparing PFAR to FAR, the recommendation accuracy of PFAR is higher than FAR si
 The recommendation accuracy of PFAR is higher than FAR, since PFAR limits the amount of loan diversity that the re-ranking imposes, based on the individual tolerance. We can also observe from Figure \ref{fig:kiva_results} that fairness of PFAR is lower, which is consistent with our previous discussion and demonstrates the tradeoff between accuracy and fairness.
 
 
-\paragraph{Visualization of the re-ranking results.} We compute the percentage of recommendations for each group with and without the proposed re-ranking algorithms, and study the corresponding allocation distribution. Due to the 4-page limitation, we chose Maxent as an example, and the results are shown in Figure \ref{fig:kiva_num_rec}. Similar trends can be observed for other base recommenders.
+\paragraph{Visualization of the re-ranking results.} We compute the percentage of recommendations for each group with and without the proposed re-ranking algorithms, and study the corresponding allocation distribution. We chose Maxent as an example, and the results are shown in Figure \ref{fig:kiva_num_rec}. Similar trends can be observed for other base recommenders.
 
 (i) The blue bars show the distribution of the base recommender Maxent, \emph{i.e.,} $\lambda=0$. We observe that Maxent focuses on a few major borrower groups, namely Asia and Africa (making up 36.58\% and 27.64\% of total recommendations, respectively), while paying less attention to the others. 
 
@@ -331,6 +333,7 @@ In this work, we proposed a personalized fairness-aware re-ranking algorithm for
 
 FAR/PFAR is extremely strict in its requirement that each possible provider group appears at least once at the top of the list. Therefore, another variant to consider is one that can adjust the accuracy/fairness tradeoff in a dynamic way as items are ranked, valuing accuracy more at the top of the list and provider-side fairness more at the bottom of the list.
 
+\todo[inline]{incorporation in the intro for other section below}
 Finally, we note that, in real-world recommendation applications, managing the tradeoff between accuracy and coverage of provider groups is not a single-shot process. Rather it is an online process, where a current lack of coverage can be compensated for at a later time, and where results are evaluated temporally. This would require making the algorithm sensitive to historical patterns of coverage, rather than just the results obtained in the current list. We intend to explore this type of algorithm design and evaluation in our future work.
 
 % This project currently is an on-going project and we intend to develop a method using probabilistic serial allocation and submit it to the ACM Conference Series on Recommender Systems 2021.

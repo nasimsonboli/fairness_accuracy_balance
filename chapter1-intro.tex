@@ -26,7 +26,7 @@ One of the leading international microlending organizations, Kiva Microfunds (Ki
 
 Consider a loan recommender system that suggests loans to lenders to support. There are many online platforms attempting to connect small businesses or entrepreneurs who have requested for a loan to lenders or donors in some way. 
 
-Discriminatory recommendations in this system could mean that for instance, more attractive, lighter-skinned, and less obese borrowers are favored \cite{JENQ2015234}, and their loans get funded faster. Or when they get similar recommendations, it is just because of their similar demographic information not because of reasons they have provided about why they need the fund.
+Discriminatory recommendations in this system could mean that for instance, more attractive, lighter-skinned, and less obese borrowers are favored \cite{JENQ2015234}, and their loans get funded faster. Or when they get similar recommendations, it is just because of their similar demographic information not because of reasons they have provided about why they need the loan.
 
 The system would therefore need to defend against biases in recommendation output, even biases that arise due to behavioral differences: for example, certain regions in the world are more favored due to the historical or political relationships of the countries where the lenders and borrowers reside. Therefore, certain borrowers unjustly get a high exposure to the lenders and the others might not get any visibility at all. And due to the formed positive feedback loops, this gap might get wider over time, resulting in ignoring certain user subgroups.
 
@@ -68,7 +68,7 @@ Ignoring the societal and ethical consequences of recommendation algorithms in d
 
 \section{Fairness-aware recommender systems}
 
-In the recent years, the topic of unfairness in machine learning algorithms, has gained the attention of a multidisciplinary community from computer scientists, social scientists to legal scholars. Thus as a response, recent research has shifted from design of algorithms that pursue purely optimal outcomes with respect to an objective function (e.g. accurate outcomes) into ones that also consider algorithms' social impacts such as unfairness, discrimination, etc.
+In the recent years, the topic of unfairness in machine learning, has gained the attention of a multidisciplinary community from computer scientists, social scientists to legal scholars. Thus as a response, recent research has shifted from design of algorithms that pursue purely optimal outcomes with respect to an objective function (e.g. accurate outcomes) into ones that also consider algorithms' social impacts such as unfairness, discrimination, etc.
 
 The problem of mitigating unfairness in recommender systems has its unique challenges that set it apart from other machine learning problems. Therefore, the methods that have been developed in other machine learning fairness literature are not fully applicable in recommender systems.
 
@@ -84,6 +84,7 @@ In fact, what recommender systems are seeking for, is the ability to predict the
 \todo[inline]{why?}
 
 \subsection{Impossibility of ideal accuracy}
+\todo[inline]{what the users want and what they click on is different?}
 So, recommender systems recognize the more general patterns in the data and use this information for recommendation generation. This general pattern is based on the log history of user rating behavior in the system. So, these general patterns might not satisfy the short term interests of users or the evolution of their taste over time. These changes are in fact hard to predict as there are many underlying confounding factors re-shaping them.
 
 % In practice, it is hard to predict the information need of users at each point in time. 
@@ -99,7 +100,7 @@ Increasing accuracy more than a threshold might even be undesirable or unsatisfa
 \subsection{Accuracy \& data imbalance}
 Accuracy-based metrics can hide consumer unfairness in their outcomes. Accuracy mostly reflects the quality of the recommendations that the majority of the user base experiences regardless of what other minority user groups are experiencing. Therefore, minority groups might not receive a high quality service from the system. 
 
-That is because these metrics are usually averaged over all the user base. And usually, the previously collected data is not reflective of the diversity in the society due to various reasons such as bias in data collection or simply lack of online participation from the minority groups. Therefore, the data imbalance can create accuracy imbalance between the majority user group(s) on whom we have more data and minority groups with less data. So, having a discrepancy in recommendation quality for different user groups is a type of unfairness  in recommender systems and reaching to balance it, is of interest for the research community \todo{cite the people who have done this}.
+That is because these metrics are usually averaged over all the user base. And usually, the previously collected data is not reflective of the diversity in the society due to various reasons such as bias in data collection or simply lack of online participation from minority groups. Therefore, the data imbalance can create accuracy imbalance between the majority user group(s) on whom we have more data and minority groups with less data. So, having a discrepancy in recommendation quality for different user groups is a type of unfairness  in recommender systems and reaching to balance it, is of interest for the research community \cite{ekstrand2018all,yao2017beyond}.
 
 
 \subsection{Accuracy \& popularity bias}
@@ -115,7 +116,9 @@ Not only the consumers of recommendations will be affected, but the item provide
 
 In spite of all the previously mentioned issues about accuracy, reaching a high accuracy is still at the core of personalization. Because accuracy is known to be strongly tied with user satisfaction (satisfying users' information need) of the system and also because compared to other goals like fairness or diversity, accuracy is financially more beneficial therefore necessary for the survival of the commercial recommendation systems (e-commerce websites).
 
-Although, since the end goal for the recommender system is to serve its users (any stakeholder group), any potential harm in the system should be prevented and the biases towards its users should be mitigated. Integrating and operationalizing a goal such as fairness to the system is essential but challenging especially because it has major tradeoffs with accuracy.
+Although, since the end goal for the recommender system is to serve its users (any stakeholder group), any potential harm in the system should be prevented and the biases towards its users should be mitigated. In some application areas, some harms are of greater concern than the others therefore they can be prioritized. For example in the Kiva application, harms towards the lenders are less likely than towards borrowers. So, in our work we decide to study provider-side fairness.
+
+Integrating and operationalizing a goal such as fairness to the system is essential but challenging especially because it has major tradeoffs with accuracy.
 
 
 \todo[inline]{add this => However, optimizing recommendation accuracy often comes at the expense of provider fairness, due to various biases present in recommender systems, including popularity bias \cite{celma2008hits,lee2014fairness}, and user-base composition \cite{lin2019crank, yao2017beyond}. Research in provider fairness is therefore generally concerned with improving the tradeoff between fairness and accuracy, or in other words, increasing the amount of fairness that can be gained for a given degree of accuracy loss.
@@ -141,15 +144,16 @@ Therefore, addressing the accuracy and fairness trade-off as competing goals is 
 
 \subsection{Fairness interventions}
 
-Fairness is a convoluted concept and it can have many different definitions under different contexts. More details on these concepts will be provided in Chapter \ref{fairness}. Our definitions of fairness are group-based with a focus on fairly increasing the exposure of under-privileged providers or consumers. 
+Fairness is a complex concept and it can have many different definitions under different contexts. More details on these concepts will be provided in Chapter \ref{fairness}. In this work, I concentrate on group fairness, focusing on increasing the exposure of under-privileged providers or consumers. 
 
+\todo[inline]{this term is not defined (fairness concerns)}
 With fairness concerns identified, it becomes possible to consider interventions to improve recommender systems performance relative to them. 
 
 In doing so, it is worth keeping in mind the ``traps'' identified in \cite{selbst2019fairness}, possible hazards in applying fairness concepts in sociotechnical systems. Sebst and colleagues note that sometimes a technical fix is not always the most appropriate approach for problems of power imbalance and bias, and the failure to recognize this is defined as the \textit{solutionism trap}. There may be a wide variety of non-computational solutions to problems that surface themselves as unfair recommendations. 
 
 Generally, three types of solutions have been proposed to operationalize fairness notions in order to mitigate  unfairness: pre-processing, in-processing, and post-processing.
 
-Pre-processing methods focus on compensating for the existing biases in a dataset. They suggest different data collection enhancements to compensate for the biases that occur due to data imbalance. In-processing approaches try to improve the fairness of results by integrating fairness notions into recommendation generation itself. Post-processing approaches focus on modifying the outputs of algorithms to satisfy a fairness criterion. More details on these methods can be found in Chapter \ref{fairness}.
+Pre-processing methods focus on compensating for the existing biases in a dataset, using different data collection enhancements to compensate for the biases that occur due to data imbalance. In-processing approaches try to improve the fairness of results by integrating fairness notions into recommendation generation itself. Post-processing approaches focus on modifying the outputs of algorithms to satisfy a fairness criterion. More details on these methods can be found in Chapter \ref{fairness}.
 
 We propose one pre-processing, one in-processing, and three post-processing approaches to improve the fairness-accuracy trade-off. More details are presented in Chapter \ref{fairness_inproc}, \ref{fairness_postproc}, and in Chapter \ref{conclude}.
 
@@ -174,7 +178,7 @@ The research questions that we seek to answer are as follows:
     \todo[inline]{how does different algorithms compare (all rerankers), which algorithm should I use?}
     \item How can we incorporate fairness objectives into recommendation generation or post-processing to achieve better trade-offs? % far/pfar, ofair
     \item How can we extend these ideas to more complex scenarios involving multiple fairness concerns or requiring dynamic assessment of fairness opportunities? %dynamic fairness, multiple fairness concerns
-    \item How can we ensure the reproducibility of the results and widen availability of fairness-aware techniques in recommendation? %librec
+    \item How can we ensure the reproducibility of the results and widen availability of fairness-aware techniques in recommender systems research? %librec
 \end{itemize}
 
 \section{Summary of contributions}

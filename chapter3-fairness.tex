@@ -1,29 +1,107 @@
 \chapter{Fairness}
 \label{ch:fairness}
 
-In recent years, the increased adoption of algorithmic systems into many realms of society has raised concerns about the harms and unfairness that such systems cause. Among these concerns, the issue of fairness in computing systems in the decision support context, especially the ones that rely on machine learning and statistical tools, has gained a significant attention\cite{mitchell2021algorithmic}. This is particularly evident where high stakes decisions are made, ones that have significant real-world impact on individuals’ lives and livelihoods such as healthcare, public policy, and law enforcement.
+In recent years, the increased adoption of algorithmic systems into many realms of society has raised concerns about the harms and unfairness that such systems cause. Among these concerns, the issue of fairness in computing systems, in the decision support context, especially the systems that rely on machine learning and statistical tools, has gained a significant attention\cite{mitchell2021algorithmic}. This is particularly evident where high stakes decisions are made, ones that have significant real-world impact on individuals’ lives and livelihoods such as healthcare, public policy, and law enforcement.
 
 The discussion of fairness, justice and equity is only one of the social aspects that is being investigated and criticized in machine learning systems. Such problems have gained the attention of a multidisciplinary community from computer scientists in different fields (e.g. artificial intelligence, machine learning, etc. to social scientists and legal scholars that have started to study "Fairness, Accountability, and Transparency", and "AI ethics" in their fields.
 
-In this chapter, we provide a short overview on algorithmic fairness including fundamental concepts, definitions, potential sources of unfairness and different family of solutions that can be used to reduce fairness in machine learning systems based on the work in \cite{mitchell2021algorithmic,barocas2016big,barocas2018fairness}.
-
+In this chapter, we provide a short overview on algorithmic fairness, for classical machine learning problems as well as recommender systems, including its fundamental concepts, definitions, potential sources of unfairness and different families of solutions that can be applied in order to reduce fairness in machine learning systems. For a deeper discussion on these topics please refer to the work of \cite{mitchell2021algorithmic,barocas2016big,barocas2018fairness}.
 
 \section{Fairness \& Justice}
-\todo[inline]{missing}
-
-
-
+\label{sec:fair_&_justice}
+    
+    On of the most fundamental concepts in the pursuit of fairness both in the society and computing systems is an axiom traced to Aristotle: \textit{Equals should be treated equally, and unequals unequally, in proportion to relevant similarities and differences.}
+    
+    This axiom establishes a rule that defines similarities according to cases’ objective characteristics as opposed to the subjective perceptions of the judge, the maxim forces decisions to be consistent with this rule so that that equal users are treated equally before the law \cite{Gosepath2011equality}. Although "treating unequals unequally" is a vague sentence. 
+    
+    This issue is addressed in the scholarship on distributive justice by recognizing four classic principles: \textit{exogenous rights}, \textit{compensation}, \textit{reward}, and  \textit{fitness} discussed in Moulin \cite{Moulin:FairDivision}. 
+    
+    Exogenous rights are the rightful external claims that the system should satisfy such as equal shares in a property defined by a contract. Compensation recognizes that fairness needs extra consideration where the costs are not equal. Affirmative action in college admission or in hiring are examples of this principle. The principle of the reward demands to gain benefits in proportion to contributions. For example, employees get increased bonuses according to their contributions to that organization.
+    
+    The argument on fitness demands that resources go to those most fit to use or in other words, whomever makes the best use of resources for the benefit of all. This idea is ideologically close to the idea of utilitarianism which favors a distribution that maximizes the overall utility (sum of the individual utilities) ignoring the needs of particular individuals. Fitness has a natural application in machine learning systems, specifically recommender systems as we deliver information (recommendation lists) to individuals based on their utility and fitness to users.
+    
+    Anti-discrimination law in the U.S. legal theory, has given rise to such important concepts as \textit{disparate impact}. Anti-discrimination law ensures that people are not denied certain benefits like housing, education, work, etc. on the basis of \textit{protected characteristics} such as race, color, religion, gender, disability, age or in many jurisdictions sexual orientation. Using the disparate impact standard, a discriminatory action can be challenged legally based on the disproportionate adverse impact on a protected group, without showing the intent to discriminate.
+    
+    Crenshaw (2018) \cite{clark2018demarginalizing} discusses that this legal framework is limited as it only focuses on discrimination on the basis of individual protected characteristics while people who suffer from the combination of protected characteristics have a hard time proving their case.
+    
+    Fairness and discrimination have been a topic of discussion for decades in other communities such as educational testing, which has a large body of literature on fairness in their domain \cite{Hutchinson2019history}. Friedman et al. (1996) \cite{Friedman1996Bias} provides one of the earlier discussions on bias in computer systems and how technical decisions may result in biased effects when computer systems are used in the social context. 
+    
+    In the last decade, fairness in machine learning has been a topic of interest in the research community and is being actively expanded in this field. In the following section, we will describe an introduction to this literature.
 
 \section{Fairness in Machine Learning}
-\todo[inline]{missing}
+\label{sec:fair_ml}
+    
+    \todo[inline]{more on the fairness concept}
+    Fairness is a convoluted and contested concept and it does not encapsulate one definition. Algorithmic fairness as well, is not one goal, but rather a spectrum of different equity concerns.
+    
+    To understand algorithmic unfairness, initially, we need to recognize the type of unfairness that happens in a system, understand the stakeholders (consumers, providers, and etc.) that are affected by the harms caused by this unfairness. It is only after taking these steps that we can design methods to assess a system's unfairness and finally design approaches to diminish unfairness in that system.
+    
+    Although researchers and practitioners should bear in mind that machine learning might not always provide a solution and formulating fairness definitions in mathematical forms without considering the full meaning such social concept might not resolve the problem. Selbst et al. (2019) \cite{selbst2019fairness} refers to this issue as \textit{formalism trap} and identifies a number of other "abstraction traps" in fairness research.
+    
+    In addition to these traps, one should understand that fairness, in its foundation, is contextual, and contestable. Additionally, incompatibility of different fairness notions \cite{friedler-impossibility-2021} implies that universal fairness is not an achievable (and even meaningful) concept.
+    
+    Considering the discussed limitations, researchers identify specific ways in which they \textbf{can} determine a system's (mathematically and reasonably definable) unfairness and try to develop tools to measure and mitigate unfairness in different domains. Much of the work in algorithmic fairness has been focused on classification with a myriad of definitions that has been proposed. The key definitions are explained in \cite{mitchell2021algorithmic,barocas2016big,barocas2018fairness}.
+
+    In the algorithmic fairness scholarship, sometimes the terms such as "bias", "fairness", "discrimination", "inequity", and "injustice", which were mostly borrowed from legal scholarship, are used interchangeably without considering their nuances. Therefore, different authors use these terms subjectively to some extent. Therefore it is important to understand the usage of these words from the perspective of different authors. Throughout this dissertation, I will specifically determine the type of unfairness for every research problem, but will use these words interchangeably as well.
+    
+    Algorithmic fairness in machine learning often addresses two major issues: (1) distributional harms and, (2) representational harms\cite{crawford2017trouble}. Distributional harm occurs when the positive or negative effects, outcomes or resources are not distributed fairly among its subjects. While in representational harms, subjects are not represented fairly by and in the system. 
+    
+    Unfairness can happen in any part of a system's pipeline such as the data collection, model, evaluation, etc. I will explain different sources of unfairness in the next section.
+    
+    When we assess the unfairness of a system, is it also important to identify users or groups of users that are being affected. We need to assess whether we are being unfair to individuals or groups of users. Individual fairness is concerned with the similar treatment of similar users, while group fairness is concerned with identifying and addressing the discrepancies between different groups. These concepts will be explained in section \todo[inline]{individual vs group fairness section}.
+    
+    To clarify unfairness definitions and to apply the appropriate solutions, we need to break them down into different categories. And this categorization (along with their assigned names) is based on the type of harm (distributional or representational) that happens in a system, the location in the pipeline that it happens, and whether this harm is affecting individuals or groups of users.
+    
+    To define fairness for the recommender system, in addition to the previous categorizations, we also need to account for some additional and unique challenges such as personalization and different stakeholders' perspectives. This issue will be further discussed in section \ref{sec:fairness_recsys}.
+
+    \subsection{Sources of unfairness}
+    The harms that are caused by a system arise from some type of bias, where there is a discrepancy between the expected and existing observations or the outcomes. These biases can creep into any part of the decision support system: in the outside world, in the collected data, in the development of the models, their evaluation or their application \cite{sureshframework2019}. Here we describe the sources of unfairness in different parts of a machine learning system's pipeline or the the its feedback loop. Unfairness may arise in any part of this process and may get mitigated, propagated or exacerbated or even re-formed in the same stage or the following stages.
+    
+    \todo[inline]{create a plot or doodle and add and refer to it here.}
+    
+    \textbf{Society} or the outside world may be unfair. This type of bias is usually historical and ongoing. Redlining in United States housing policies \cite{rothstein2017color} is an example of this type of bias, which prevented Black Americans from home ownership in wealthier neighborhoods; neighborhoods with better amenities such as parks or better schools that improve the quality of life and childhood development. Due to such actions by private-sector and government policies, Black residents were prohibited from accessing the same opportunities for wealth building which has lead to significant racial disparity in wealth through home ownership and even disparate quality of education.
+    
+    \textbf{Data} is another source of bias. The data can get biased during the data collection process. In some cases, some people are more likely to respond to surveys or volunteer information. This type of bias is know as response or submission bias. 
+    
+    Sampling strategies are used to collect a certain amount of data for a specific purpose might fail to collect a sample that is representative of the real data or the real world. This issue can contribute to representation bias.
+    
+    The previous issues may construct an imbalanced data where the size of different users differ. In this case, the prediction/recommendation models may become more accurate for the groups with greater group sizes as they have more data while being more erroneous in predictions for smaller sized groups.
+    
+    In the data collection process, sometimes the perspective of the people involved in the the process  can invite bias into the data, particularly if there is little engagement with the stakeholders (for whom we are providing a service) to understand their needs. These biases will go undetectable if there is not a clear documentation of the perspectives and assumptions that went into its design \cite{Hutchinson2021Account}. 
+    Lack of documentation, becomes problematic particularly when such sensitive personal attributes such as gender or race are recorded. Categorization of such attributes like gender is usually adapted from administrative data collection which might not be inclusive of all the differences. Therefore, their categorization and how they are recorded vary over time as the social and cultural constructs evolve \cite{Hanna2020CriticalRace}. Therefore it is important to interpret the data according to its time and also according to the cultural and social contexts to avoid the previous biases and to avoid unfairly disregarding local knowledge and perspectives.
+    
+    Mitchell \cite{mitchell2021algorithmic} differentiates between the societal bias and systematic or statistical bias. Societal bias is the deviation between the \textit{the world as it should and could be} and \textit{the world as it is}. Redlining is an example of societal bias, since without this bias, the world could be different with Black residents living in any neighborhood. Statistical bias results in systematic discrepancies between \textit{the world as is} and \textit{the world that the data represents}. For example, if the records of housing information differs from the actual housing, it can cause a systematic mismatch.
+    
+    \textbf{Models} can also exacerbate the existing unfairness or introduce unfairness. Models can learn to discriminate based on the sensitive attributes with or without having these attributes in the data. Models can indirectly learn the sensitive attributes based on the correlations of other variables with the sensitive attributes or the behavioral patterns associated with those attributes.
+    
+    The objective functions may also include biased perspectives about what constitutes a \textit{good} model and result in biased outcomes.
+    
+    \textbf{Evaluation} of machine learning algorithms is also bias prune. All of the issues with data that we discussed before (such as sampling strategies, group sizes, etc.) apply to evaluation as well. The perspectives in the design of the evaluation metric, and how these perspectives define success in the outcome can bias the outcomes. For example, if the evaluation metric is aggregate, it will hide the biases for the minority group. Or some metrics measure and reflect success on stakeholder while other experience bias. 
+    
+    Therefore, the perspective of the decision makers involved in the design of the metric, the model, the data collection methods can bias the outcomes.
+    
+    \textit{Human responses} are another factor that bias the outcomes. Some of the machine learning systems are interactive, so they record human responses to their results and feed this data back to the system. Srivastava et al. (2019) \cite{Srivastava2019fairnessnotions} discusses how algorithms and humans might disagree in this case on the notions of fairness in a way that their response might even be the exact opposite of the fairness definitions. Green and Chen (2019) \cite{Green2019algointheloop} found that the racial disparity in human assessment of risk scores increased after they were provided with the risk scores that were produced by a racially fair algorithm. Besides algorithms, other factors may skew human responses which can skew the current outcomes or the outcomes in the next iterations.
+    
+    Unfairness as we described can happen in any stage of the machine learning systems. Each part needs different interventions to mitigate the biases. Although, the bias that is removed in one stage can be re-introduces in another stage of the pipeline.
+    
+    \todo[inline]{should I have the table of different biases in ML that is in the book chapter?}
+    
+    \subsection{Concepts}
+    
+    %group fairness
+    %individual fairness
+    
+    \subsection{Mitigation methods}
 
 
 \section{Fairness in Recommender Systems}
+\label{sec:fairness_recsys}
 \todo[inline]{missing}
 
 
 \todo[inline]{do they belong under the fairness in recommender systems?}
 \section{Consumer fairness}
+\label{fairness_cf}
 
 Recommender systems exist to facilitate transactions between all the stakeholders such as consumers of recommendations, and the providers of the items that were recommended (content providers), etc. Many recommendation applications involve multiple stakeholders and therefore may give rise to fairness issues for more than one group of participants~\cite{burke_multisided_2017}. Among all these stakeholders consumers and providers have the highest stake. 
 Here we  define consumer fairness and discuss the literature that has addresses the consumer unfairness problem.\todo[inline]{in recsys?}
@@ -34,7 +112,7 @@ Consumer fairness (C-fairness) is concerned with the ways recommender systems im
     \subsection{Individual fairness}
     If the goal of a system for consumers is individual fairness, then the system needs to make sure that similar individuals have similar experiences or quality of service within the system. This similarity can be calculated based on any user characteristics that the system might have been discriminating against such as gender, location, user profile, etc. Previous literature has used the accuracy of the recommendation outcomes to compare the quality of the service that individual users are experiencing. 
     
-    In offline experiments, typical evaluation measures such as nDCG or recall can be used to measure accuracy. Another evaluation approach is to measure the distribution of utility for all the users. (Hashimoto et al.,2018 \cite{hashimoto2018fairness})\todo{write the names of all the papers you cited and put in parenthesis} develop an approach based on distributionally robust optimization (DRO), which minimizes the worst case risk over all distributions close to the empirical distribution. They try to control the discrepancy in accuracy across users by constraining the performance for all of the users within a particular error region. This method hasn't been utilized in recommender systems due to some reasons. This method assumes that users are all the same and thus we can ensure a minimum quality of service for all of them. Whereas in recommender systems (all the information access systems) users might not be considered equal due to some reasons. For example, we do not have enough data about the users who recently joined a system yet (cold-start users) and this lack of data on this group of users will lead to a worse accuracy for them. Therefore performance discrepancy between the cold-start users and the users with denser profiles becomes inevitable. Applying the previous method here means to lessen the quality of recommendations for users with denser profiles in order to achieve equal accuracy between these user groups which is undesirable.
+    In offline experiments, typical evaluation measures such as nDCG or recall can be used to measure accuracy. Another evaluation approach is to measure the distribution of utility for all the users. (Hashimoto et al.,2018 \cite{hashimoto2018fairness})\todo{write the names of all the papers you cited and put in parenthesis} develop an approach based on distributionally robust optimization (DRO), which minimizes the worst case risk over all distributions close to the empirical distribution. They try to control the discrepancy in accuracy across users by constraining the performance for all of the users within a particular error region. This method hasn't been utilized in recommender systems due to some reasons. This method assumes that users are all the same and thus we can ensure a minimum quality of service for all of them. Whereas in recommender systems users might not be considered equal due to some reasons. For example, we do not have enough data about the users who recently joined a system yet (cold-start users) and this lack of data on this group of users will lead to a worse accuracy for them. Therefore performance discrepancy between the cold-start users and the users with denser profiles becomes inevitable. Applying the previous method here means to lessen the quality of recommendations for users with denser profiles in order to achieve equal accuracy between these user groups which is undesirable.
     
     \subsection{Group fairness}
     Group fairness in a system means to ensure that the system provides the same (or comparable) quality of service or utility to different consumer groups within the system. For example, if in a job recommendation scenario, if on average women receive lower-paying job recommendations than the rest of the users, this could be considered unfair.
@@ -64,7 +142,7 @@ Consumer fairness (C-fairness) is concerned with the ways recommender systems im
 
 \section{Dynamic fairness}
 
-    It is important to consider fairness in recommender systems as a dynamic property, because, recommender systems operate in dynamic environments where it continuously makes new decisions based on the recent changes in the system such as: gaining or losing consumers, gaining or losing (item) providers and the different items that they provide based on the current needs of the market, seasonal changes, and etc.
+    It is important to consider fairness in recommender systems as a dynamic property, because, recommender systems operate in a dynamic environment. A system continuously is making new decisions based on recent changes in the system such as: gaining or losing consumers, gaining or losing (item) providers and the different items that they provide based on the current needs of the market, seasonal changes, and etc.
 
     Some of these dynamic changes can introduce biases into a system that might have been "de-biased" recently or they can even re-enforce the existing biases. 
     
@@ -72,11 +150,11 @@ Consumer fairness (C-fairness) is concerned with the ways recommender systems im
     
     This type of bias occurs because users are more likely to interact with items that the system presents to them. 
     
-    The first issue here is the item selection by the recommender system here and whether it will contribute to unfairness to any of the stakeholders. We have addressed how to mitigate this issue in Chapter \ref{fairness} in the pre-processing section \todo[inline]{preprocessing section}. 
+    The first issue here is the item selection by the recommender system here and whether it will contribute to unfairness to any of the stakeholders. We have addressed how to mitigate this issue in Chapter \ref{ch:fairness} in the pre-processing section \todo[inline]{preprocessing section}. 
     
     The second issue is that presentation bias, can lead to a form of positive feedback loop, in which presented items gain more popularity since they are more likely to be interacted with. This leads to greater bias towards presenting the items when the popular items are promoted more at the cost of other items. Presentation bias and the created feedback loop not only magnifies the initial differences between items' popularity but also it makes it hard for new providers to attract the attention of users to their products/items in a system with this type of bias.
     
-    For example, in the microlending case, if the system doesn't recommend loans from a specific geographical region because on average the requested loans from this region are risky (their borrowers are less likely to return the loan), not only the current good borrowers (the borrowers who are more likely to return the loan) from that region are affected, but also the future good borrowers. This positive feedback loop re-enforces over time until that region is completely ignored by the system.
+    For example, in the microlending case, if the system doesn't recommend loans from a specific geographical region because on average the requested loans from this region are risky (their borrowers are less likely to repay the loan), not only the current good borrowers (the borrowers who are more likely to return the loan) from that region are affected, but also the future good borrowers. This positive feedback loop reinforces over time until that region is completely ignored by the system.
     
     \cite{Chaney2018Homo} shows that in an iterative environment, recommender systems increase the inequity in item exposure and homogenize the recommendation lists across different users which is undesirable. \cite{pmlr-v80-hashimoto18a} shows in a systems where users engage with it iteratively, machine learning models that are trained on average loss, suffer from representation disparity (presentation bias) which over time these systems lose their minority groups. To mitigate this bias, they develop an approach based on distributionally robust optimization (DRO) that achieves a more balanced performance between the dominant subgroups and minority ones. \cite{NEURIPS2019_7690dd4d} study this idea in a sequential framework and show that representation disparity gets worse under the natural user dynamics model, resulting in some groups diminishing entirely from the sample pool in the long run. to mitigate feedback loops in the context of predictive policing, \cite{pmlr-v81-ensign18a} develop a mathematical model of predictive policing that proves why this feedback loop occurs, show empirically that this model exhibits such problems, and demonstrate how to change the inputs to a predictive policing system so the feedback loop does not occur, leading to better decision-making systems.
     
