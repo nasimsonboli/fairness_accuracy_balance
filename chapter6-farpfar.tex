@@ -2,12 +2,7 @@
 
 In this section we propose a post-processing approach to mitigate provider unfairness in the context of microlending. Provider unfairness here is defined as mitigating the presentation bias for the minority groups and it is calculated over a single dimension (region). Since the recommendation slots are limited, utility becomes rivalrous for providers. Recommendation systems contain popularity bias that contributes to presentation bias. And the utility is calculated as an average utility over all the users. Therefore, this value is skewed towards the majority group and any attempt to increase the exposure of the minority group, by allocating some of the recommendation slots to them, will lead to loss of accuracy. 
 
-
 The goal in this project is to achieve a reasonable accuracy / fairness balance. In other words, we intend to maximize lenders' interests, while ensuring a "fairer" allocation of recommendation opportunities across the borrower side. Our method has the capability of controlling between fairness and accuracy, so it can be tuned according to the application that it is going to be used for.
-
-% Microlending is the provision of small and low-interest loans (as little as \$25) to low-income individuals or small-scale entrepreneurs from under-developed countries \cite{yunus1998banker}. The extremely poor people in rural areas often lack collateral, steady employment, or a verifiable credit history, hence they cannot get access to financial services. Under such circumstances, microlending has attracted an increased attention in the last decade \cite{chen2017microfinance}, providing impoverished entrepreneurs an opportunity to start their own businesses as well as avoid the vicious cycle of debt.
-
-% One of the leading international microlending organizations, Kiva Microfunds (Kiva.org), has crowd-funded about 3 million borrowers with \$1.27 billion USD as of February 2019 \cite{kiva}. Kiva does not collect interest but provides an intermediary service for lenders and borrowers, as illustrated in Figure \ref{fig:kiva_process}. Borrowers from over 80 countries, divided into 8 regions by Kiva, post their applications for loans on the website for lenders to support. Lenders browse and crowd-fund the loans in the increments of \$25 or more. 
 
 \subsection{Introduction}
 
@@ -162,9 +157,9 @@ The algorithm FAR/PFAR is formally given in Algorithm \ref{alg:main}. For a lend
 \subsection{Experiments}
 \label{subsect:exp}
 
-In this section, we test our proposed algorithms on a real-world dataset from Kiva.org (explained in Chapter \ref{ch:methodology}). The performance of our proposed re-ranking algorithms on top of different base recommenders is evaluated in terms of accuracy and fairness. Our implementation is built upon the LibRec 3.0 \cite{guo2015librec} and integrated into \libauto{} (for detailed explanation please refer to Chapter \ref{ch:lib_auto}), and all results are averages from five-fold cross-validation.
+In this section, we test our proposed algorithms on a real-world dataset from Kiva.org (explained in Chapter \ref{ch:methodology}). The performance of our proposed re-ranking algorithms on top of different base recommenders is evaluated in terms of accuracy and fairness. Our implementation is built upon the LibRec 3.0 \cite{guo2015librec} and integrated into \libauto{} (for detailed explanation please refer to Chapter \ref{ch:librec-auto}), and all results are averages from five-fold cross-validation.
 
-% \paragraph{\textbf{Dataset}}
+
 \vspace{0.25cm}
 \noindent \textbf{(\romannum{1})~Dataset}
 \vspace{0.25cm}
