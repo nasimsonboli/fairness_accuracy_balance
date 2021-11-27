@@ -1,5 +1,5 @@
 \chapter{Introduction}
-\label{introchap}
+\label{ch:intro}
 
 % Robin's comments
     % more structure: subsections, giant block of text.
@@ -11,28 +11,27 @@
 
 % \todo{research context}
 
-After a substantially fast development in creating "smarter" digital systems, more and more decisions are being delegated to algorithms. Having observed the evolution, influence, and consequences of these AI-supported systems over time, growing concerns have been raised in the public discourse about ethical issues and the potential harms of these systems to individuals and society. Machine learning is and continues to be one of the main pillars of these systems.
+After a fast development in creating "smarter" digital systems, more and more decisions are being delegated to algorithms. Having observed the evolution, influence, and consequences of these AI-supported systems over time, growing concerns have been raised in the public discourse about ethical issues and the potential harms of these systems to individuals and society. Machine learning is and continues to be one of the main pillars of these systems.
  
-Recommender systems are one of the most pervasive applications of machine learning in the industry. They play a pivotal role in connecting users to relevant items or content throughout the web. Not only do users rely heavily on these systems but also other parties such as content producers, sellers, or information providers.
-
-Although they are intended to assist people in different tasks, they can risk implicit or explicit discrimination against individuals or groups, especially marginalized groups. %they can potentially cause implicit or explicit
+Recommender systems are one of the most pervasive applications of machine learning in the industry. They play a pivotal role in connecting users to relevant items or content throughout the web. Not only do users rely heavily on these systems, but also other parties such as content producers, sellers, or information providers. Although these systems are intended to assist people in different tasks, they can risk implicit or explicit discrimination against individuals or groups, especially marginalized groups. Consider a recommender system suggesting job opportunities to job seekers. Discriminatory recommendations in these systems could mean that men and women with similar qualifications don't get recommendations for jobs with equal rank and salary.
+%they can potentially cause implicit or explicit
 
 % \todo[inline]{is a job recommendation scenario out of context?}
-Consider a recommender system suggesting job opportunities to job seekers. Many online platforms attempt to connect job opportunities and job applicants in some way. Sometimes they are professional networks with a job-seeking component such as Xing and LinkedIn, or they might have been designed only for employment seeking. Discriminatory recommendations in these systems could mean that men and women with similar qualifications don't get recommendations of jobs with similar rank and salary.
+% Many online... is redundant.
 
-For example, suppose there are more women on a job recommendation website. They all apply for secretarial jobs; these jobs might show up in the recommendations of women who are looking for CEO jobs. On the other side of the coin, jobs with better salaries and higher ranks will be recommended to men regardless of their qualifications. Basileal et al. \cite{Korolova2021JobAds} demonstrates this issue in the Facebook's ad delivery system.
+%Many online platforms attempt to connect job opportunities and job applicants in some way.Sometimes they are professional networks with a job-seeking component such as Xing and LinkedIn, or they might have been designed only for employment seeking.
 
-In another real-world example, Human Rights Watch reports the case that women are being discriminated against \cite{HRW2018ads}. They analyzed over 36,000 job advertisements posted between 2013 and 2018 on Chinese recruitment and company websites and social media platforms. Many of the ads specify a requirement or preference for men regardless of the qualifications of women. Some job posts require women to have certain physical attributes – with respect to height, weight, voice, or facial appearance – that are irrelevant to job duties.
+For example, suppose more women apply for lower-paying jobs on a given job-seeking website. Also, assume that the recommendation algorithm relies heavily on the correlation between demographic information and job salaries. In this case, jobs with lower salaries or ranks might show up more often in the recommendations to women. Suppose that this behavior is more common in women than men, therefore more jobs with better salaries and higher ranks will be recommended to men. Basileal et al. \cite{Korolova2021JobAds} demonstrates this issue in the Facebook's ad delivery system and how demographic information causes the system to discriminate against women regardless of their qualifications.
+
+In another real-world example, Human Rights Watch reports similar discrimination against women in the job market \cite{HRW2018ads}. They analyzed over 36,000 job advertisements posted between 2013 and 2018 on Chinese recruitment and company websites and social media platforms. Many of the ads specify a requirement or preference to hire men regardless of other qualified women candidates. Some job posts require women to have certain physical attributes – with respect to height, weight, voice, or facial appearance – that are irrelevant to job duties.
 
 % ali2019JobDiscrimination
 % when they get similar recommendations, it is just because of their demographic information not because of their qualifications.
 
-Now, consider a loan recommender system that suggests loans to lenders to support. Many online platforms attempt to connect small businesses or entrepreneurs in need of loans to lenders or donors, such as Kiva.org or DonorsChoose.org. Discriminatory recommendations in this system could mean that, for instance, more attractive, lighter-skinned, and less obese borrowers are favored \cite{JENQ2015234}, and their loans get funded faster.
+Now, consider a loan recommender system that suggests loans to lenders to support. Many online platforms attempt to connect small businesses or entrepreneurs in need of loans to lenders or donors, such as Kiva.org or DonorsChoose.org. Discriminatory recommendations in these systems could mean that, for instance, more attractive, lighter-skinned, and less obese borrowers are favored \cite{JENQ2015234}, and their loans get funded faster.
 
-There are several ways that bias can creep into recommender systems. Reflection of societal and historical prejudices in datasets, lack of data on minority groups or any problem in data collection, and lack of suitable model designs and evaluation methods are among the underlying reasons for unfairness in these systems.
+There are several ways that different biases can creep into recommender systems. Reflection of societal and historical prejudices in datasets, lack of data on minority groups or any problem in data collection, and lack of suitable model designs and evaluation methods are among the underlying reasons for unfairness in these systems. A system needs to defend against these biases in recommendation output, even biases that arise due to behavioral differences. For example, male users might be more likely to apply optimistically for high-paying jobs compared to women. These differences reflect how these biases might have been internalized in people in the society and their behavior which may lead to discrimination in job recommendation. 
 
-A system needs to defend against these biases in recommendation output, even biases that arise due to behavioral differences. For example, male users might be more likely to click optimistically on high-paying jobs. 
-% \todo{more clarifications?}
 
 % \section{Running example}
 % \todo{expand on it}
@@ -77,35 +76,42 @@ A system needs to defend against these biases in recommendation output, even bia
 Disregarding the societal impacts and ethical consequences of recommendation algorithms in different applications leads to algorithm designs that are unfair or harmful to their users. In recent years, the topic of fairness in machine learning has gained the attention of a multi-disciplinary community from computer scientists, social scientists to legal scholars. Thus as a response, recent research has shifted from design of algorithms optimizing for accurate outcomes to ones that also consider algorithms' social impacts. 
 % such as representational or distributional harms. %accurate outcomes 
 
-The problem of mitigating unfairness in recommender systems has unique challenges that set it apart from general machine learning fairness problems: (a) the multi-stakeholder nature of these systems, and (b) the centrality of personalization and its trade-off with fairness goals are among the core issues we try to address. These two unique properties prevent the researchers from translating the proposed solutions and common techniques in machine learning fairness to recommender systems.
-
-\subsection{Unfairness towards multiple stakeholders}
-Recommender systems are multi-stakeholder settings with users or consumers (of content/recommendations), providers or producers (of content/items), or any other party at different ends of the system's transactions. Fairness concerns might arise for any of these stakeholders. As we discussed in the job recommendation example, a system might be discriminatory towards certain job-seekers (consumers), such as women, by presenting them recommendations of lower paying job opportunities or it could be unfair to certain businesses (providers), such as start-ups, by not giving them enough visibility to the best candidates.
+The problem of mitigating unfairness in recommender systems has unique challenges that set it apart from general machine learning fairness problems: (a) the multi-stakeholder nature of these systems and (b) the centrality of personalization and its trade-off with fairness goals. These two unique properties prevent the researchers from translating the proposed solutions and common techniques in machine learning fairness to recommender systems. In the following sections, we dive into each of these two points separately.
 
 
-\section{Accuracy / fairness tradeoff}
+\subsection{Fairness in a multi-stakeholder system}
 
+Recommender systems are multi-stakeholder settings with users or consumers (of recommendations), providers or producers (of content/items), or other parties involved in systems transactions. Fairness concerns might arise for any of these stakeholders. Although these concerns might need to be addressed at the same time, achieving perfect fairness for all is impossible. So, we might need to prioritize fairness concerns across different stakeholders.
+
+As an example, a system might be discriminatory towards certain job-seekers (consumers), such as women, by presenting them the recommendations of lower-paying job opportunities based on their demographic information, or it could be unfair to certain businesses (providers), such as start-ups, by not giving them enough visibility to the best candidates.
+
+
+\section{Personalization/fairness trade-off}
 % what accuracy is? and what word should we replace it with?
 % In machine learning algorithms, achieving optimum accuracy by itself is impossible and might not even be desirable! 
 
-Traditionally, the main goal of a recommender system is personalization. In other words, recommender systems strive to present items to the users that are more likely to be interacted with. And to achieve personalization, these systems utilize users' historical log data and optimize for accuracy. Although, achieving optimum accuracy by itself is impossible for several reasons, or it might not be the only desirable goal in some cases. 
+Traditionally, the main goal of a recommender system is personalization. In other words, recommender systems strive to present items to the users that are more likely to be interacted with. And to achieve personalization, these systems utilize users' historical log data and optimize for accuracy. Achieving optimum accuracy by itself is impossible due to reasons such as inconsistency in user rating behavior. Additionally, optimizing for accuracy might reinforce the popularity bias, or some consumer-side unfairness. In the following sections, I discuss the ways in which optimizing for accuracy can lead to user dissatisfaction and the reasons why we might need to balance the goal of accuracy with other goals such as fairness.
+%TODO check I versus passive form
 
 \subsection{Impossibility of ideal accuracy}
 
-Recommender systems recognize the more general patterns in the data and use this information to predict users' rating behavior for recommendation generation. These general patterns are based on the log history of user rating behavior in the system. Therefore accuracy for recommender systems is fidelity to historical patterns in the data.
+Recommender systems recognize the more general patterns in the data and use this information to predict users' rating behavior for recommendation generation. These general patterns are based on historical logged user interactions with the system. Therefore accuracy for recommender systems is fidelity to historical patterns in the data.
 % \todo[inline]{what the users want and what they click on is different?}
+%historical logged user
 
-However, human behavior is always associated with some degree of uncertainty \cite{hill1995recommending}, which will lead to deviation from perfect accuracy. This uncertainty might originate from the natural variability of human decision making, or it might be system-induced.
+However, human behavior is always associated with some degree of uncertainty \cite{hill1995recommending}, which will lead to deviation from perfect accuracy. This uncertainty might originate from the natural variability of human decision-making, or it might be system-induced.
 
 % In this case, recommender systems generate recommendations according to the general patterns of users interests. 
-Users' rating behavior is inconsistent, and their preferences are not fixed. Said et al. (2012) \cite{Said2012MagicBarrier} introduces and discusses the concept of the \textbf{Magic Barrier} in recommender systems, a barrier caused by variability in user behavior which prevents the model from getting much more accurate. 
+Users' rating behavior is inconsistent, and their preferences are not fixed. Said et al. (2012) \cite{Said2012MagicBarrier} introduces and discusses the concept of the \textbf{Magic Barrier} in recommender systems, a barrier caused by variability in user behavior which prevents the model from reaching an ideal accuracy. 
 
-Besides the behavioral inconsistency, users' tastes might evolve \cite{McAuley2013expertise} as they consume the recommendations. To improve their accuracy, recommender systems might need to model these temporal and dynamic changes. % to keep up with the variability in users' rating behavior
+Besides the behavioral inconsistency, users' tastes might evolve \cite{McAuley2013expertise} as they consume the recommendations. To improve accuracy, recommender systems might need to model these temporal and dynamic changes. % to keep up with the variability in users' rating behavior
 
 % Users' preferences are inconsistent.
-Additionally, recommender systems models built on general patterns in the data capture mainly the long-term interests of users and might disregard users' short-term needs and interests. Many researchers have attempted to use contextual information to account for these changes \cite{Adomavicius2011context}.
+Additionally, recommender system models built on general patterns in the data capture mainly the long-term interests of users and might disregard users' short-term needs and interests. Many researchers have attempted to use contextual information to account for these changes \cite{Adomavicius2011context}.
 
-In some cases, due to technical limitations or lack of data, the system fails to present users their items of interest, so users might end up clicking on the items that are not reflective of their interest. This data might re-enter the system and bias the input for the subsequent iterations. These changes are hard to predict as there are many underlying confounding factors involved in them.
+In some cases, due to technical limitations or lack of data, the system fails to present users their items of interest, so users might end up clicking on the items that are not reflective of their interest. This data might enter the training data and bias the input for the subsequent iterations.
+The points mentioned above are just a few examples of underlying confounding factors that make the prediction task challenging in these systems.
+%These changes are hard to predict as there are many underlying confounding factors involved in them.
 
 %  Some authors speculated that we may be reaching
 % some Magic Barrier where this variability prevents us from getting much more accurate
@@ -115,27 +121,32 @@ In some cases, due to technical limitations or lack of data, the system fails to
 
 % For example, when you want to listen to music, a lot of the times you don't think about the songs you exactly want to listen to. You might not want to listen to what you were listening before. Therefore, we can never achieve perfect accuracy and presenting accurate recommendations to the users is a myth.
 
-Increasing accuracy, more than a threshold, might even be undesirable or unsatisfactory to one or all the stakeholders of a recommender system. This is because increasing accuracy can contribute to introducing and propagating bias or even re-enforcing some of the existing biases in the system, such as popularity bias, positive feedback loops, filter bubbles, miscalibration error, over-, and under- estimation of the predictions, and etc.
+Using accuracy as the only measure to optimize might even be undesirable or unsatisfactory to one or all the stakeholders of a recommender system. This is because increasing accuracy, without considering other goals, can contribute to introducing and propagating biases or even reinforcing some of the existing biases in the system, such as popularity bias, positive feedback loops, filter bubbles, miscalibration error, over/under estimation of the predictions, etc. 
 % Below are some examples of the potential biases that increasing accuracy causes for consumers and providers.
 % \todo[inline]{check all the biases mentioned before..}
 
 \subsection{Accuracy \& data imbalance}
 
-Accuracy-based metrics can include consumer unfairness in their outcomes. These metrics might contain error disparity for different user groups in the data. Usually, accuracy reflects the quality of the recommendations that the majority of the user base experiences regardless of other minority groups' experience. Therefore, minority groups might not receive a high-quality service in the system.
+The collected data used for training recommendation models might not reflect the diversity in the society due to various reasons such as biases in data collection or simply lack of online participation from minority groups. These issues can create data imbalance leading to accuracy imbalance between the majority user group(s) for whom we have more data versus minority groups with fewer data.
 
-These metrics are usually averaged over all the user base and skewed towards the majority user group. Usually, the previously collected data might not reflect the diversity in the society due to various reasons such as bias in data collection or simply lack of online participation from minority groups. These issues can create data imbalance which leads to accuracy imbalance between the majority user group(s) on whom we have more data and minority groups with less data. So, having a discrepancy in recommendation quality for different user groups is a type of unfairness in recommender systems and reaching to balance it, is of interest for the research community \cite{ekstrand2018all,yao2017beyond}.
+Since accuracy-based metrics are aggregated over all the users, they lack capturing the accuracy for different user subgroups in a system. Usually, accuracy reflects the quality of the recommendations that the majority of the users experience regardless of other minority groups' experience. The error disparity for different user groups is considered a type of unfairness and trying to balance it, is of interest for the research community \cite{ekstrand2018all,yao2017beyond}.
+% Therefore, minority groups might not receive a high-quality service in the system.
+
+% These metrics are usually averaged over all the user base and skewed towards the majority user group.   So, having a discrepancy in recommendation quality for different user groups is a type of unfairness in recommender systems and reaching to balance it, is of interest for the research community \cite{ekstrand2018all,yao2017beyond}.
 
 \subsection{Accuracy \& popularity bias}
+
+% how is accuracy and popularity related
 
 Recommendation datasets are usually inter-weaved with popularity bias \cite{celma2008hits,lee2014fairness}. Striving to reach a high accuracy will lead to reinforcing popularity bias~\cite{barocas2016big}.
 
 % These algorithms might also propagate the existing biases in the data \cite{barocas2016big}. For example, recommender systems increase the popularity of items by just presenting those items to the users. 
 It is known that these systems affect the users’ opinion, and hence, their ratings of items \cite{Cosley2003Influence}. Thus, a user’s rating of an item is either their intrinsic preference or the influence of the recommender system on the user. Users are more likely to click on the items that recommender systems deliver to them. This phenomenon is called presentation bias \cite{baeza2018bias}. 
 
-Over time, items gain even more popularity as they are shown to users, up to the point that less popular items are not recommended at all. Due to the positive feedback loop, the item space shrinks, and the recommendation lists become too homogeneous \cite{Chaney2018Homogeneity}. The formed \textit{filter bubble} might be harmful or unfair to users as users' choices become limited and homogeneous, preventing them from novel content or ideas. A real-world example of the harms that filter bubbles cause for users is the influence of the news feeds on people's minds that can eventually lead to political polarization~\cite{HONG2016777}.
+Over time, items gain even more popularity as they are shown to users, up to the point that less popular items are not recommended at all. Due to this positive feedback loop, the item space shrinks, and the recommendation lists become too homogeneous \cite{Chaney2018Homogeneity}. The formed \textit{filter bubble} might be harmful or unfair to users as users' choices become limited and homogeneous, preventing them from receiving novel content or ideas. A real-world example of the harms that filter bubbles cause for users is the influence of the news feeds on people's mindset that can eventually lead to political polarization~\cite{HONG2016777}.
 
 % Not only is this issue discriminatory towards users, but it is also unfair to (content) providers as a small group of them gain unfairly high visibility while the others are systematically pushed away. 
-Not only the consumers of recommendations will be affected, but the item providers might also suffer from discrimination. Popularity bias leaves less popular (item) providers with less consumer exposure opportunities which might push them away from the system. This unjust exposure can affect their livelihoods. In a music streaming platform, this issue could affect the livelihood of musicians. In Algorithms of Oppression, Sofiya Noble \cite{noble2018algorithms} discusses this issue in personalized search through real-world examples and people's experiences. The author later, discusses how popularity bias in Yelp along with other factors such as private interests in promoting certain sites, along with the monopoly status of a relatively small number of Internet search engines, can potentially lead to racial discrimination, especially businesses owned by women of color.
+Not only the consumers of recommendations will be affected, but the item providers might also suffer from discrimination. Popularity bias leaves less popular (item) providers with fewer consumer exposure opportunities, pushing them away from the system. This unjust exposure can affect their livelihoods. In a music streaming platform, this issue could affect the livelihood of musicians. In algorithms of Oppression, Sofiya Noble \cite{noble2018algorithms} discusses this issue in personalized search through real-world examples and people's experiences. The author later, discusses how popularity bias in Yelp along with other factors such as private interests in promoting certain sites, along with the monopoly status of a relatively small number of Internet search engines, can potentially lead to racial discrimination, especially businesses owned by women of color.
 
 % Recommendation datasets are usually inter-weaved with popularity bias. Striving to reach a high accuracy will lead to reinforcing popularity bias as well. Over time, this bias gets even worse due to the effect of positive feedback loops in the system.
 
@@ -169,7 +180,6 @@ Integrating and operationalizing a goal such as fairness to the system is essent
 % how is this problem and set of solutions different than the ones that are proposed to solve popularity bias?
 
 \subsection{Fairness interventions}
-
 Fairness is a complex concept. It can have many different definitions under different contexts. More details on these concepts will be provided in Chapter \ref{ch:fairness}. In this work, I concentrate on increasing group fairness for under-privileged providers or consumers. In other words, I intend to increase their exposure opportunities.
 
 % \todo[inline]{this term is not defined (fairness concerns)}
