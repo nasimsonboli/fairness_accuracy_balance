@@ -85,14 +85,13 @@
 \readerFive{Michael Ekstrand}   %  5rd person to sign thesis
 
 
-\abstract{  \OnePageChapter	% because it is very short, Leave out the \OnePageChapter if your abstract runs over one page.
+\abstract{ 
 
-	Often the abstract will be long enough to require
-	more than one page, in which case the macro
-	``$\backslash$OnePageChapter'' should {\it not}
-	be used.
+    \OnePageChapter	% because it is very short, Leave out the \OnePageChapter if your abstract runs over one page.
 
-	But this one isn't, so it should.
+	Often the abstract will be long enough to require more than one page, in which case the macro
+	``$\backslash$OnePageChapter'' should {\it not} be used.
+
 	}
 
 % \dedication[Dedication]{	% NEVER use \OnePageChapter here.
@@ -104,10 +103,10 @@
 
 % 	}
 
-\acknowledgements{	\OnePageChapter	% *MUST* BE ONLY ONE PAGE!
+% \acknowledgements{	\OnePageChapter	% *MUST* BE ONLY ONE PAGE!
     % 	Here's where you acknowledge folks who helped. But keep it short, i.e., no more than one page, as required by the Grad School Specifications.
     
-    This dissertation would not have been possible without the involvement of \todo{edit}
+    % This dissertation would not have been possible without the involvement of \todo{edit}
     
     % I also would like to thank Dr. Robin Burke for not only helping me persevere through the challenges of completing a PhD but for inspiring me to pursue my passion in the first place. You gave me the courage to take the risks that I needed to take to become the person I have always wanted to be. You've encouraged me to embrace uncertainty and complexity in the face of my natural inclination towards order and certainty. Rather than shutting down my curiosity about the world, you've always encouraged me to dig deeper no matter where that may take me. I am so incredibly fortunate to have such a wonderful person as not only my wife but also as a colleague.
     
@@ -119,8 +118,7 @@
     
     % I dedicate my dissertation work to my family. A special feeling of gratitude to my loving parents, Mahvash and Ali whose words of encouragement and push for tenacity ring in my ears. My sisters Ronak, and Rojan who have never left my side and are very special.
     % I also dedicate this dissertation to my friends who have supported me throughout the process. I will always appreciate all they have done, especially Nikki Hariri for her great advice and for being there for me throughout the entire doctorate program.
-
-	}
+% 	}
 
 
 \ToCisShort	% use this only for 1-page Table of Contents
@@ -139,13 +137,18 @@
 \begin{document}
 
 \input macros.tex
-\input chapter1-intro.tex
-\input chapter3-fairness.tex
-\input chapter4-methodology.tex
-\input chapter5-inprocess.tex
-\input chapter6-postprocess.tex
-\input chapter7-librec.tex
-\input chapter8-conclusion.tex
+
+% \input chapter1-intro.tex
+% \input chapter2-fairness.tex
+
+\chapter{Recommender Systems}
+\label{ch:recsys}
+
+% \input chapter3-methodology.tex
+\input chapter4-inprocess.tex
+% \input chapter5-postprocess.tex
+% \input chapter6-librec.tex
+% \input chapter7-conclusion.tex
 
 %%%%%%%%%   then the Bibliography, if any   %%%%%%%%%
 \bibliographystyle{plain}	% or "siam", or "alpha", etc.

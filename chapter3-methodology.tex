@@ -1,0 +1,573 @@
+\chapter{Experimental Methodology}
+\label{ch:methodology}
+
+The personalized recommendation is domain-specific; in other words, algorithms that work in one setting might work poorly in other settings with different characteristics \cite{Beel2016Reproducibility,bellogin2021improving}. In this chapter, I will describe the datasets, data pre-processing and data transformation approaches, recommendation and re-ranking algorithms used as baselines to perform experiments on them throughout this dissertation. I also thoroughly explain the experimental details such as hyper-parameter tuning, the choice of the models, the selection of the sensitive attribute(s), etc., in each dataset. For my experiments, I used \libauto{}, a recommendation library that other researchers and I developed during my Ph.D. The proposed recommendation or re-ranking algorithms were added as part of my contribution to \libauto{} or LibRec itself. Further, I will describe \libauto{}'s capabilities and architecture in details in Chapter \ref{ch:librec-auto}. Here we define protected attributes or sensitive attributes as the characteristics (e.g., demographic information such as gender, race, age, etc.) used to identify the under-privileged, under-served, or minority users or items. Systems might implicitly or explicitly use this information to discriminate against these groups.
+% \todo[inline]{what do we mean by protected and unprotected groups?}
+    
+\section{Datasets}
+
+I performed the experiments on the following public and proprietary datasets: MovieLens\cite{movielens}, The Movies dataset\footnote{https://www.kaggle.com/rounakbanik/the-movies-dataset}, and two variations of the Kiva dataset: proprietary and publicly accessible data. We created an anonymized dataset based on the proprietary Kiva dataset, and with Kiva's permission made it publicly accessible \footnote{https://github.com/nasimsonboli/DynamicFairness/tree/master/data/Kiva}. For each dataset, we will explain the general characteristics of the dataset and also the choice of the protected attribute(s) and the transformation methods used to produce them. The choice of the protected features firstly depends on the stakeholder for which we are seeking fairness. Secondly, it depends on the context and the previously detected unfairness or biases in the dataset. Generally, the choice of sensitive features and protected groups within those features is usually determined by legal liability or business model considerations. Lacking this type of insight, we chose to identify protected features as those associated with rarely-recommended items for providers and those features that are strongly correlated with a significant discrepancy between their input and output data. The details of these choices are explained below.
+
+% To determine the protected values of each feature, we performed a trial run of recommendation generation over the dataset, and examined the distribution of features in the results. In a live system, historical recommendation data would be available over which to calculate this distribution. The values in the 25th percentile of the distribution were selected as the protected group for that feature.
+
+% and summarized in Table \todo[inline]{create a table for them}.
+% Dataset & #users, #items, #ratings, rating scale, density, consumer, provider, protected attribtue, access (public or private)
+
+    \subsection{MovieLens 1M Dataset}
+    
+        We use the well-known MovieLens 1M dataset~\cite{movielens} in some of our experiments. This dataset is a movie rating dataset that the GroupLens research group collected\footnote{https://grouplens.org/}. This dataset contains 1,000,209 ratings from 6,000 users on 4,000 movies. The sparsity of MovieLens is 4.47\%. All of the users in the MovieLens dataset rated at least 20 movies. Besides user ratings, this dataset contains, some additional information on ratings, users, and the movies. The rating information consist of ratings (only whole ratings), and the timestamp of the ratings (represented in seconds). This dataset has information on movies such as movie titles and 18 movie genre(s) (e.g., ``Animation'', ``Comedy''). It also contains user information such as gender (binary, represented by F and M), age (split into seven age rages), 20 occupations (e.g., ``academic/educator'', ``artist''), and zip-code. Since we have information on both the consumers (i.e. users) and the providers (i. e. movies), it is possible to choose sensitive attributes for both stakeholders and propose algorithm solutions both for the consumer and provider fairness.
+    
+        % \todo[inline]{the slim-u discussion is out of place here! move this discussion elsewhere}
+        \vspace{0.25cm}
+        \noindent \paragraph{Protected Feature(s) for Consumer Fairness}
+        \vspace{0.25cm}
+ 
+            % To determine the protected values of each feature, we performed a trial run of recommendation generation over the dataset, and examined the distribution of features in the results. In a live system, historical recommendation data would be available over which to calculate this distribution. The values in the 25th percentile of the distribution were selected as the protected group for that feature.
+
+            In the Movielens dataset, female users are the minority group (1709 out of 6040). In this dataset, specific genres display a discrepancy in recommendation delivery to male and female users. For example, in the ``Crime'' genre, female users rate an equal number of movies, and their average rating is approximately the same. However, this genre is recommended to male users more frequently. Therefore we choose gender as the protected attribute since females are experiencing different recommendations regardless of their similar average genre rating. Similar losses can be observed for other genres. We are not asserting that there is any harm associated with this outcome for the female users. But, it is sufficient that these differences allow us to validate the properties of our proposed algorithm. For more details on the experiments and proposed algorithms to mitigate the \textit{consumer-side} unfairness, please refer to Chapter \ref{ch:fairness_inproc}. To measure genre discrepancy within the MovieLens 1M dataset, we calculated the equity score $E_c@k$ that we will explain in detail later in this chapter. We selected the five genres that had the highest genre discrepancy or lowest equity scores (undesirable) : ``Film-Noir'', ``Mystery'', ``Horror'', ``Documentary'', and ``Crime''. Using the proposed algorithm in Chapter \ref{ch:fairness_inproc}, we decrease these discrepancies.
+            
+            % One can use any other movie attribute. For example, \cite{kamishima2018recommendation} chose the release year of the movie as the protected attribute.
+
+    \subsection{The Movies Dataset}
+    
+    This dataset is also a movie rating dataset, which was obtained from the Kaggle website\footnote{https://www.kaggle.com/rounakbanik/the-movies-dataset}. It contains the metadata for 45,000 movies listed in the full MovieLens dataset \footnote{https://grouplens.org/datasets/movielens} which were released on or before July 2017. As we mentioned before, movies are not a domain to which significant fairness concerns are typically applied. We use this dataset as a well-known example with a rich set of provider-side features. The dataset contains 26 million ratings from 270,000 users for all 45,000 movies. Ratings are on a scale of 1-5. The following set of features were used from the movies in our experiments: ``genres'', ``original language'', ``release date'', ``revenue'', ``run-time'', ``popularity'', ``production countries'', and ``spoken language''. A sample of this dataset was extracted, which contained the 559,070 ratings from 6,000 users on 14,623 items (density of 0.63\%). 
+    
+    All the selected features were transformed into categorical variables in the following way. If a movie's popularity is greater than the average, we categorize the movie as popular, otherwise unpopular. The same method was used to categorize and transform revenue and run-time in the same way as well. Therefore revenue are either ``high'' or ``low'', and the values of run-time are either ``short'' or ``long''. The release date is bucketed to categories: ``old'', if the movie's release date is before 1990, and ``new'' for the movies that are from 1990 onward \cite{kamishima2016model}. Then all the categorical features were transformed into dummy variables, resulting in a total of 323 binary features (21 genres, 2 popularity buckets (popular and unpopular), 2 year buckets (old, and new), 2 revenue buckets (low, and high), 2 run-time buckets (short, and long), 133 languages and 161 production countries.
+    
+    
+        % In this dataset, three types of genders were present: 0, 1, 2. Each movie is directed or written by an individual or a group of directors or writers. To capture this diversity, we considered every combination of these three gender types. So, gender was discretized into seven groups. For example, if a movie is directed by all the genders, we assign 012 for the gender information, and if it is directed only by one gender, a single number was assigned to that movie, e.g., 0, 1 or 2. 
+        % All the categorical features were transformed into dummy variables, resulting in a total of 335 binary features.
+    
+        \vspace{0.25cm}
+        \noindent \paragraph{Protected Feature(s) for Provider Fairness}
+        \vspace{0.25cm}
+        % \subsubsection{Protected Feature(s) for Provider Fairness}
+
+            This dataset is rich in movie metadata that one can use to study fairness in the recommender systems. As an example, this dataset contains the metadata about the cast and the crew for each movie: such as the gender (non-binary) information of the director(s) and the writer(s), the number of people from each gender in the director team or the writer team, etc. We did not use this information in our experiments.
+            
+            This dataset was used to mitigate fairness for multiple fairness concerns at the same time (Chapter \ref{ch:fairness_postproc}, Section \ref{sec:ofair} and Section \ref{sec:dynamicfair}). In other words, the goal is to mitigate exposure unfairness in multiple sensitive attributes for the providers. Since we need to address the unfairness issue in all of these features, we need to select the protected group within each one of them. We identified the following protected classes within each category: ``unpopular'' (popularity), ``lower revenue'' (revenue) , ``longer'' (running time), ``before 1990'' (release date), ``Horror'', ``Music'', ``Mystery'', ``History'' (genres), and ``CA'', ``ES'', ``DE'', ``HK'' (countries). These feature categories were chosen because they represented a minority within each category.
+
+    \subsection{Kiva Dataset}
+    
+    This dataset is a proprietary dataset obtained from the Kiva Microloans organization. Part of the collected data was extracted from the Kiva.org website using the site's API\footnote{http://build.kiva.org/}. This data includes all lending transactions for 12 months. Initially, there were 1,084,521 transactions involving 122,464 loans and 207,875 Kiva users. Of the 122,464 loans, we found that 116,650 were funded, that is they received their total funding amount from Kiva users by the 30-day deadline imposed by the site. Loans not fully funded within 30 days are dropped from the system and the money raised is returned to lenders.
+    % protected value: higher than average number of unfunded loans
+    
+    We selected only the funded loans for analysis. Each loan is specified by features including ``borrower's name/id'', ``gender'', ``borrower's country'', ``loan purpose'', ``funded date'', ``posted date'', ``loan amount'', ``loan sector'', and geographical coordinates such as ``geo-location'', ``town'', ``country'', and ``region'' of the borrower and the ``number of lenders'' who lent money to this loan. To reduce the feature space and to solve the multicollinearity problem, highly correlated features were removed. The percentage funding rate (PFR) was added as a new feature, computed as follows:
+    
+    \begin{equation}
+     \mbox{\textit{PFR}} =  \frac{1}{\mbox{\textit{{\#} days to fund}}} * 100 
+    \end{equation}
+    \vspace{0.25cm}
+    
+    The percentage funding rate captures the speed at which a loan goes from being introduced in the system to being fully funded. For example, a loan with a PFR of 25\% is accumulating a quarter of its needed capital each day. After preparing the data, the final features for each loan reduced to borrower's gender, borrower's country, loan purpose, loan amount (binned to 10 equal-sized buckets), and loan's percentage funding rate. 
+    
+    The transaction file included the lender's hashed id, lender's username, loan id, time of ``purchase'' or lending, the lent amount by that user, and the lending team id that user is part of. A lender can be a part of one or several lending teams. These teams advocate for a particular cause, such as agriculture, or support a specific country such as Vietnam. We removed the lender user id, lending team id and the time of purchase id from the transactions file. The final columns were user's hashed id, loan id and the lent amount.
+    
+    One important characteristic of this dataset, and the micro-finance domain in general, is the rapid turnover in recommendable items. Loans are only available to lenders for a short period until they are fully funded or dropped from the system. Subsequent visitors will not see or be able to support these loans, limiting the maximum item profile size significantly. For example, at a minimum loan amount of \$25, a \$200 loan can have a maximum of only 8 lenders. Contrasting with a consumer taste domain such as MovieLens \cite{movielens}, where a popular movie might be rated by hundreds or thousands of consumers. There are no ``blockbuster'' loans with thousands of lenders. The Kiva dataset is extremely sparse (density = $4.2e^{-5}$) and this sparsity exhibits a significant item cold-start problem. So, it could not support the effective collaborative recommendation, because a loan can only attract a limited amount of support. 
+    
+    To generate a denser dataset with more significant potential for user profile overlap, we applied a content-based clustering technique creating \textit{pseudo-items} that represents groups of items with shared features. We applied agglomerative hierarchical clustering \cite{rokach2005clustering} using the features of ``borrower gender'', ``borrower country'', ``loan purpose'', ``loan amount'' (binned to 10 equal-sized buckets), and ``percentage funding rate'' (4 equal-sized buckets). We chose the cluster with the highest Silhouette Coefficient \cite{rousseeuw1987silhouettes} of around 0.69 which indicates a reasonable cohesion of the clusters. Note that there weren't any singleton clusters.
+    
+    After creating the feature file for pseudo items, we transformed the lent amount feature to rating values. We replace the loan id with the pseudo-loan id if that loan id exists in that cluster. Also, if a lender had lent to multiple loans in the same cluster(pseudo-loan), summation of all the lent amount is considered as one transaction since it shows how strong the interest of that lender to that item is. To transform the loan amount to ratings, for every user, we collected all the transactions on the pseudo-loans she/her has interacted with. We collected the lent amounts to each pseudo-loan and finally normalized it using the min-max normalization method in Scikit-Learn \cite{scikit-learn} library to values between 3.0 and 5.0. This is because ratings of 1s and 2s are considered as dislikes, therefore we omitted them in the normalization process. If a lender had not liked a loan, she/he probably would not have lent it any amount of money. Therefore, I set the minimum to 3.0. The min-max normalization was computed for every user separately over all her/his lent amounts. To make the dataset denser, we applied a 10-core transformation, selecting pseudo-items with at least ten lenders who had funded at least ten pseudo-items. The retained dataset has 2,673 pseudo-items, 4,005 lenders and 110,371 ratings / lending actions.
+    
+        % \subsubsection{kiva data collected from api}
+        % The provider information in this Kiva dataset were collected from Kiva's API in September 2016. It contains approximately 1 million loans funded by approximately 180,000 lenders.
+
+    % \todo[inline]{true?}
+    % The final condensed dataset used in our experiments includes the pseudo items and the rating behavior of lenders with them. Loan requests contain information about the borrowers, but the process of pseudo item creation hides and combines that information with the information of many other borrowers, therefore it protects the privacy of the borrowers. 
+    
+    % Lenders' information such as user id is hashed, and their rating behavior is different to some extent due to the aggregation of loans. For example, the transactions are precise, but the amount of the transaction could be different.
+    % As the privacy of the borrowers and the lenders are now protected to a great degree, with the permission of Kiva, I have made this dataset available to use for the research community. This version of the Kiva dataset is one of my contributions to this thesis.
+
+        \vspace{0.25cm}
+        \noindent \paragraph{Protected Feature(s) for Provider Fairness}
+        \vspace{0.25cm}
+        
+            For the projects that use \textbf{one-dimensional fairness} definitions, we use ``region'' as the fairness concern. Kiva.org divides its borrowers into nine geographic regions. In our dataset, we find that there are some geographic regions with a higher than average number of unfunded loans. In these regions, borrowers have a lower probability of getting the desired capital. As shown in Table~\ref{tab:unfunded}, the regions of North America, Eastern Europe, South America, and Asia have proportionately more funded loans than the regions of Africa, Middle East, and Central America\footnote{Our dataset had only a single loan request from Australia.}. 
+            
+            % These regions, where borrowers have lower funding percentages, are treated as the protected group in our experiments.
+        
+            \begin{table}
+                \centering
+            \begin{tabular}{l|l|r}
+                Category & Region & Unfunded \% \\ \hline
+                Unprotected & North America & 1.73 \\
+                & Eastern Europe & 0.99 \\
+                & South America & 4.33 \\
+                & Asia & 6.70 \\ \hline
+                Protected & Africa & 10.57 \\
+                & Middle East & 13.23 \\
+                & Central America & 8.81 \\
+            \end{tabular}
+                \caption{Percentage of unfunded loans by region}
+                \label{tab:unfunded}
+            \end{table}
+     
+            Therefore, we define the protected group as those regions where it appears to be more difficult to fund loans. Using the proposed methods in Chapter \ref{ch:fairness_postproc} and Chapter \ref{ch:fairness_inproc}, we are promote the loans that have not found enough interested lenders to support them so they have a higher chance of getting funded. Note that the assumption behind this method is that all the loan requests are equally worthy regardless of all their information, in other words the more popular loans are not inherently better than the less popular ones.
+        
+            To use this dataset in the \textbf{multi-aspect fairness} problems, we include more than one fairness concern. We observed an imbalance of frequency within the following feature values/dimensions: ``percentage funding rate'', ``country'', ``economic sector'', ``loan amount'', ``borrower gender''. In keeping with Kiva's mission of providing equal access to capital across regions and economic sectors, we designate the items from the sectors and countries that have less than 1\% frequency in the training data as the protected group. As an example, 5 loan purposes in the economic sectors and 23 countries were selected to be the protected group. Note that we use Kiva dataset only for studying \textit{provider-side} unfairness. We used ``country'' instead of ``region'' to have a more fined-grained feature values. These two features are highly correlated, so they both carry the same information and can be used interchangeably.
+        
+
+
+        % \subsection{Yelp dataset}
+        % \todo[inline]{in the Hypertext paper we used this data for mis-calibaration analysis}
+        % The original Yelp.com data included 6.7 million reviews from 1.6 million users on 192,609 businesses from different industries. We used a filtered subset, Yelp\_core40 \cite{mansoury2019bias}, which includes users who rated at least 40 businesses and businesses which were rated by at least 40 users. In the Yelp\_core40, there are many business categories  (e.g. car dealers, airports, or different types of restaurants, etc.). We limited the dataset to restaurant/food establishments, using both "restaurant" and "food" labels for filtering. After pre-processing, the dataset included 85,041 ratings by 1,355 users over 1,077 restaurants, covering 231 categories. The sparsity of Yelp is 5.83\%. The categories are defined by the labels provided in the original Yelp dataset. Some of the categories are very general (e.g. "American (New)", "Breakfast \& Brunch", etc.), while some of them are extremely specific (e.g. "Pretzels", "Shaved snow", etc.). There were also many establishments with multiple labels, which meant that they belonged to different item categories.\todo{protected features?}
+% \todo[inline]{before you get to the metrics have a discussion on offline evaluation:training/test splits, ranking evaluation, etc.}
+
+\section{Experimental Approach}
+
+    All experiments were performed using a 5-fold cross-validation setting where 80\% of each user's rating data is used for the training dataset, and the rest is used as the test dataset (LibRec's \texttt{userfixed} configuration). The training set was used for building a recommendation model and generating recommendation lists, and the test set was used for evaluating the performance of generated recommendations. A random seed was set for all the experiments to ensure the repeatability of the algorithms. Each recommendation algorithm can have several hyper-parameters. To identify the best-performing sets of hyper-parameters for each algorithm, Grid-search was performed on the hyper-parameters space. The results with the highest precision was selected for evaluation or post-processing.
+    
+    For the post-processing approaches that we propose, the baseline recommender generates a long recommendation list for users (e.i. 200), then the post-processing approaches selects the top@k for each user according to their selection strategy. The proposed recommendation or re-ranking algorithms in this dissertation were integrated to \libauto{} and in some cases to LibRec. Along with these methods, I incorporated the most common evaluation metrics for fairness. Evaluation metrics are thoroughly explained in Section \ref{sec:eval}. Librec-auto and LibRec were used to run the experiments~\cite{burke2020facct_libauto,Sonboli2020FARLA,guo2015librec,mansoury2019algorithm,mansoury2018automating} and to evaluate the results both in terms of performance and fairness.
+
+\section{Evaluation Metrics}
+\label{sec:eval}
+    
+    Recommender systems can be evaluated based on user studies, online or offline methods. In user studies, test subjects are recruited and asked for their feedback about the system and their interaction with it. Then this data is used to infer the likes and dislikes of users. In an online system, we measure user reactions with respect to the presented recommendation lists, such as the conversion rate of users. Such testing methods are referred to as A/B testing, and they measure the direct impact of recommendations on the end-users. In this type of testing, active user participation is essential, although it is not always feasible to have access to this data from online systems in various domains, especially in academia. In such cases, offline methods with historical data, such as ratings, are used. Since we lack access to real-time user interaction data, offline evaluation in this dissertation which is the most common approach to evaluate recommender systems in this situation. We have also made use of the user-study based evaluation to investigate how users perceive fairness in recommender systems~\cite{Sonboli2021transparency}.
+    
+    To understand the effectiveness of recommender systems, we need to make use of proper evaluation metrics. Multiple metrics are required because the evaluation of recommender systems is often multifaceted, and a single criterion cannot capture all of the goals of a designer. As an example, accuracy-based metrics show the quality of the recommendations that users receive on average, but they can't reflect whether we have a diverse set of providers in the recommendations or not. Our goal in this dissertation is to design methods that increase the tradeoff between accuracy and fairness. Therefore we need to use metrics that assess both the accuracy and the unfairness of the output. To evaluate the proposed approaches ranking and re-ranking approaches, we used the following ranking metrics to measure the accuracy of our approaches: nDCG, Precision, and Recall. To estimate the unfairness in the recommendation outcome, we used the following fairness metrics and fairness-inducing diversity metrics: Average Coverage Rate (ACR) for provider-side fairness, Consumer-side Risk Ratio, Provider-side Risk Ratio, Protected Group Hit Rate, Intra-list distance(ILD) and Shannon Entropy.
+    
+    
+    \subsection{Accuracy Metrics}
+    
+        Accuracy is the most important component in the evaluation of recommender systems. Although secondary metrics such as fairness play a key role in understanding the social aspects of a recommendation system, accuracy is still the top priority. Accuracy measures the ability of a recommender system to either predict the ratings or the correctness of ranking of the items in users' recommendation lists. We evaluate the ranking accuracy of our algorithms using the following metrics below. Assume that one selects the top-$k$ set of ranked items to recommend to the user.
+    
+        \vspace{0.25cm}
+        \noindent \paragraph{Precision}
+        \vspace{0.25cm}
+        
+            For any given value $k$ of the size of the recommended list, the set of recommended items is denoted by $\mathcal{S}(L)$. Let $\mathcal{G}$ represent the true set of relevant items (ground-truth) that are in the user's test data. Then, for any given size $k$ of the recommended list, the precision is defined as the proportion or percentage of recommended items that are truly relevant. %(i.e., clicked, viewed or consumed by the user). 
+            % Note that $\mathcal{S}(L)=k$. So, as $k$ changes, the size of $\mathcal{S}(L)$ changes too.
+            
+            \begin{equation}
+            \text{Precision(k)}=\frac{|\mathcal{S}(k) \displaystyle \cap \mathcal{G}|}{|\mathcal{S}(k)|}
+            \label{eq:precision}
+            \end{equation}
+            \vspace{0.25cm}
+        
+        
+        \vspace{0.25cm}
+        \noindent \paragraph{Recall}
+        \vspace{0.25cm}
+        
+        % \textbf{Recall}
+            The recall is defined as the proportion of the set of relevant items (ground-truth) recommended for a list of size $k$.
+            
+            \begin{equation}
+            \text{Recall(k)}=\frac{|\mathcal{S}(k) \displaystyle \cap \mathcal{G}|}{\mathcal{G}}
+            \label{eq:recall}
+            \end{equation}
+            \vspace{0.25cm}
+            
+            Similarly to precision, these values can be described as percentages.
+            
+        % \todo[inline]{delete this totally?}
+        % \textbf{Normalized Discounted Cumulative Gain (nDCG)}: 
+        \vspace{0.25cm}
+        \noindent \paragraph{Normalized Discounted Cumulative Gain (nDCG)}
+        \vspace{0.25cm}
+        
+            Proposed in~\cite{jarvelin2002cumulated}, nDCG is a commonly-used measure of ranking quality, defined as Eq.~\eqref{eq:ndcg}. In this measure, an item appearing on a recommendation list accrues ``gain'' according to its position on the list -- thus the discount. The measure is normalized by comparing the algorithm's performance to the best ranking that could have been achieved. 
+    
+            \begin{equation}
+            \text{nDCG}=\frac{\text{DCG}}{\text{IDCG}},
+            \label{eq:ndcg}
+            \end{equation}
+            \vspace{0.25cm}
+            
+            where the formula of Discounted Cumulative Gain (DCG) of a $K$ ranked list is defined as
+            
+            \begin{equation}
+            \text{DCG}=\sum_{i=1}^K\frac{{rel}_i}{\log_2(i+1)},
+            \end{equation}
+            \vspace{0.25cm}
+            
+            where ${rel}_i$ is defined by the ratings of the item in the test set at position $i$. Ideal Discounted Cumulative Gain (IDCG) is the maximum possible DCG, which is the value of DCG computed by sorting all the items in the test set by their ratings. In some of the research projects, ${rel}_i$ is considered as an indicator function that is 1 for items that the user liked and 0 for others. And the normalized discounted cumulative gain is measured at $k$ (list length).
+        
+    % \todo[inline]{we need a table of these metrics}
+    % \todo[inline]{have an example for other metrics as well?}
+    \subsection{Fairness Metrics}
+    
+        To measure unfairness in recommender systems, we need to identify the fairness concern, the stakeholder we prioritize according to their experienced unfairness, the application, and the context of the problem. Below we discuss the following group-based fairness metrics that were used throughout this dissertation.
+        
+        % \todo[inline]{robin says concepts will be in chapter 2?}
+        % \todo[inline]{needs an intro}
+        % I have introduced some of the following metrics.: ACR, DPF
+        % mostly provider-side fairness.
+        % all group-based metrics.
+        
+        %\textbf{Average Coverage Rate (ACR)}:
+        \vspace{0.25cm}
+        \noindent \paragraph{Average Coverage Rate (ACR)}
+        \vspace{0.25cm}
+        
+            We compute the average number of provider groups covered by the ranked list to measure the provider-side unfairness. These metrics were initially designed to be used in the microlending application but can be applied to other contexts.
+            % in microlending application, we compute the average number of borrower groups covered by the ranked list.
+        
+            \begin{equation}
+                \text{ACR}=\frac{\sum_{u\in U_t}N_{S(u)}}{N_\text{pg}|U_t|},
+            \end{equation}
+            \vspace{0.25cm}
+        
+            where $U_{test}$ is the test user set, $|U_{test}|$ is the number of users in the test set, $N_\text{pg}$ is the total number of provider groups ($pg$), and $N_{\mathcal{S}(u)}$ is the number of provider groups covered in the list $\mathcal{S}(u)$. A larger ACR indicates a better coverage of the provider groups, thus higher provider-side fairness in the system.
+        
+        % \todo[inline]{re-visit with care. it doesn't seem to be correct at the moment!}
+        % \textbf{Weighted Proportional Fairness ($WPF$)}: Here we introduce a well-accepted and axiomatically justified metric of fairness, the weighted proportional fairness \cite{kelly1998rate}. Weighted proportional fairness is a generalized Nash solution for multiple groups.
+        
+        % \begin{definition}[Weighted Proportional Fairness]
+        % An allocation of desired activities $x_t$ is weighted proportionally fair if it is the solution of the following optimization problem,
+        % \begin{equation}\label{eq:fairness}
+        %     \max_{x_t}\,\, \sum_{i=1}^lw_i\log(x^i_t), \quad\text{s.t.}\,\,\sum_{i=1}^lx^i_t = 1,\, x^i_t\geq0,\,i=1,\ldots,l.
+        % \end{equation}
+        % \end{definition}
+        
+        % % Where $x_c$ denotes a provider group with the sensitive attribute $c$.
+        % The coefficient $w_i\in\mathbb R_+$ is a pre-defined parameter weighing the importance of each group.
+        
+        
+        % \todo[inline]{is the formula correct recheck? change the notation i. confused!}
+        % \begin{equation*}
+        % x_{t}^i=\sum_{u\in\mathcal U}\sum_{t}\sum_{i=1}^K\frac{{rel}_i\mathbbm{1}_{\{t\in \mathcal X_{t}\}}}{\log(i+1)}
+        % \end{equation*}
+        
+        
+        % The optimal solution can be easily solved by standard Lagrangian multiplier methods, namely
+        
+        % \begin{equation}
+        % x_*^i=\frac{w_i}{\sum_{i^{'}=1}^lw_{i^{'}}}.
+        % \end{equation}
+        
+        % Higher values of $WPF$ are better. The optimal value is obtained when the allocation is proportional to the assigned weights. For example, let assume the weights are $w = [w_{c1}, w_{c2}] = [0.8, 0.2]$. If the utility (allocation) is uniformly distributed $x = [x_{c1}, x_{c2}] = [0.5,0.5]$, the metric is computed as $dpf = 0.8*\log 0.5+0.2*\log 0.5=-0.301$. The maximum is achieved when $x = [x1, x2] = [0.8, 0.2]$, where $dpf=0.8\times \log 0.8 + 0.2\times \log 0.2 = -0.217 $. In other words, the maximum value is achieved when each group is assigned a utility that is equal to its weight.
+        
+        % The weights can be a hyper-parameter and can be defined according to the popularity of each group, the system preferences on who deserves to have a higher weight, or any other method.
+        
+        % % dividing it by the max utility or ideal utility when the weights and the utilities are the same.
+        % We have implemented this metric in \libauto{} (explained in Chapter \ref{librec-auto}) for both providers and the consumers.
+        
+        
+        % \textbf{Normalized Discounted Proportional Fairness ($NDPF$)}
+
+        % \todo[inline]{look at Weiwen's latest paper that uses a version of this measure}
+        % % Here we introduce the discounted proportional fairness metric which we adopted based on the well-accepted and axiomatically justified metric of fairness, the proportional fairness \cite{kelly1998rate}. Proportional fairness is a generalized Nash solution for multiple groups.
+        % Ideal Discounted proportional fairness is achieved when
+        % \begin{equation}
+        % x_*^i=\frac{w_i}{\sum_{i^{'}=1}^lw_{i^{'}}}.
+        % \end{equation}
+        
+        % therefore,
+        
+        % \begin{equation*}
+        %     \text{$IDPF$}=\sum_{c=1}^{n_c} w_c \log\left(x_*^i\right),
+        % \end{equation*}
+        
+        
+        % \begin{equation*}
+        %     \text{$DPF$}=\sum_{c=1}^{n_c} w_c \log\left(\frac{x_c}{\sum_{c'}x_{c'}}\right),
+        % \end{equation*}
+        
+        % \todo[inline]{recheck the notations}
+        % where $c$ is representing a provider group $\mathcal V_c$ with a specific sensitive attribute, $n_c$ is the total number of providers, $x_c$ is the utility (allocation) of a provider group. We define the utility of $\mathcal V_c$ by the cumulative gain that $\mathcal V_c$ received from all users,
+        
+        % \todo[inline]{is the formula correct recheck?}
+        % \begin{equation*}
+        % x_c=\sum_{u\in\mathcal U}\sum_{c}\sum_{i=1}^K\frac{{rel}_i\mathbbm{1}_{\{v\in \mathcal V_{c}\}}}{\log(i+1)}
+        % \end{equation*}
+        
+        % \begin{equation*}
+        %     NDPF = \frac{DPF}{IDPF}
+        % \end{equation*}
+
+        % This metric is bounded between 0 and 1. Therefore easier to interpret and understand.
+        
+        
+        \vspace{0.25cm}
+        \noindent \paragraph{Consumer-side Risk Ratio}
+        \vspace{0.25cm}
+        
+            In evaluating fairness of the outcome, we use a variant of what is known in statistics as \textit{risk ratio} or \textit{relative risk} (RR) \cite{romei2014multidisciplinary}. We measure what effectively \textit{relative opportunity} is. In other words, we measure the observed probability of protected class items being recommended divided by the probability of unprotected class items being recommended.
+        
+            We construct a consumer-side equity score, $E_c@k$ for recommendation lists of $k$ items, as the ratio between the outcomes for the different groups. Let $P_i@k = {\rho_1, \rho_2, ..., \rho_k}$ be the top-$k$ recommendation list for user $i$, and let $\gamma()$ be a function $\rho \rightarrow \{0,1\}$ that maps to 1 if the recommended item is in a protected group. Then:
+
+            \begin{equation}
+            E_c@k=\frac{\sum_{i \in U^+}{\sum_{\rho \in P_i@k}{\gamma(\rho)}}/|U^+|}
+            {\sum_{i \in U^-}{\sum_{\rho \in P_i@k}{\gamma(\rho)}}/|U^-|}
+            \end{equation}
+            \vspace{0.25cm}
+        
+        
+        % \todo[inline]{should I make the metrics general? or specific as in our cases? for example use item instead of movies?}
+            $E_c@k$ will be less than 1 when the protected group is, on average, recommended fewer items than they desired. It may be unrealistic to imagine that this value should approach 1: the metric does not correct for other factors that might influence this score -- in the case of movie recommendation, for example, female users may rate a particular genre significantly lower so equality of outcome should not be expected.
+            
+            While the absolute value of the metric may be difficult to interpret, it is still useful for comparing algorithms. Higher $E_c@k$ than 1.0 means that the items which are favorable by the protected group are recommended more than necessary, to the protected group. In other words, we might have reversed the influence of unfairness. Note that this is an additive, utilitarian measure of outcome equity and does not take into account variations in user experience. More nuanced measures of distributional equity, including Pareto improvement, we leave for future work.
+        
+        \vspace{0.25cm}
+        \noindent \paragraph{Provider-side Risk Ratio}
+        \vspace{0.25cm}
+        
+            % \textbf{Provider-side Risk Ratio}:
+            The provider-side equity score, $E_p@k$, is defined on recommendation lists of $k$ items. Let $L^+$ be the set of items in the test set that are from the protected groups, and $L^-$ be the corresponding set from the unprotected groups. Also, let $\pi^+()$ be an indicator function $\rho \rightarrow \{0,1\}$ that maps to 1 if the recommended item is from a protected group and $\pi^-$ is a similar function for the unprotected groups. Then:
+
+            \begin{equation}
+            E_p@k=\frac{\sum_{i \in U}{\sum_{\rho \in P_i@k}{\pi^+(\rho)}}/|L^+|}
+            {\sum_{i \in U}{\sum_{\rho \in P_i@k}{\pi^-(\rho)}}/|L^-|}
+            \end{equation}
+            \vspace{0.25cm}
+        
+            $E_p@k$ will be less than 1 when items from the protected group appear less often on recommendation lists. As with $E_c$, this is a utilitarian measure, summing over all the providers, without considering the distribution across individual providers. Like $E_c$, this metric does not take the rank of recommended items into account.
+            
+
+        \vspace{0.25cm}
+        \noindent \paragraph{Protected Group Hit Rate}
+        \vspace{0.25cm}
+        
+        % \textbf{Protected group hit-rate}
+            The fairness of lists was evaluated based on the protected group hit rate, which measures the ratio of the protected group to appear in a recommendation list. This value is related to the fairness concept of ``statistical parity,'' measured relative to items' level of promotion within the recommender system. Because list lengths are fixed at $k$ in our experiment, the hit rate for unprotected items is just one minus the protected group hit rate. We will calculate this metric for every 1\% accuracy loss to have a better understanding about the accuracy/fairness trade-off.
+            
+        % \textbf{Misalibration error}
+        % \todo[inline]{do we need this part? drop?}
+        
+        % The concept of miscalibration in recommendations is introduced in \cite{steck2018calibrated} by Steck. This metric measures whether recommender systems reflect the various interests of users relative to their initial preference proportions or not. The greater the difference between a user initial preferences and her recommendations, the higher the error. In other words the users with high miscalibration error, are not receiving the recommendations that match what they want.
+        
+        % Miscalibration error often disproportionately impacts users, therefore has a close relationship with fairness. In our projects we have used the miscalibration error as a consumer-side fairness metric.
+        
+        
+        % Steck uses Kullback-Leibler (KL) divergence to measure the difference between the probability distributions (preference distributions) across item categories, in a user profile and the distribution in the user's recommendation set. Both, are based on the distribution of item categories $c$ for each item $i$, denoted by $p(c|i)$.
+    
+        % \begin{itemize}
+        %     \item $p(c|u)$: the distribution over categories $c$ of the set of items $\mathcal{H}_u$ interacted with by user $u$ in the past.
+        %     \begin{equation}\label{input_preference}
+        %         p(c|u) = \frac{\sum_{i \in \mathcal{H}_u} w_{u, i} \cdot p(c|i)}{\sum_{i \in \mathcal{H}_u} w_{u, i}},
+        %     \end{equation}
+        
+        %     where $w_{i,u}$ is the weight of each item $i$, e.g. how recently it was liked or clicked on, or its popularity or rank.
+            
+        %     \item $q(c|u)$: the distribution across categories $c$ of the list of items recommended to user $u$.
+        %     \begin{equation}
+        %         q(c|u) = \frac{\sum_{i \in \mathcal{I}_u} w_{r(i)} \cdot p(c|i)}{\sum_{i \in \mathcal{I}_u} w_{r(i)}},
+        %     \end{equation}
+            
+        %     where $\mathcal{I}_u$ is the set of recommended items and $w_{r(i)}$ is the weight of an item and can be measured by its rank $r(i)$ in the recommendation list.
+        % \end{itemize}
+    
+        % KL-divergence \cite{kullback1997information} is used to measure the difference between these two probability distributions, or the divergence of $p$ from $q$. KL-divergence is denoted by:
+        % \begin{equation} \label{kl}
+        % MC_{KL}(p||q) = KL(p||\Tilde{q})= \sum_{c \in C}{p(c|u)\log\frac{p(c|u)}{\Tilde{q}(c|u)}},
+        % \end{equation}
+        
+        % where $p(c|u)$ is the target distribution. If $q$ is similar to $p$, $MC_{KL}$ will take small values, and in the case of perfect calibration, it is 0. $MC_{KL}$ diverges if a category $c$ is $q(c|u)=0$ and $p(c|u)>0$, so instead we use:
+        % \begin{equation}
+        %     \Tilde{q}(c|u) = (1 - \alpha) \cdot q(c|u) + \alpha \cdot p(c|u),
+        % \end{equation}
+        
+        % where $0 < \alpha < 1$, so that $q \approx \Tilde{q}$. We set $\alpha = 0.01$ in this experiment.
+        
+        % I renamed this metric to $MC_{KL}$ instead of $C_{KL}$ which is described in \cite{steck2018calibrated}, since it specifies the degree to which we have miscalibration in our recommendations and it is more in line with the values that KL-divergence takes. For example, if $p$ and $q$ are very similar, KL-divergence takes lower values, so miscalibration is low and vice versa.
+        
+        % One properties discussed in \cite{steck2018calibrated} is worth mentioning. $MC_{KL}$ is sensitive to small differences when $p$ is small. For example, if a user liked a category 2\% of the time and it is recommended to her 1\% of the time, $MC_{KL}$ considers it a significant change compared to a situation where a user likes a category 50\% of the time, while it's recommended to her 49\% of the time. 
+    
+        % \todo[inline]{we need a summary of evaluation metrics in a table or not?}
+    \subsection{Other Metrics}
+        % \todo[inline]{title this section: other metrics isnce it's not a fairness metric}
+        In the fairness-aware recommender systems, some metrics are used that usually are used to measure the diversity of a list. These metrics can be used as exposure-based fairness metrics to measure the exposure of the protected group in a list. Here, two of these metrics are explained.
+        
+        \vspace{0.25cm}
+        \noindent \paragraph{Intra-list Distance(ILD)}
+        \vspace{0.25cm}
+
+            We used intra-list similarity as introduced by Ziegler et al. \cite{ziegler2005improving} to measure the diversity of a list. Diversity here is the measure of dissimilarity between items in a set. This measure uses average pairwise distance of items in a set. We adjusted this metric to compute the diversity based on the item features in a list of each user rather than calculating the diversity of items based on their ratings. This list could be the recommendation list or the user profile. Therefore, ILD is a feature-based diversity metric that is used as a provider-side and exposure-based fairness metric.
+            % \todo[inline]{is it a catalogue coverage metric?}
+        
+            \begin{equation}
+                \text{ILD}(\mathcal{L}) = \frac{1} {|\mathcal{L}|(|\mathcal{L}|-1)} \sum_{i \in \mathcal{L}}\sum_{j \in \mathcal{L}}d(i,j)
+            \end{equation}
+            \vspace{0.25cm}
+        
+            Higher values in this metric mean a more comprehensive coverage of the items that are different in their features; yet still desirable.
+            % \todo[inline]{why is this a fairness metric?}
+
+        \vspace{0.25cm}
+        \noindent \paragraph{Shannon Entropy}
+        \vspace{0.25cm}
+        
+            The concept of information entropy was introduced by Claude Shannon in his 1948 paper \cite{entropy1948} and is also referred to as Shannon entropy. In information theory, the entropy of a random variable is the average level of ``information'', ``uncertainty'', or ``impurity'' inherent in the variable's possible outcomes. The entropy measures the “amount of information” present in a variable. That is, the more certain or the more deterministic an event is, the less information it will contain. In a nutshell, the information is an increase in uncertainty or entropy. 
+        
+            Given a discrete random variable $X$, with possible outcomes $x_{1},...,x_{n}$, which occur with probability $P(x_1),...,P(x_n)$, the entropy of $X$ is formally defined as:
+         
+             \begin{equation}
+                H(X)=-\sum_{i=1}^{n}P(x_{i})\log P(x_{i}),
+             \end{equation}
+             \vspace{0.25cm}
+
+            where $\Sigma$ denotes the sum over the variable's possible values ($n$). The value of entropy always lies in the range (0, 1). We use this concept in two ways in our work: (a) to measure the diversity in a recommendation list and (b) to learn more about user preferences. 
+            
+            Entropy is a measure of impurity or heterogeneity. In the recommender system literature, it is known as a metric to measure the diversity in a list, or a.k.a distributional inequality \cite{RICOTTA2006237, DINOIA2017234, Eskandanian2017}. It can be computed over different aspects of a list: ratings, item features, etc. Higher entropy means higher heterogeneity or diversity in that list, and lower entropy shows more homogeneity in a list. For example, it can measure the uncertainty of an item’s rating (output value) in data. For example, it captures the variability of ratings over a certain movie by all the users in the dataset. Or it can compute the diversity of the movie genres in a user's recommendation list. We have used this metric in Chapter \ref{ch:fairness_postproc}.
+        
+            We have also used entropy to learn more about the users and to increase personalization. By calculating the entropy of the items that a user has interacted with (user's profile), we can learn the level of diversity she prefers in her list. We can also measure the variability of recommendations made to a user as the user profile changes. For example, if the items in a user's profile are more alike (e.g., same genres of movies like Romance), the entropy will be lower. In other words, the user's preference for specific movie genres is more intense or more deterministic. Hence she might not like the system to diversify her recommendation list. On the other hand, when a user interacts with various dissimilar items (e.g., different movie genres such as Romance, Historical, Children, etc.), the entropy is higher, indicating that the user's preferences over different categories are more equally distributed. We use this concept in Chapter \ref{ch:fairness_postproc} to increase provider-fairness, which will be explained in detail.
+        
+            % This concept is used in user modeling to increase personalization. 
+            % \begin{equation}
+            %     \text{Entropy}(i) = - \sum_{i=1}^n p(i) \log p(i)
+            % \end{equation}
+            % let $n$ be the total number of items, with smaller values being more indicative of discriminative power.
+            
+            % Entropy is also a measure of catalog coverage which is used to compute the diversity of a list. The term coverage refers to the proportion of items that the recommendation system can recommend. 
+        
+            % \begin{equation} \label{upe_c}
+            % E(u) = -\sum_{c \in C}{p(c|u)\log{p(c|u)}}
+            % \end{equation}
+        
+    
+            
+            % \begin{equation} \label{upe_i}
+            % E(u) = -\sum_{i \in  \mathcal{H}_u}{p(i|u)\log{p(i|u)}}
+            % \end{equation}
+            
+            % where: $p(i|u) = \frac{w(u,i)}{\sum_{i \in \mathcal{H}_u}{w(u,i)}}$ with $\mathcal{H}_u$ here and in the following factor presenting the rated items in the user's profile. 
+            
+
+
+% \section{Experimental Approach}
+    % n-fold, data cleaning, pre-processing 7 filtering, train/test etc.
+    % all the hyper parameters, librec-auto
+    
+    % \subsection{Initial Setup}
+    
+    % All the datasets were split into 80\% for training data and the remaining 20\% for the tested.
+    % % In the training phase of all the algorithms \todo[inline]{all?most}, 5-fold cross validation was used.
+    % All experiments were performed using a 5-fold cross-validation setting where 80\% of each user's rating data is used for the training dataset, and the rest is used as the test dataset (LibRec's \texttt{userfixed} configuration). The training set was used for building a recommendation model and generating recommendation lists, and the test set was used for evaluating the performance of generated recommendations. A random seed was set for all the experiments to ensure the repeatability of the algorithms.
+    
+    % For evaluation purposes of our ranking methods, we chose $k = 10$ (top 10 recommended items). Each recommendation algorithm can have several hyper-parameters. To identify the best-performing sets of hyper-parameters for each algorithm, I performed grid-search on hyper-parameters space and then selected the results with the highest precision for the next analysis. 
+    
+    
+    % % and for each algorithm we chose the hyper-parameters that achieved the highest performance using the Grid Search method.
+    
+    % For the post-processing approaches that we propose, the baseline recommender generates a long recommendation list for users (e.i. 200), then the post-processing approaches selects the top@k for each user according to their selection strategy.
+    
+    % I used librec-auto and LibRec to run the experiments\cite{burke2020facct_libauto,Sonboli2020FARLA,guo2015librec,mansoury2019algorithm,mansoury2018automating}. I added the proposed recommendation or re-ranking algorithms in this dissertation to \libauto{} and in some cases to LibRec. Additionally, I incorporated the most common evaluation metrics for fairness. Evaluation metrics are thoroughly explained in Section \ref{sec:eval}.
+
+    % \todo[inline]{move this to the recsys chapter}
+    
+\section{Recommender Systems}  
+    \todo[inline]{missing}
+
+
+    \subsection{Baseline Recommendations}
+    
+        The following baseline recommendation systems were used to indicate the improvement of the proposed approaches compared to these well-established algorithms: most-popular, item-based $K$ nearest neighbor, non-negative matrix factorization. Recommendation system baselines that are close to the proposed approaches are explained in each chapter.
+        % In Chapter \ref{ch:fairness_postproc}, we explain the re-ranking algorithms that we considered as baselines. 
+        
+        \vspace{0.25cm}
+        \noindent \paragraph{Most Popular Item Recommender}
+        \vspace{0.25cm}
+        % \textbf{Most popular item}
+        
+            Most popular baseline recommends the most popular items in the dataset in order of their popularity. This is a non-personalized recommender, and falls short in generating good recommendations. This popularity-based model is often used in the cold-start setting when we don't have any ratings from the users. Although, this baseline is not always easy to beat due to the popularity bias that usually exists in the recommendation datasets. In other words, in datasets with high popularity bias, a significant part of the ratings can be explained by item popularity, rather than any specific personalized preferences of users for items. So, it is important to have this non-personalized algorithm as a baseline to ensure the outcomes of the proposed algorithm is not only influenced by the popularity bias in the input data.
+        
+        \vspace{0.25cm}
+        \noindent \paragraph{Item-based K-nearest-neighbor (Item-Knn)}
+        \vspace{0.25cm}
+        % \textbf{Item-based K-nearest-neighbor (item-Knn)}: 
+        
+            Nearest neighbor models are a type of collaborative filtering models that use the collaborative power of the ratings provided by multiple users to make recommendations. In this approach the ratings of users on items are predicted on the basis of their neighborhoods. Neighborhoods can be the user nearest neighbors, who are similar to the target user or they can be the nearest neighbors of a target item which are the items most similar to that target item.
+        
+            In item-Knn order to make the rating predictions for target item B by user A, the first step is to determine a set S of items that are most similar to target item B. The ratings in the item set $S$, specified by A, are used to predict whether user A will like item B. Therefore, a person's ratings on similar science fiction movies like Alien and Predator can be used to predict her rating on Terminator.
+    
+            For the $m \times n$ ratings matrix $R = [r_{uj}]$ with $m$ users and $n$ items, let $I_u$ denote the set of item indices for which ratings have been specified by user (row) $u$ (user profile). Consider the case in which the rating of target item $t$ for user $u$ needs to be determined. The first step is to choose the top-$k$ most similar items to the item $t$ based on the aforementioned adjusted cosine similarity. Let the top-$k$ matching items to the item $t$, for which the user $u$ has specified ratings, be denoted by $Q_{t}(u)$. The weighted average value of these ratings is reported as the predicted value $\hat{r}_{ut}$. The weight of item $j$ in this average is equal to the similarity between item $j$ and the target item $t$.
+        
+            \begin{equation}
+                \hat{r}_{ut} = \frac{\sum_{j \in Q_{t}(u)} \text{Similarity(j,t)} \cdot r_{uj}}{\sum_{j \in Q_{t}(u)} |\text{Similarity(j,t)}|}
+            \end{equation}
+            \vspace{0.25cm}
+        
+            The underlying idea here is to make use of the user’s \textit{own} ratings on similar items in the final step of making the prediction. For example, in a movie recommendation system, the nearest neighbors of the movie will typically be movies of a similar genre. The rating history of the same user on such movies is a very reliable predictor of that user's interests.
+        
+            We use a standard item-based nearest neighbor technique \cite{desrosiers2011comprehensive} as a baseline recommendation system in our research. Neighborhood-based collaborative filtering algorithms were among the earliest and very effective collaborative filtering approaches and among the most popular methods. Their popularity might not be because of their accuracy but rather because they are quite simple to implement. It is also quite easy to explain their generated recommendations with the list of the neighbors used. Another strengths of neighborhood based models is its potential to make serendipitous recommendations that can lead users to the discovery of unexpected, yet very interesting items.
+        
+            When the data is sparse, these algorithms don't work very well as there aren't sufficiently similar neighbors to predict the rating robustly. Therefore they don't have full coverage of the rating predictions. Of course, if we only focus on the top-$k$ items, this problem seems to become less significant. Most of our proposed methods aim to increase provider-side fairness using the methods that increase diversity in the recommendation lists so we can then filter or re-order the items based on the system's fairness concerns. 
+        
+            Item-Knn tends to have a more diverse recommendation outcome compared to user-Knn, therefore it is a good baseline to have for comparison reasons. User-Knn algorithms have less diverse outcomes mainly due to the popularity bias issue. In a movie recommendation scenario, this means that most of the users have rated popular genres of movies. Now, if a user likes a niche genre, since we might not have enough ratings of nearest neighbor users for that niche genre, the user-Knn algorithm might perform poorly in predicting the rating of that movie for that user. In a way user-Knn has a great prediction on the movies that we have a lot of data about, while ignoring the niche genres. This issue leads to have less diverse recommendation results. While item-Knn, predicts the rating for that niche genre based on the user's own ratings. Since the user likes that genre, she might have rated more movies in that genre which gives the algorithm enough data to have a good prediction for the user. In this way item-Knn keeps all the less popular genres in the recommendations, hence more diverse recommendation results. Therefore item-Knn is a better option as our baseline.
+        
+            % So, the data has popularity bias, therefore most of the users have rated popular items. So, If I like a niche genre that only a few people like, user-Knn might not be able to do a good job on predicting a rating for me about that niche genre. And it's only giving me great predictions on the items that a lot of people have rated.But since item-Knn calculates the ratings based on my own ratings, It should have a better prediction whether i like that movie or not.  Since I like that niche genre, I have probably rated some movies in that genre, and because it uses my own ratings, it's predictions are more accurate.So item-Knn has diversity since it includes all the preferences of users, but user-Knn ignores the less popular preferences of users therefore less diversity.
+        
+            Besides the previously mentioned reason, we chose item-based Knn, as they are typically preferred when the number of users far exceeds the number of available items since they provide more accurate recommendations in this case. Compared to item-based Knn, they are more computationally efficient and requiring less frequent updates.
+
+        \vspace{0.25cm}
+        \noindent \paragraph{Non-Negative Matrix Factorization (NNMF)}
+        \vspace{0.25cm}
+        % \textbf{Non-negative matrix factorization (NNMF)}:
+       
+            Matrix factorization models \cite{koren20009mf} are also in the collaborative filtering family of methods. In a basic matrix factorization model, the rating matrix $R$ of size $m\times n$ is approximately factorized into $m\times k$ matrix $U$ and and $n\times k$ matrix $V$, as below:
+            
+           \begin{equation}
+               R\approx UV^T
+           \end{equation}
+        %   \vspace{0.cm}
+       
+            Each column of $U$ (or $V$ ) is referred to as a latent vector or latent component, whereas each row of $U$ (or $V$ ) is referred to as a latent factor. The $i$th row $\bar{u_i}$ of $U$ is referred to as a user factor, and each row $\bar{v_j}$ of V is referred to as an item factor. They both have $k$ entries and they correspond to the affinity of user $i$ and item $j$ to the $k$ concepts. Each rating $r_{ij}$ in in $R$ can be approximately expressed as a dot product of $i$th user factor and $j$th item factor:
+       
+           \begin{equation}
+               r_{ij} \approx \sum_{s=1}^{k} u_{is} \cdot v_{js}
+           \end{equation}
+           \vspace{0.25cm}
+       
+            Where $u_{is}$ is the affinity of user $i$ to concept $s$ and $v_{js}$ is the affinity of item $j$ to concept $s$. Non-negative matrix factorization (NNMF) \cite{lee2001algorithms,zhang2006learning} may be used for rating matrices that are non-negative ($U$ and $V$). The major advantage of this method is its interpretability which helps in understanding the user-item interactions. This property is most useful for cases when the the data consists of implicit feedback data (a unary ratings matrix which only contains positive feedback) such as clicks or likes. We chose NNMF as one of our other baseline recommender systems as a well-established collaborative filtering algorithms as a the latent factor model and because of its higher interpretability compared to other matrix factorization models.
+       
+       
+            % non-negative matrix factorization model treats missing entries as negative feedback by setting them to 0s. This example is a manifestation of overfitting caused by a lack of
+
+            % NMF(non-negative matrix factorization), UserKNN, itemKNN, BPR WRMF, Maxent, RankSGD, SLIM, FAR/PFAR, most-popualr, MMR, variants of ofair
+        
+            % (a) RankSGD \cite{pmlr-v18-jahrer12b} uses stochastic gradient descent to optimize the ranking error; (b) UserKNN \cite{resnick1997recommender}  is a memory-based collaborative algorithm that computes user similarity; (c) Weighted Regularized Matrix Factorization (WRMF) ~\cite{hu2008collaborative} creates a reduced-dimensionality factorization of the rating matrix; (d) Maximum-entropy distribution (Maxent) \cite{choo2014gather} is a loan recommender system specially designed for Kiva. Maxent models lending behaviors by estimating a maximum-entropy distribution based on a set of heterogeneous information regarding micro-financial transactions available at Kiva.
+        
+            % We also used MMR by itself, as a diversity-enhancing re-ranker, a variant of OFAiR that includes only user tolerance weights for each feature, and a variant that includes only the fairness weights for the protected feature dimensions without the tolerance weights. In this way, we can study separately the contribution of each of these aspects of the algorithm.
+        
+            % The recommendation algorithms for generating the recommendation lists of size 10 in pre-processing solution are Biased Matrix Factorization (BiasedMF) [94], Singular Value Decomposition (SVD++) [93], and List-wise Matrix Factorization (ListRankMF) [160]. The recommendation algorithms for generating the longer recommendation lists of size 50 in post-processing solution are Bayesian Personalized Ranking (BPR) [146], Neural Collaborative Filtering (NCF) [71], User-based Collaborative Filtering (UserKNN) [147]. I chose these algorithms to cover different approaches in recommender systems: matrix factorization, neural networks, and neighborhood models.
+        
+
+    % \subsection{Notations}
+        % Let U and I be the sets of users and items, respectively. The lists of recommendations is denoted as R. Ru is the recommendation items for user u ∈ U and user profile Iu is the list of items that u has rated
+
+        % \todo[inline]{needs to be revisited}
+       
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % capital X for items and Y for users
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Different recommendation scenarios can be distinguished by differing configurations of interests among the stakeholders. We divide the stakeholders of a given recommender system into three categories: consumers $C$, providers $P$, and platform or system $S$. The consumers are those who receive the recommendations. They are the individuals whose choice or search problems bring them to the platform, and who expect recommendations to satisfy those needs. The providers are those entities that supply or otherwise stand behind the recommended objects, and gain from the consumer's choice.\footnote{In some recommendation scenarios, like on-line dating, the consumers and providers are same individuals.} The final category is the platform itself, which has created the recommender system in order to match consumers with providers and has some means of gaining benefit from successfully doing so. 
+
+    % what is a protected and unprotected group? what are the limitaitons of this categorizations in research.
+    
+    % SLIM learns $\langle user, item \rangle$ regression weights through optimization, minimizing a regularized loss function. Although this is not proposed in the original SLIM paper, it is possible to create a user-based version of SLIM (labeled SLIM-U in~\cite{zheng2014cslim}), which generalizes the user-based algorithm in the same way. 
+    
+    % \todo[inline]{check the notations}
+    % Assume that there are $M$ users (a set $U$), $N$ items (a set $I$), and let us denote the associated 2-dimensional rating matrix by $R$. SLIM is designed for item ranking and therefore $R$ is typically binary. We will relax that requirement in this work, we use $u_i$ to denote user $i$ and $t_j$ to denote the item $j$. An entry, $r_{ij}$, in matrix $R$ represents the rating of $u_i$ on $t_j$.
+    
+    % SLIM-U predicts the ranking score $\hat{s}$ for a given user, item pair $\langle u_i, t_j \rangle$ as a weighted sum:
+    
+    % \begin{equation}
+    %     \hat{s}_{ij} = \sum_{k \in U}{w_{ik}r_{kj}}, 
+    % \end{equation}
+    % where $w_{ii} = 0$ and $w_{ik} >= 0$.
+    
+    % Alternatively, this can be expressed as a matrix operation yielding the entire prediction matrix $\hat{S}$:    
+    % \begin{equation}
+    % \hat{S} = WR,
+    % \end{equation}
+    % where $W$ is an $M \times M$ matrix of user-user weights. For efficiency, it is very important that this matrix be sparse.
+    
+    % The optimal weights for SLIM-U can be derived by solving the following minimization problem:
+    
+    % \begin{equation}
+    % \text{min}_W~\frac{1}{2}\left\Vert R - WR \right\Vert^2 + 
+    %     \lambda_1 \left\Vert W \right\Vert^1 +
+    %     \frac{\lambda_2}{2}\left\Vert W \right\Vert^2,   
+    % \end{equation}
+    % subject to $W > 0$  and $\text{diag}(W) = 0$.
+    
+    % The $\left\Vert W \right\Vert^1$ represents the $\ell_1$ norm and the $\left\Vert W \right\Vert^2$ term represents the $\ell_2$ norm of the $W$ matrix. These regularization terms are present to constrain the optimization to prefer sparse sets of weights. Typically, coordinate descent is used for optimization. Refer to \cite{ning2011slim} for additional details. 
+
+
+    % To describe this term, we will enrich our notation further by indicating $U^+$ to be the subset of $U$ containing users in the protected class with the remaining users in the class $U^-$. Let $W_i^+$ be the set of weights for users in $U^+$ and $W_i^-$ be the corresponding set of weights for the non-protected class. Then the neighborhood balance term $b_i$ for a given user $i$ is the squared difference between the weights assigned to peers in the protected class versus the unprotected class.
+
+    % \begin{equation}
+    %     b_i = (\sum_{w^+ \in W_i^+}{w^+} - \sum_{w^- \in W_i^-}{w^-})^2
+    % \end{equation}

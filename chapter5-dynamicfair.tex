@@ -3,7 +3,7 @@
 
 A recommendation system operates in a changing environment where it has to make new decisions based on the new changes. For instance, new stakeholders (consumers, providers, etc.) might come to the system or go from the system. Not surprisingly, these changes might introduce new biases into the system or affect the propagation, aggravation or maybe even mitigation of the pre-existing biases in recommender systems. In this situation, any attempt to mitigate bias in a system, will only help the issue in one iteration and for the stakeholders at that specific time window. Therefore, it is important to consider fairness in recommender systems as a dynamic property.
 
-Positive feedback loops are one of the most destructive dynamic changes that happen in recommender systems \cite{o2016weapons}. As we explained in Chapter \ref{fairness}, positive feedback loops are re-enforced over time until and worsen the presentation bias over time.
+Positive feedback loops are one of the most destructive dynamic changes that happen in recommender systems \cite{o2016weapons}. As we explained in Chapter \ref{fairness}, positive feedback loops are reinforced over time until and worsen the presentation bias over time.
 
 In the following section, I propose an adaptive approach to address the problem of multidimensional provider fairness using probabilistic social choice to control feedback loops and adjust the system over time.
 
@@ -201,7 +201,7 @@ Each metric has a maximum fairness of 1 and therefore it is possible to calculat
 \subsubsection{Dataset}
 We tested our model on two datasets. The first is The Movies Dataset explained in Chapter \ref{chap:methodology}. We use this dataset as a well-known example with a rich set of provider-side features. Additionally, we extracted two features that contain demographic information on the movie directors and screenplay writers.
 
-In a fielded application, the choice of sensitive features and protected groups within those features may be determined by legal liability or business model considerations. Lacking this type of insight, we chose to identify protected features as those associated with rarely-recommended items. To determine the protected values of each feature, we performed a trial run of recommendation generation over the data set, and examined the distribution of features in the results. In a live system, historical recommendation data would be available over which to calculate this distribution. The values in the 25th percentile of the distribution were selected as the protected group for that feature.
+In a fielded application, the choice of sensitive features and protected groups within those features may be determined by legal liability or business model considerations. Lacking this type of insight, we chose to identify protected features as those associated with rarely-recommended items. To determine the protected values of each feature, we performed a trial run of recommendation generation over the dataset, and examined the distribution of features in the results. In a live system, historical recommendation data would be available over which to calculate this distribution. The values in the 25th percentile of the distribution were selected as the protected group for that feature.
 
 
 \begin{table}[!hbt]
@@ -228,10 +228,10 @@ In a fielded application, the choice of sensitive features and protected groups 
 
 Our algorithm is also evaluated on a proprietary dataset obtained from Kiva.org (refer to Chapter \ref{chap:methodology}). 
 After preparing the data, the final features for each loan reduced to borrower's gender, borrower's country, loan purpose, loan amount (binned to 10 equal-sized buckets), and loan's percentage funding rate. 
-To identify the protected values for each feature, we applied the same method as for the MovieLens data set. We assigned the values that their frequencies are in the 25 percentile of the distribution to the protected group for each feature. The final number of features are 231 for this dataset.
+To identify the protected values for each feature, we applied the same method as for the MovieLens dataset. We assigned the values that their frequencies are in the 25 percentile of the distribution to the protected group for each feature. The final number of features are 231 for this dataset.
 
 \subsubsection{Experiments}
-Our experimental methodology is designed to highlight differences between these choice functions. We followed a typical recommendation evaluation process with each user's profile split into 80\% training and 20\% testing. We chose non-negative matrix factorizing (NMF) as our base algorithm~\cite{takacs2008investigation} based on prior experience with these data sets. We plan to explore the interaction between base algorithm and choice functions in future work. The factorization model was built using the training data and then used to generate a recommendation list $\ell$ for each user.
+Our experimental methodology is designed to highlight differences between these choice functions. We followed a typical recommendation evaluation process with each user's profile split into 80\% training and 20\% testing. We chose non-negative matrix factorizing (NMF) as our base algorithm~\cite{takacs2008investigation} based on prior experience with these datasets. We plan to explore the interaction between base algorithm and choice functions in future work. The factorization model was built using the training data and then used to generate a recommendation list $\ell$ for each user.
 % \nasim{add mostpop and kNN as another baseline}
 Arrival time was simulated in our experiments. Users were shuffled randomly and grouped into batches of size 0.5\% of all the users, where each batch was considered to be a single time step. For each batch, we computed fairness metrics $\metrics$ over the previous 20 batches, so that the backward window $w_b$ equals approximately 10\% of the test data. \footnote{For the first batch, when no backward window exists, the Fixed Lottery was performed.} The experiment was run for each of the four choice functions described above: Fixed Lottery, Deterministic Least Misery, Dynamic Lottery, and Allocation Lottery. For the choice functions dependent on $\metrics$, we computed the lottery probabilities once per batch. 
 % \nasim {choosing shorter forward and backward windows, looking at extreme cases basically}
@@ -241,7 +241,7 @@ The results of the different algorithms were compared in summary and over the co
 
 \subsection{Overall Results}
 
-Table~\ref{tab:overall-ML} shows the overall results for the MovieLens data set. The first point to notice is that fairness is greatly improved (5x) over the base algorithm for all of the re-ranking methods, which is to be expected. Interestingly, the Fixed choice function, which chooses among the re-rankers with equal probability has the best fairness over all experiment iterations taken as a whole. The other re-rankers are similar. All of the re-rankers show a reduction in ranking accuracy, around 25\% of nDCG. We did not seek to minimize nDCG loss in these experiments as doing so would reduce the impact of any given re-ranking operation and require a longer experiment to tease out differences.
+Table~\ref{tab:overall-ML} shows the overall results for the MovieLens dataset. The first point to notice is that fairness is greatly improved (5x) over the base algorithm for all of the re-ranking methods, which is to be expected. Interestingly, the Fixed choice function, which chooses among the re-rankers with equal probability has the best fairness over all experiment iterations taken as a whole. The other re-rankers are similar. All of the re-rankers show a reduction in ranking accuracy, around 25\% of nDCG. We did not seek to minimize nDCG loss in these experiments as doing so would reduce the impact of any given re-ranking operation and require a longer experiment to tease out differences.
 
 \begin{table}[htb]
     \centering
@@ -255,7 +255,7 @@ Table~\ref{tab:overall-ML} shows the overall results for the MovieLens data set.
     %   Sampling         & \ 0.108 & \ 0.167 & \ 1.9e-3 \ \\
        Allocation       & \ 0.109 & \ 0.171 & \ 2.3e-4 \ \\
     \end{tabular}
-    \caption{MovieLens data set. Fairness measured by percentage of protected item exposure in recommendation lists.}
+    \caption{MovieLens dataset. Fairness measured by percentage of protected item exposure in recommendation lists.}
     \label{tab:overall-ML}
 \end{table}
 
@@ -272,7 +272,7 @@ Table~\ref{tab:overall-ML} shows the overall results for the MovieLens data set.
     %   Sampling     \ & \ 0.048 & \ 0.326 & \ 6e-4\\
        Allocation   \ & \ 0.048 & \ 0.327 & \ 1e-4\\
     \end{tabular}
-    \caption{Kiva data set. Fairness measured by percentage of protected item exposure in recommendation lists.}
+    \caption{Kiva dataset. Fairness measured by percentage of protected item exposure in recommendation lists.}
     \label{tab:overall-Kiva}
 \end{table}
 
@@ -291,7 +291,7 @@ Table~\ref{tab:overall-ML} shows the overall results for the MovieLens data set.
 %     %   Sampling         & \ 0.108 & \ 0.167 & \ 1.9e-3 \ \\
 %       Allocation       & \ 0.109 & \ 0.171 & \ 2.3e-4 \ \\
 %     \end{tabular}
-%     \caption{MovieLens data set}
+%     \caption{MovieLens dataset}
 %     \label{tab:overall-ML}
 %  \end{subtable}%
 %   \begin{subtable}{.5\textwidth}
@@ -306,29 +306,29 @@ Table~\ref{tab:overall-ML} shows the overall results for the MovieLens data set.
 %     %   Sampling     \ & \ 0.048 & \ 0.326 & \ 6e-4\\
 %       Allocation   \ & \ 0.048 & \ 0.327 & \ 1e-4\\
 %     \end{tabular}
-%     \caption{Kiva data set}
+%     \caption{Kiva dataset}
 %     \label{tab:overall-Kiva}
 %     \end{subtable}
 %     \caption{Summary results. Fairness measured by percentage of protected item exposure in recommendation lists.}
 % \end{table}
 
 
-Table~\ref{tab:overall-Kiva} shows similar results for the Kiva data set. Here we do not see as much accuracy loss. The Allocation algorithm, which here has the best nDCG, is only 5.5\% below the original base algorithm. For this data set, the re-rankers also improve fairness, although not as dramatically as in the MovieLens case. The Allocation method has the highest fairness score in addition to the best nDCG.
+Table~\ref{tab:overall-Kiva} shows similar results for the Kiva dataset. Here we do not see as much accuracy loss. The Allocation algorithm, which here has the best nDCG, is only 5.5\% below the original base algorithm. For this dataset, the re-rankers also improve fairness, although not as dramatically as in the MovieLens case. The Allocation method has the highest fairness score in addition to the best nDCG.
 % \todo{Re-plot, removing sampling lottery} 
-Figure~\ref{fig:local-regret} shows the average fairness regret over time for the experiment. The algorithms all move within a fairly narrow regret bound, indicating the difficulty of achieving fairness in these data sets. The Fixed lottery shows lowest regret over most epochs for the MovieLens data set, but does not do as well with Kiva. Similar inconsistency is shown with the Least Misery algorithm. The low variance of the fairness of Allocation algorithm can be seen, as its regret does not show the swings of the other algorithms.
+Figure~\ref{fig:local-regret} shows the average fairness regret over time for the experiment. The algorithms all move within a fairly narrow regret bound, indicating the difficulty of achieving fairness in these datasets. The Fixed lottery shows lowest regret over most epochs for the MovieLens dataset, but does not do as well with Kiva. Similar inconsistency is shown with the Least Misery algorithm. The low variance of the fairness of Allocation algorithm can be seen, as its regret does not show the swings of the other algorithms.
 
 \begin{figure}[tbh]
 \setlength\tabcolsep{0pt}
     \begin{subfigure}{1.0\textwidth}
     \centering
     \includegraphics[width=4.5in]{imgs/dynfair/ml_avg_regret_overtime_sep20.png}
-    \caption{MovieLens data set}
+    \caption{MovieLens dataset}
     \label{fig:local-regret-ML}
     \end{subfigure}
     \begin{subfigure}{1.0\textwidth}
     \centering
       \includegraphics[width=4.5in]{imgs/dynfair/kiva_avg_regret_overtime_sep20.png}
-    \caption{Kiva data set}
+    \caption{Kiva dataset}
     \label{fig:local-regret-Kiva}
     \end{subfigure}
     \caption{Average fairness regret over time}
@@ -353,7 +353,7 @@ Figure~\ref{fig:local-regret} shows the average fairness regret over time for th
     \caption{Distribution of fairness regret}
 \end{figure*}
 
-Across both tables and in the time series figure, we see that the Allocation method has  lower variance in the fairness it achieves across iterations. Another way to see this consistency is the distribution of the average regret values. Figures~\ref{fig:local-regret-ML} and \ref{fig:local-regret-Kiva} show the distribution of regret for the different choice functions on each data set. The distribution of the Allocation method (shown in red) falls within a much narrower band than any of the other methods, particularly in the MovieLens data set where we see the Fixed method in blue taking on a wide range of regret values. At any given time, the Allocation algorithm is producing consistently fair results without the large variations in regret seen the other algorithms. As its fairness results are similar to those of the other lottery mechanisms, this consistency is a good reason to prefer it.
+Across both tables and in the time series figure, we see that the Allocation method has  lower variance in the fairness it achieves across iterations. Another way to see this consistency is the distribution of the average regret values. Figures~\ref{fig:local-regret-ML} and \ref{fig:local-regret-Kiva} show the distribution of regret for the different choice functions on each dataset. The distribution of the Allocation method (shown in red) falls within a much narrower band than any of the other methods, particularly in the MovieLens dataset where we see the Fixed method in blue taking on a wide range of regret values. At any given time, the Allocation algorithm is producing consistently fair results without the large variations in regret seen the other algorithms. As its fairness results are similar to those of the other lottery mechanisms, this consistency is a good reason to prefer it.
 
 \todo[inline]{fix and edit this section}
 \subsection{Conclusion and Future Work}
@@ -363,7 +363,7 @@ The move to frame fairness as a problem of social choice has several important c
 
 Second, we are able to make use of the large body of research in computational social choice, including the study of fairness, that has emerged in the past decades. 
 
-Building on these ideas, we demonstrate the SCRUF framework for dynamic adaptation of recommendation fairness using social choice to arbitrate between different re-ranking methods. We define a set of choice functions, ranging from a simple fixed lottery to an adaptation of the probabilistic serial mechanism, and demonstrate their performance on two data sets where multiple fairness concerns have been defined. We found relatively minor differences between the different lottery mechanisms, except that the Allocation mechanism, which takes user preferences over features into account, provides lower variance in fairness over time and therefore a more consistently fair output.
+Building on these ideas, we demonstrate the SCRUF framework for dynamic adaptation of recommendation fairness using social choice to arbitrate between different re-ranking methods. We define a set of choice functions, ranging from a simple fixed lottery to an adaptation of the probabilistic serial mechanism, and demonstrate their performance on two datasets where multiple fairness concerns have been defined. We found relatively minor differences between the different lottery mechanisms, except that the Allocation mechanism, which takes user preferences over features into account, provides lower variance in fairness over time and therefore a more consistently fair output.
 
 
 
