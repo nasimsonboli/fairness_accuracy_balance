@@ -9,13 +9,17 @@ Positive feedback loops are one of the most destructive dynamic changes that hap
 \subsection{Introduction}
 \label{subsec:dyn_intro}
 
-We motivate our problem with an example from Kiva.org, the peer-to-peer micro-lending platform. As we have explained before, the users of Kiva are lenders who support entrepreneurs, usually from developing countries, by lending small amounts. The (item) providers are borrowers who request loans. We call borrowers or the loans (which consists of the loan information and the borrower information) providers. The organization has aims to provide equitable access to capital across different regions, economic sectors, and borrower demographics. This organizational mission needs to be embedded in any system deployed to recommend loans to lenders. Without some control over the characteristics of the recommendations delivered, it is easy to imagine that a positive feedback loop \cite{sun2019debiasing} could develop. In this case, some types of loans are increasingly disadvantaged by the algorithm. In other words, recommender systems worsen the presentation bias within loans over time.
+We motivate our problem with an example from Kiva.org, the peer-to-peer micro-lending platform. As we have explained before, the users of Kiva are lenders who support entrepreneurs, usually from developing countries, by lending small amounts. The (item) providers are borrowers who request loans. We call borrowers or the loans (which consists of the loan information and the borrower information) providers. The organization has aims to provide equitable access to capital across different regions, economic sectors, and borrower demographics. 
+
+This organizational mission needs to be embedded in any system deployed to recommend loans to lenders. Without some control over the characteristics of the recommendations delivered, it is easy to imagine that a positive feedback loop \cite{sun2019debiasing} could develop. In this case, some types of loans are increasingly disadvantaged by the algorithm. In other words, recommender systems worsen the presentation bias within loans over time.
 
 In general, we may anticipate that a fairness-aware recommender system will need to respond to multiple \textit{fairness concerns} simultaneously. In this work, we adopt a social choice perspective \cite{BCELP16a} on balancing different fairness concerns, which gives us a rich set of normative properties and algorithms. Social choice is fundamentally concerned with combining preferences from multiple parties into a single outcome in which all parties participate, voting being a paradigmatic example of such a choice~\cite{Zwicker:Voting}. We can think of each fairness concern as a kind of actor, with preferences over which recommendations should be delivered. Combining the preferences of multiple such concerns fits squarely into the social choice realm.
 
-We believe that social choice is a more flexible and realistic framework for representing fairness-aware issues in machine learning than the optimization frameworks typically employed. Social choice is inherently multi-agent, and therefore, the idea of the integration of multiple fairness concerns naturally emerges, rather than being a complex add-on. Importantly for recommendation problems, social choice naturally allows for heterogeneity and hence personalization across decision instances since a user is just another agent with preferences over the outcome. Finally, fairness is inherently a social and political construct, and a social choice formalization allows the preferences of different actors to be foregrounded, rather than relegated to the black box of machine learning optimization. The study of fairness has a long history in the social choice literature \cite{Young:Equity,Zwicker:Voting}.
+We believe that social choice is a more flexible and realistic framework for representing fairness-aware issues in machine learning than the optimization frameworks typically employed. Social choice is inherently multi-agent, and therefore, the idea of the integration of multiple fairness concerns naturally emerges, rather than being a complex add-on. Importantly for recommendation problems, social choice naturally allows for heterogeneity and hence personalization across decision instances since a user is just another agent with preferences over the outcome. 
 
-\todo[inline]{is the following paragraph repetition?}
+Finally, fairness is inherently a social and political construct, and a social choice formalization allows the preferences of different actors to be foregrounded, rather than relegated to the black box of machine learning optimization. The study of fairness has a long history in the social choice literature \cite{Young:Equity,Zwicker:Voting}.
+
+% \todo[inline]{is the following paragraph repetition?}
 \noindent\textit{Contributions} In this project, we propose a novel framework for recommender systems we call \textit{Social Choice for Re-ranking Under Fairness} (SCRUF). SCRUF uses multiple fairness metrics to evaluate the history of recommendation delivery and determine whether and how to adjust its performance. It uses feature-specific re-rankers to improve fairness, selecting one re-ranker (possibly non-deterministically) at each time point. We use a set of social choice inspired algorithms to allocate re-rankers to users based on the user preferences. This framework abstracts the particular fairness metrics away from the recommendation algorithm design, an approach that becomes unwieldy when attempting to incorporate multiple fairness concerns. It also supports a dynamic balance between the interplay between personalization and fairness and is therefore sensitive to context and individual differences. We demonstrate the efficacy of our design on two recommendation domains.
 
 \vspace{0.25cm}
@@ -395,15 +399,16 @@ Across both tables and in the time series figure, we see that the Allocation met
 
 % \todo[inline]{fix and edit this section}
 \subsection{Conclusion}
-In this project, we conceptualize algorithmic fairness and recommendation fairness, in particular, as a problem of \textit{social choice}. That is, we define the task of computing a recommendation as a problem of arbitrating among the preferences of different individual agents to arrive at a single outcome. For our purposes, the agents in question include the user and also multiple \textit{fairness concerns} that may be active within a particular organization. 
 
-The move to frame fairness as a problem of social choice has several important consequences. First, it highlights the multiplicity and diversity of fairness (and other stakeholder) concerns that might be relevant in a given application. This approach allows us to be agnostic to different definitions and metrics of fairness and does not impose any particular structure on stakeholder preferences. Second, we are able to make use of the large body of research in computational social choice, including the study of fairness, that has emerged in the past decades. 
-
-Building on these ideas, we demonstrate the SCRUF framework for dynamic adaptation of recommendation fairness using the social choice to arbitrate between different re-ranking methods. We define a set of choice functions, ranging from a simple fixed lottery to an adaptation of the probabilistic serial mechanism, and demonstrate their performance on two datasets where multiple fairness concerns have been defined. We found relatively minor differences between the different lottery mechanisms, except that the Allocation mechanism, which takes user preferences over features into account, provides lower variance in fairness over time and therefore a more consistently fair output.
-
-
-
-
-
-
-
+    In this project, we conceptualize algorithmic fairness and recommendation fairness, in particular, as a problem of \textit{social choice}. That is, we define the task of computing a recommendation as a problem of arbitrating among the preferences of different individual agents to arrive at a single outcome. For our purposes, the agents in question include the user and also multiple \textit{fairness concerns} that may be active within a particular organization.
+    
+    The move to frame fairness as a problem of social choice has several important consequences. First, it highlights the multiplicity and diversity of fairness (and other stakeholder) concerns that might be relevant in a given application. This approach allows us to be agnostic to different definitions and metrics of fairness and does not impose any particular structure on stakeholder preferences. Second, we are able to make use of the large body of research in computational social choice, including the study of fairness, that has emerged in the past decades. 
+    
+    Building on these ideas, we demonstrate the SCRUF framework for dynamic adaptation of recommendation fairness using the social choice to arbitrate between different re-ranking methods. We define a set of choice functions, ranging from a simple fixed lottery to an adaptation of the probabilistic serial mechanism, and demonstrate their performance on two datasets where multiple fairness concerns have been defined. We found relatively minor differences between the different lottery mechanisms, except that the Allocation mechanism, which takes user preferences over features into account, provides lower variance in fairness over time and therefore a more consistently fair output.
+    
+    
+    
+    
+    
+    
+    

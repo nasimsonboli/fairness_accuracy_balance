@@ -4,29 +4,73 @@
 % \section{Transparency}
 % \section{Data minimization}
 
-a brief discussion of the issues of accuracy
+Integrating the goal of fairness into recommender systems is not easy as it has significant trade-offs with accuracy. Accuracy in recommender systems is the ability of that system to reproduce the preferences of its users. And the objective of fairness, depending on its definition, application, context, the flaws that each part of the pipeline has, the stakeholders involved in the recommender systems and the priority of their fairness concern, can have different contradictions with the goal of accuracy. 
 
-solutions presented
+Some of these issues are obstacles that prevent the model from reaching an ideal accuracy. Inconsistency in users' rating behavior, imbalance of data between the majority and minority groups in the dataset, the inevitable popularity bias, and the positive feedback loops in recommendations are some of the issues that diverge the model from its primary goal. Besides preventing the model from accurately predicting user behavior, these issues can cause societal harm or exacerbate the harms towards users, specially the protected group. Therefore, having accuracy as the only objective regardless of its potential social impacts, particularly on the protected group(s), will not serve the users as much as one expects. 
 
-then the limitations
+Therefore, reaching a satisfactory level of accuracy while preventing the model from being unfair to users becomes essential. Throughout this dissertation, several recommendation models and re-ranking approaches are presented. These methods aim for controlling the balance between accuracy and fairness to rich a reasonable trade-off. Although, these approaches show promising results, they have intrinsic limitations. Rather than thinking about these solutions as ultimate answers to the challenge of accuracy/fairness trade-off, they should be thought of as examples of tools that other researchers can use and apply in their own applications. 
 
-group fairness we try to provide solutions for
+One of the key challenges in this area is the domain-specificity of recommendation environments. The utilities delivered to each class of stakeholder are highly dependent on the type of item being recommended, the social function of the platform, and the interactions that it enables. Therefore, it is difficult to find appropriate datasets for experimentation and challenging to generalize across recommendation scenarios.
 
-bias isn't felt equally by everyone
-societal harms
+% balanced neighborbood 
+In our future work, we plan to extend our methods and findings in several ways. A multisided platform may require fairness to be considered for both consumers and providers at the same time: a CP-fairness condition. For example, a rental property recommender may treat minority applicants as a protected class and wish to ensure that they are recommended properties similar to unprotected renters. At the same time, the recommender may wish to treat minority landlords as a protected class and ensure that highly-qualified tenants are referred to them at the same rate as to landlords who are not in the protected class. A critical question for future research is how the outcomes for each stakeholder and the overall system performance are affected by combining consumer- and provider-fairness concerns. We intend to test the idea of Balanced Neighborhoods on other algorithms such as user-Knn and item-Knn. OFAiR algorithm takes the weights of the fairness concerns into account, so it can emphasize on the importance of the protected group concerns over the others. Previously, these weights were set manually. Metric learning and voting systems used in distributive justice are good alternatives to use for setting the weights of fairness concerns.
 
-don't lose the protected value concept when writing about popularity bias
+Finally, note that philanthropy and, specifically, Kiva Microfund is the main case study for this research. However, the unfairness of this system and its effects on different stakeholders are not fully analyzed (e.g., and the real effect of unfairness on borrowers and perspective of lenders to Kiva's fairness interventions). The proposed methods, here, address the algorithmic fairness issue of the borrowers that is only one part of the equation.
 
-popularity bias plays into it, but it's not only that.. these put a bigger burden on the protective group
-example, black women who sing in Spanish are treated unfairly
 
-I am not trying to solve the whole issue. I am creating tools and examples of the technology so researchers can use and apply in their own applications
-
-it is not perfect set of solutions they are just examples of how to approach this problem and providing tools to help mitigating the issue
-
-this work is not also a rich detailed analysis of Kiva
+% The other approach to explore is to use voting methods in the fair resource allocation literature in the computational social choice field. Specifically, the cake-cutting problem, where we want to allocate cake slices fairly where we assume users have different preferences for different layers of the cake, which is similar to our research problem here, where users have different preferences over different dimensions.
 
 
 
 
+    % Another path to pursue is to have a more extensive experimentation of the fairness properties of the balanced neighborhood SLIM for both consumers and providers. We would like to test this idea on K-nearest neighbor method as well. Finally, we expect to publish a journal article of these thorough experiments in the Information and Management Journal.
+    
+    % Another important area of research is to extend our measures of fairness. The additive measures used in this paper capture an aggregate representation of how recommendation results are changing for user and provider groups generally, but they do not permit fine-grained analysis of the tradeoffs experienced by individual users or providers. We do not know, for example, if the results of our Kiva.org experiments represent a Pareto improvement in system performance or just an average improvement over the stakeholder groups, and whether some subgroups are impacted more than others.
+    
+    % One of the key challenges in this area is the domain-specificity of recommendation environments. The utilities that are delivered to each class of stakeholder are highly dependent on the type of item being recommended, the social function of the platform, and the interactions that it enables. It is therefore difficult to find appropriate datasets for experimentation and challenging to generalize across recommendation scenarios.
 
+
+%far/pfar
+    % In the future, we will consider the position bias into the fairness-aware recommendation for microlending. As discussed in this paper, the recommendation for microlending is moved forward by considering the coverage rate of borrowers and the lenders' diversity tolerance. However, the top positions are generally more valuable than the bottom ones \cite{robertson1977probability}. We plan to make a further assumption that the chance of exposure for an item depends on its position in ranking. Thus, incorporating such position bias into the re-ranking criteria for microlending is promising.
+    
+    % In the future, we will study a number of variants of our algorithms presented here. We plan to explore different methods for computing personalized diversity tolerance factors, especially to solve the cold-start problem in the current algorithm. We also plan to examine variants of the re-ranking algorithm to take into account the size of each provider group's inventory. 
+
+%ofair
+    
+    % As our future work in this section, we plan to run more thorough experimentation with weights of the weighted cosine similarity and capture the influence of these weights on the final results. We also intend to use different recommendation algorithms as the base recommendation. A more general method to use is the metric learning approach that assumes different dimensions and assigns weights to these dimensions accordingly. This is useful as it automatically assigns weights to dimensions not manually.
+    % The other approach to explore is to use voting methods in the fair resource allocation literature in the computational social choice field. Specifically, the cake-cutting problem, where we want to allocate cake slices fairly where we assume users have different preferences for different layers of the cake, which is similar to our research problem here, where users have different preferences over different dimensions.
+
+
+
+
+% Disagreement between accuracy and fairness
+
+% a brief discussion of the issues of accuracy
+% solutions presented
+
+% then the limitations
+
+% group fairness we try to provide solutions for
+
+% bias isn't felt equally by everyone
+% societal harms
+
+% don't lose the protected value concept when writing about popularity bias
+
+% popularity bias plays into it, but it's not only that.. these put a bigger burden on the protective group
+% example, black women who sing in Spanish are treated unfairly
+
+% I am not trying to solve the whole issue. I am creating tools and examples of the technology so researchers can use and apply in their own applications
+
+% it is not perfect set of solutions they are just examples of how to approach this problem and providing tools to help mitigating the issue
+
+% this work is not also a rich detailed analysis of Kiva
+
+
+
+
+
+% \item \textbf{Fairness through Balanced Neighborhoods}: In this project, we built on the standard nearest neighbor techniques in recommender systems and built balanced neighborhoods to ensure diversity among the peers from whom recommendations are generated. In our future work for this project, we plan to extend these findings in several ways. We would like to have a more extensive experimentation of the fairness properties of the balanced neighborhood SLIM. And we would like to run these experimentation for both consumers and providers. We would also like to test this idea on different neighborhood-based methods besides SLIM. 
+
+
+% Overall, the presented methods in previous sections were looking to find a balance between accuracy and fairness either using a re-ranking method or a regularization based method. Most of the focus of the previous methods were on reaching provider-side fairness. 

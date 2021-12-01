@@ -301,7 +301,9 @@ The most obvious precursor for this research is the work of Dwork et al. in the 
 
 A key aspect of this extension is to note the tension between a personalized view of recommendation delivery and a regulatory view that values particular outcomes. The regulatory view is somewhat foreign to research in personalization, but there are strong arguments that total obedience to user preference is not always risk-free or desirable~\cite{pariser2011filter,sunstein2009republic}. This project also introduces the concept of multisided fairness, relevant in multisided platforms that serve a matchmaking function. We identify consumer- and provider- fairness as properties desirable in certain applications and demonstrate that the concept of balanced neighborhoods in conjunction with the well-known sparse linear method can be used to balance personalization with fairness considerations.
 
-% \todo[inline]{should we have future work?}
+
+The following section will discuss the post-processing approach as an alternative approach to fairness through in-processing. We will then present three different re-rankers to mitigate provider side group unfairness.
+
 % In our future work, we plan to extend these findings in several ways. It is possible that a multisided platform may require fairness be considered for both consumers and providers at the same time: a CP-fairness condition. For example, a rental property recommender may treat minority applicants as a protected class and wish to ensure that they are recommended properties similar to unprotected renters. At the same time, the recommender may wish to treat minority landlords as a protected class and ensure that highly-qualified tenants are referred to them at the same rate as to landlords who are not in the protected class. One important question for future research is how the outcomes for each stakeholder and the overall system performance are affected by combining consumer- and provider-fairness concerns.
 % Another path to pursue is to have a more extensive experimentation of the fairness properties of the balanced neighborhood SLIM for both consumers and providers. We would like to test this idea on K-nearest neighbor method as well. Finally, we expect to publish a journal article of these thorough experiments in the Information and Management Journal.
 
@@ -309,4 +311,4 @@ A key aspect of this extension is to note the tension between a personalized vie
 
 % One of the key challenges in this area is the domain-specificity of recommendation environments. The utilities that are delivered to each class of stakeholder are highly dependent on the type of item being recommended, the social function of the platform, and the interactions that it enables. It is therefore difficult to find appropriate datasets for experimentation and challenging to generalize across recommendation scenarios.
 
-\todo[inline]{connect it to the post-processing section. Provide an argument here why we relied on post-processing approaches etc.}
+% \todo[inline]{connect it to the post-processing section. Provide an argument here why we relied on post-processing approaches etc.}

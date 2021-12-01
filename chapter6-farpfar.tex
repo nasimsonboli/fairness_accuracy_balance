@@ -26,7 +26,7 @@ To assist lenders in looking for promising (low-risk) borrowers, loan recommende
 \caption{The issue of fairness on regions in a designed loan recommender system \cite{choo2014gather} for Kiva: the recommendation percentage for each region.}
 \label{fig:recom_result}
 \end{figure}
-\todo[inline]{move kiva plots to the introduction section and remove it from far, pfar! combine it's intro with the main intro}
+% \todo[inline]{move kiva plots to the introduction section and remove it from far, pfar! combine it's intro with the main intro}
 % \todo[inline]{missing some initial sentences}
 
 % \todo[inline]{we are mitigating provider presentation bias! make sure all the definitions align everywhere}
@@ -189,7 +189,7 @@ In our experiments, we assume a context in which the Kiva site provides short li
 \vspace{0.25cm}
 \noindent \textbf{(\romannum{3})~Evaluation Metrics}
 \vspace{0.25cm}
-\todo[inline]{details in methodology}
+% \todo[inline]{details in methodology}
 
 We propose to utilize Normalized Discounted Cumulative Gain (nDCG)~\cite{jarvelin2002cumulated} and Average Coverage Rate (ACR) to evaluate recommendation accuracy and borrower-side fairness, respectively. ACR is defined by the average number of borrower groups covered by the ranked list,
 
@@ -323,11 +323,11 @@ In this work, we proposed a personalized fairness-aware re-ranking algorithm for
 
 % In the future, we will study a number of variants of our algorithms presented here. We plan to explore different methods for computing personalized diversity tolerance factors, especially to solve the cold-start problem in the current algorithm. We also plan to examine variants of the re-ranking algorithm to take into account the size of each provider group's inventory. 
 
-FAR/PFAR is extremely strict in requiring that each possible provider group appears at least once at the top of the list. Therefore, another variant to consider is one that can adjust the accuracy/fairness tradeoff in a dynamic way as items are ranked, valuing accuracy more at the top of the list and provider-side fairness more at the bottom of the list.
+FAR/PFAR is extremely strict in requiring that each possible provider group appears at least once at the top of the list. Therefore, another variant to consider is one that can adjust the accuracy/fairness trade-off in a dynamic way as items are ranked, valuing accuracy more at the top of the list and provider-side fairness more at the bottom of the list. In the following section (Section \ref{sec:ofair}), we will present a method that offers a better accuracy/fairness trade-off.
 
 % \todo[inline]{incorporation in the intro for other section below}
-Finally, we note that, in real-world recommendation applications, managing the trade-off between accuracy and coverage of provider groups is not a single-shot process. Instead, it is an online process, where a current lack of coverage can be compensated for later and where results are evaluated temporally. This would require making the algorithm sensitive to historical patterns of coverage, rather than just the results obtained in the current list. We intend to explore this type of algorithm design and evaluation in our future work.
+% Finally, we note that, in real-world recommendation applications, managing the trade-off between accuracy and coverage of provider groups is not a single-shot process. Instead, it is an online process, where a current lack of coverage can be compensated for later and where results are evaluated temporally. This would require making the algorithm sensitive to historical patterns of coverage, rather than just the results obtained in the current list. We intend to explore this type of algorithm design and evaluation in our future work.
 
 % This project currently is an on-going project and we intend to develop a method using probabilistic serial allocation and submit it to the ACM Conference Series on Recommender Systems 2021.
 
-\todo[inline]{remove conclusion and add a transition paragraph}
+% \todo[inline]{remove conclusion and add a transition paragraph}
