@@ -77,7 +77,7 @@ Note that \libauto{} supports incremental updating of study execution. Later por
 \label{subsec:study_structure}
 A study is organized in a multi-directory file structure. Some parts of the structure are managed by \libauto{} itself, others are set up by the experimenter. Figure~\ref{fig:study-dir} shows an example of the file layout for a study called ``demo01''. In this case, the data is being used in more than one study, so it is stored in a directory outside the study structure. As the shaded region in figure indicates, most of the study files are managed by \libauto{} itself. 
 
-\todo[inline]{update this directory figure}
+% \todo[inline]{update this directory figure}
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=0.8\linewidth]{imgs/la/study-dir-labeled2.png}
@@ -99,7 +99,7 @@ Key files in the study structure include:
 
 For reproducibility, it is sufficient for experimenters to distribute their data and configuration files (\texttt{conf} directory). All other aspects of a study can be reproduced by running the \libauto{} application.
 
-\subsection{Fairness-aware recommendation}
+\subsection{Fairness-aware Recommendation}
 \label{subsec:libauto_fair_tools}
 
 With the extensive research in literature focusing on the assessment and mitigation of unfair outcomes of algorithms, several toolkits for fair machine learning have recently emerged to make such methods widely accessible.
@@ -196,7 +196,7 @@ A re-ranking algorithm takes the ranked output of a base system (usually an info
 
 Re-rankers strive to achieve a reasonable balance between accuracy and other output properties, like fairness or diversity, by offering a tunable tradeoff between boosting protected or diverse items and including items ranked highly by the base system. 
 
-\todo[inline]{mention in which chapter you are talking about them}
+% \todo[inline]{mention in which chapter you are talking about them}
 \libauto{} includes implementations of the following re-ranking algorithms:
 \begin{itemize}
     \item \textbf{FAR}, defined in \cite{liu2019farpfar} and in Chapter \ref{ch:fairness_postproc}, Section \ref{sec:farpfar}, combines a personalization-induced and fairness-induced scores with hyper-parameter $\lambda$;
@@ -333,7 +333,7 @@ Note that a re-ranking step can participate in the optimization aspects of \liba
 \subsection{Post-Processing Section (optional)}
 \libauto{} supports the post-processing of study results. There are existing scripts for producing simple visualizations (see Figure~\ref{fig:viz}), for producing CSV files for further analysis, and for posting experimental results to Slack and Dropbox (see Figure~\ref{fig:slack}). The latter are useful for experiments with longer run-times. There is a script provided for encrypting application API keys so that they do not need to be shared (insecurely) in the configuration file. 
 
-\todo[inline]{drop this}
+% \todo[inline]{drop this}
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=0.8\linewidth]{imgs/la/sample-output.png}
@@ -342,13 +342,13 @@ Note that a re-ranking step can participate in the optimization aspects of \liba
     \vspace{-0.15in}
 \end{figure}
 
-\begin{figure}[!htb]
-    \centering
-    \includegraphics[width=0.6\linewidth]{imgs/la/slack-post.png}
-    \caption{Sample auto-generated Slack posts. Such notifications provide experimenters and research teams with asynchronous notifications of study progress.}
-    \label{fig:slack}
-    \vspace{-0.15in}
-\end{figure}
+% \begin{figure}[!htb]
+%     \centering
+%     \includegraphics[width=0.6\linewidth]{imgs/la/slack-post.png}
+%     \caption{Sample auto-generated Slack posts. Such notifications provide experimenters and research teams with asynchronous notifications of study progress.}
+%     \label{fig:slack}
+%     \vspace{-0.15in}
+% \end{figure}
 
 \section{Related Work}
 
@@ -423,7 +423,8 @@ One of the key requirements for future releases is that the platform makes it ea
 
 As noted above, Microsoft Recommenders \cite{MicrosoftRecommenders} is an open-source platform for recommender systems development and evaluation. This Python-based tool includes 31 recommendation algorithms, including some recent deep learning algorithms, for example, Neural Recommendation with Multi-Head Self-Attention (NRMS) \cite{wu2019neural}. While the platform includes many capabilities for data handling and evaluation, these are handled by \libauto{} in our integration. We draw only from the algorithm implementations. 
 
-An experimenter accesses non-LibRec platforms through custom wrapper scripts to which parameters are passed. For example, the algorithm configuration element below invokes the xDeepFM \todo{can't read robin's comment} algorithm using the \texttt{msrec-wrapper.py} and passing arguments needed by this algorithm.
+An experimenter accesses non-LibRec platforms through custom wrapper scripts to which parameters are passed. For example, the algorithm configuration element below invokes the xDeepFM algorithm using the \texttt{msrec-wrapper.py} and passing arguments needed by this algorithm.
+% \todo{can't read robin's comment}
 
 {\small
 \begin{verbatim}
