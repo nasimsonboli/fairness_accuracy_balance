@@ -82,7 +82,7 @@ I performed the experiments on the following public and proprietary datasets: Mo
         \noindent \paragraph{Protected Feature(s) for Provider Fairness}
         \vspace{0.25cm}
         
-            For the projects that use \textbf{one-dimensional fairness} definitions, we use ``region'' as the fairness concern. Kiva.org divides its borrowers into nine geographic regions. In our dataset, we find that there are some geographic regions with a higher than average number of unfunded loans. In these regions, borrowers have a lower probability of getting the desired capital. As shown in Table~\ref{tab:unfunded}, the regions of North America, Eastern Europe, South America, and Asia have proportionately more funded loans than the regions of Africa, Middle East, and Central America\footnote{Our dataset had only a single loan request from Australia.}. 
+            For the projects that use \textit{one-dimensional fairness} definitions, we use ``region'' as the fairness concern. Kiva.org divides its borrowers into nine geographic regions. In our dataset, we find that there are some geographic regions with a higher than average number of unfunded loans. In these regions, borrowers have a lower probability of getting the desired capital. As shown in Table~\ref{tab:unfunded}, the regions of North America, Eastern Europe, South America, and Asia have proportionately more funded loans than the regions of Africa, Middle East, and Central America\footnote{Our dataset had only a single loan request from Australia.}. 
             
             % These regions, where borrowers have lower funding percentages, are treated as the protected group in our experiments.
         
@@ -104,7 +104,7 @@ I performed the experiments on the following public and proprietary datasets: Mo
      
             Therefore, we define the protected group as those regions where it appears to be more difficult to fund loans. Using the proposed methods in Chapter \ref{ch:fairness_postproc} and Chapter \ref{ch:fairness_inproc}, we are promote the loans that have not found enough interested lenders to support them so they have a higher chance of getting funded. Note that the assumption behind this method is that all the loan requests are equally worthy regardless of all their information, in other words the more popular loans are not inherently better than the less popular ones.
         
-            To use this dataset in the \textbf{multi-aspect fairness} problems, we include more than one fairness concern. We observed an imbalance of frequency within the following feature values/dimensions: ``percentage funding rate'', ``country'', ``economic sector'', ``loan amount'', ``borrower gender''. In keeping with Kiva's mission of providing equal access to capital across regions and economic sectors, we designate the items from the sectors and countries that have less than 1\% frequency in the training data as the protected group. As an example, 5 loan purposes in the economic sectors and 23 countries were selected to be the protected group. Note that we use Kiva dataset only for studying \textit{provider-side} unfairness. We used ``country'' instead of ``region'' to have a more fined-grained feature values. These two features are highly correlated, so they both carry the same information and can be used interchangeably.
+            To use this dataset in the \textit{multi-aspect fairness} problems, we include more than one fairness concern. We observed an imbalance of frequency within the following feature values/dimensions: ``percentage funding rate'', ``country'', ``economic sector'', ``loan amount'', ``borrower gender''. In keeping with Kiva's mission of providing equal access to capital across regions and economic sectors, we designate the items from the sectors and countries that have less than 1\% frequency in the training data as the protected group. As an example, 5 loan purposes in the economic sectors and 23 countries were selected to be the protected group. Note that we use Kiva dataset only for studying \textit{provider-side} unfairness. We used ``country'' instead of ``region'' to have a more fined-grained feature values. These two features are highly correlated, so they both carry the same information and can be used interchangeably.
         
 
 
@@ -118,6 +118,78 @@ I performed the experiments on the following public and proprietary datasets: Mo
     All experiments were performed using a 5-fold cross-validation setting where 80\% of each user's rating data is used for the training dataset, and the rest is used as the test dataset (LibRec's \texttt{userfixed} configuration). The training set was used for building a recommendation model and generating recommendation lists, and the test set was used for evaluating the performance of generated recommendations. A random seed was set for all the experiments to ensure the repeatability of the algorithms. Each recommendation algorithm can have several hyper-parameters. To identify the best-performing sets of hyper-parameters for each algorithm, Grid-search was performed on the hyper-parameters space. The results with the highest precision was selected for evaluation or post-processing.
     
     For the post-processing approaches that we propose, the baseline recommender generates a long recommendation list for users (e.i. 200), then the post-processing approaches selects the top@k for each user according to their selection strategy. The proposed recommendation or re-ranking algorithms in this dissertation were integrated to \libauto{} and in some cases to LibRec. Along with these methods, I incorporated the most common evaluation metrics for fairness. Evaluation metrics are thoroughly explained in Section \ref{sec:eval}. Librec-auto and LibRec were used to run the experiments~\cite{burke2020facct_libauto,Sonboli2020FARLA,guo2015librec,mansoury2019algorithm,mansoury2018automating} and to evaluate the results both in terms of performance and fairness.
+
+
+\section{Recommender Systems}  
+    
+    The increasing use of the Web in the mid-nineties as a medium for e-commerce transactions had an important role in enhancing the Recommender System techniques. The primary goal of a recommendation system is to assist users in choosing their favorite item among millions of products such as music, books, or even choosing a new friend on social media platforms. Using the Web facilitates the data collection process and receiving feedback from users. This feedback could be in the explicit form like a score, ratings of users on items, or likes. It could also be in an implicit form, such as clicks, views, or purchases. Thus, the Web helps the recommendation system algorithms learn more about their users’ preferences and recommend more personalized items to choose from. 
+    
+    In general, the recommendation algorithms can be classified into five learning models: Collaborative Filtering (CF) \cite{Breese1998CF,Aggarwal1999CF}, Content-based \cite{chakrabarti2002mining,wu2008top}, Knowledge-based \cite{burke2000knowledge}, Demographic \cite{Krulwich_1997,pazzani1999framework}, and Hybrid recommender systems techniques \cite{burke2002hybrid}. In this work, the main focus is on CF methods. Therefore, this method and its approaches are described in more detail further in this section. In Collaborative Filtering techniques, the model uses the interactions between users and items to predict missing or unobserved ratings and make new recommendations. Movie recommendation engines such as Netflix are one of the most common recommendation applications which use CF methods. Based on users’ ratings of movies and TV shows (on a scale of 5) and further information such as views, Netflix recommends new movies and TV shows to the users. The CF techniques can be divided into two types of methods: \textit{Memory-based} and \textit{Model-based}. In Memory-based methods (or Neighborhood-based collaborative filtering approaches), rating prediction is based on finding similar users/items to a target user/item by considering their neighborhoods. 
+    
+    Two methods called User-based and Item-based collaborative filtering are used to describe these neighborhoods. In User-based collaborative filtering, the goal is first to find users who are similar to a target user (with similar interests and tastes). Then, using the weighted averages of ratings these similar users have provided, these algorithms predict the target user's rating for an unseen item. In contrast, in an Item-based approach, the goal is to find whether a target item will be chosen by a target user. To do that, the first step is to find a set of items that are similar to the target item. Then the ratings of these items can be used to predict whether the target user will like that item or not. Among different CF approaches, Item-based k-nearest-neighbors \cite{desrosiers2011comprehensive} and Non-Negative Matrix Factorization (NNMF) \cite{koren20009mf} models are used in this study.
+    
+    In model-based methods, Machine Learning models such as Bayesian algorithms \cite{miyahara2000collaborative}, Latent factor models \cite{Canny2002CF,Aggarwal2001Min}, Rule-based models \cite{Mobasher2001Rule}, and Decision trees \cite{aggarwal2015data} are used to predict the ratings of unobserved items. In Content-based approaches, the users’ ratings or purchasing behavior can be added to the attributes of items (as content information) in making new recommendations. In Knowledge-based methods, the key idea is to add domain knowledge to user specifications and item attributes for new recommendations. Contextual data, such as external knowledge, social information, or temporal information, can be used in advanced knowledge-based models. In Demographic recommendation systems, users’ demographic information is leveraged to learn classifiers that can map specific demographics to ratings or buying propensities. Hybrid recommendation techniques provide the opportunity of combining different types of recommendation systems with different advantages and disadvantages and building more robust models. Below, we discuss the baseline recommender systems that we used for our experiments in this dissertation.
+    
+
+    \subsection{Baseline Recommendations}
+    
+        The following baseline recommendation systems were used to indicate the improvement of the proposed approaches compared to these well-established algorithms: most-popular, item-based $K$ nearest neighbor, non-negative matrix factorization. Recommendation system baselines that are close to the proposed approaches are explained in each chapter.
+        % In Chapter \ref{ch:fairness_postproc}, we explain the re-ranking algorithms that we considered as baselines. 
+        
+        \vspace{0.25cm}
+        \noindent \paragraph{Most Popular Item Recommender}
+        \vspace{0.25cm}
+        % \textbf{Most popular item}
+        
+            Most popular baseline recommends the most popular items in the dataset in order of their popularity. This is a non-personalized recommender, and falls short in generating good recommendations. This popularity-based model is often used in the cold-start setting when we don't have any ratings from the users. Although, this baseline is not always easy to beat due to the popularity bias that usually exists in the recommendation datasets. In other words, in datasets with high popularity bias, a significant part of the ratings can be explained by item popularity, rather than any specific personalized preferences of users for items. So, it is important to have this non-personalized algorithm as a baseline to ensure the outcomes of the proposed algorithm is not only influenced by the popularity bias in the input data.
+        
+        \vspace{0.25cm}
+        \noindent \paragraph{Item-based K-nearest-neighbor (Item-Knn)}
+        \vspace{0.25cm}
+        
+            Nearest neighbor models are a type of collaborative filtering models that use the collaborative power of the ratings provided by multiple users to make recommendations. In this approach the ratings of users on items are predicted on the basis of their neighborhoods. Neighborhoods can be the user nearest neighbors, who are similar to the target user or they can be the nearest neighbors of a target item which are the items most similar to that target item.
+        
+            In item-Knn order to make the rating predictions for target item B by user A, the first step is to determine a set S of items that are most similar to target item B. The ratings in the item set $S$, specified by A, are used to predict whether user A will like item B. Therefore, a person's ratings on similar science fiction movies like Alien and Predator can be used to predict her rating on Terminator.
+    
+            For the $m \times n$ ratings matrix $R = [r_{uj}]$ with $m$ users and $n$ items, let $I_u$ denote the set of item indices for which ratings have been specified by user (row) $u$ (user profile). Consider the case in which the rating of target item $t$ for user $u$ needs to be determined. The first step is to choose the top-$k$ most similar items to the item $t$ based on the aforementioned adjusted cosine similarity. Let the top-$k$ matching items to the item $t$, for which the user $u$ has specified ratings, be denoted by $Q_{t}(u)$. The weighted average value of these ratings is reported as the predicted value $\hat{r}_{ut}$. The weight of item $j$ in this average is equal to the similarity between item $j$ and the target item $t$.
+        
+            \begin{equation}
+                \hat{r}_{ut} = \frac{\sum_{j \in Q_{t}(u)} \text{Similarity(j,t)} \cdot r_{uj}}{\sum_{j \in Q_{t}(u)} |\text{Similarity(j,t)}|}
+            \end{equation}
+            \vspace{0.25cm}
+        
+            The underlying idea here is to make use of the user’s \textit{own} ratings on similar items in the final step of making the prediction. For example, in a movie recommendation system, the nearest neighbors of the movie will typically be movies of a similar genre. The rating history of the same user on such movies is a very reliable predictor of that user's interests.
+        
+            We use a standard item-based nearest neighbor technique \cite{desrosiers2011comprehensive} as a baseline recommendation system in our research. Neighborhood-based collaborative filtering algorithms were among the earliest and very effective collaborative filtering approaches and among the most popular methods. Their popularity might not be because of their accuracy but rather because they are quite simple to implement. It is also quite easy to explain their generated recommendations with the list of the neighbors used. Another strengths of neighborhood based models is its potential to make serendipitous recommendations that can lead users to the discovery of unexpected, yet very interesting items.
+        
+            When the data is sparse, these algorithms don't work very well as there aren't sufficiently similar neighbors to predict the rating robustly. Therefore they don't have full coverage of the rating predictions. Of course, if we only focus on the top-$k$ items, this problem seems to become less significant. Most of our proposed methods aim to increase provider-side fairness using the methods that increase diversity in the recommendation lists so we can then filter or re-order the items based on the system's fairness concerns. 
+        
+            Item-Knn tends to have a more diverse recommendation outcome compared to user-Knn, therefore it is a good baseline to have for comparison reasons. User-Knn algorithms have less diverse outcomes mainly due to the popularity bias issue. In a movie recommendation scenario, this means that most of the users have rated popular genres of movies. Now, if a user likes a niche genre, since we might not have enough ratings of nearest neighbor users for that niche genre, the user-Knn algorithm might perform poorly in predicting the rating of that movie for that user. In a way user-Knn has a great prediction on the movies that we have a lot of data about, while ignoring the niche genres. This issue leads to have less diverse recommendation results. While item-Knn, predicts the rating for that niche genre based on the user's own ratings. Since the user likes that genre, she might have rated more movies in that genre which gives the algorithm enough data to have a good prediction for the user. In this way item-Knn keeps all the less popular genres in the recommendations, hence more diverse recommendation results. Therefore item-Knn is a better option as our baseline.
+        
+            % So, the data has popularity bias, therefore most of the users have rated popular items. So, If I like a niche genre that only a few people like, user-Knn might not be able to do a good job on predicting a rating for me about that niche genre. And it's only giving me great predictions on the items that a lot of people have rated.But since item-Knn calculates the ratings based on my own ratings, It should have a better prediction whether i like that movie or not.  Since I like that niche genre, I have probably rated some movies in that genre, and because it uses my own ratings, it's predictions are more accurate.So item-Knn has diversity since it includes all the preferences of users, but user-Knn ignores the less popular preferences of users therefore less diversity.
+        
+            Besides the previously mentioned reason, we chose item-based Knn, as they are typically preferred when the number of users far exceeds the number of available items since they provide more accurate recommendations in this case. Compared to item-based Knn, they are more computationally efficient and requiring less frequent updates.
+
+        \vspace{0.25cm}
+        \noindent \paragraph{Non-Negative Matrix Factorization (NNMF)}
+        \vspace{0.25cm}
+       
+            Matrix factorization models \cite{koren20009mf} are also in the collaborative filtering family of methods. In a basic matrix factorization model, the rating matrix $R$ of size $m\times n$ is approximately factorized into $m\times k$ matrix $U$ and and $n\times k$ matrix $V$, as below:
+            
+           \begin{equation}
+               R\approx UV^T
+           \end{equation}
+        %   \vspace{0.cm}
+       
+            Each column of $U$ (or $V$ ) is referred to as a latent vector or latent component, whereas each row of $U$ (or $V$ ) is referred to as a latent factor. The $i$th row $\bar{u_i}$ of $U$ is referred to as a user factor, and each row $\bar{v_j}$ of V is referred to as an item factor. They both have $k$ entries and they correspond to the affinity of user $i$ and item $j$ to the $k$ concepts. Each rating $r_{ij}$ in in $R$ can be approximately expressed as a dot product of $i$th user factor and $j$th item factor:
+       
+           \begin{equation}
+               r_{ij} \approx \sum_{s=1}^{k} u_{is} \cdot v_{js}
+           \end{equation}
+           \vspace{0.25cm}
+       
+            Where $u_{is}$ is the affinity of user $i$ to concept $s$ and $v_{js}$ is the affinity of item $j$ to concept $s$. Non-negative matrix factorization (NNMF) \cite{lee2001algorithms,zhang2006learning} may be used for rating matrices that are non-negative ($U$ and $V$). The major advantage of this method is its interpretability which helps in understanding the user-item interactions. This property is most useful for cases when the the data consists of implicit feedback data (a unary ratings matrix which only contains positive feedback) such as clicks or likes. We chose NNMF as one of our other baseline recommender systems as a well-established collaborative filtering algorithms as a the latent factor model and because of its higher interpretability compared to other matrix factorization models.
+       
 
 \section{Evaluation Metrics}
 \label{sec:eval}
@@ -445,72 +517,7 @@ I performed the experiments on the following public and proprietary datasets: Mo
     % I used librec-auto and LibRec to run the experiments\cite{burke2020facct_libauto,Sonboli2020FARLA,guo2015librec,mansoury2019algorithm,mansoury2018automating}. I added the proposed recommendation or re-ranking algorithms in this dissertation to \libauto{} and in some cases to LibRec. Additionally, I incorporated the most common evaluation metrics for fairness. Evaluation metrics are thoroughly explained in Section \ref{sec:eval}.
 
     % \todo[inline]{move this to the recsys chapter}
-    
-\section{Recommender Systems}  
-    \todo[inline]{missing}
 
-
-    \subsection{Baseline Recommendations}
-    
-        The following baseline recommendation systems were used to indicate the improvement of the proposed approaches compared to these well-established algorithms: most-popular, item-based $K$ nearest neighbor, non-negative matrix factorization. Recommendation system baselines that are close to the proposed approaches are explained in each chapter.
-        % In Chapter \ref{ch:fairness_postproc}, we explain the re-ranking algorithms that we considered as baselines. 
-        
-        \vspace{0.25cm}
-        \noindent \paragraph{Most Popular Item Recommender}
-        \vspace{0.25cm}
-        % \textbf{Most popular item}
-        
-            Most popular baseline recommends the most popular items in the dataset in order of their popularity. This is a non-personalized recommender, and falls short in generating good recommendations. This popularity-based model is often used in the cold-start setting when we don't have any ratings from the users. Although, this baseline is not always easy to beat due to the popularity bias that usually exists in the recommendation datasets. In other words, in datasets with high popularity bias, a significant part of the ratings can be explained by item popularity, rather than any specific personalized preferences of users for items. So, it is important to have this non-personalized algorithm as a baseline to ensure the outcomes of the proposed algorithm is not only influenced by the popularity bias in the input data.
-        
-        \vspace{0.25cm}
-        \noindent \paragraph{Item-based K-nearest-neighbor (Item-Knn)}
-        \vspace{0.25cm}
-        % \textbf{Item-based K-nearest-neighbor (item-Knn)}: 
-        
-            Nearest neighbor models are a type of collaborative filtering models that use the collaborative power of the ratings provided by multiple users to make recommendations. In this approach the ratings of users on items are predicted on the basis of their neighborhoods. Neighborhoods can be the user nearest neighbors, who are similar to the target user or they can be the nearest neighbors of a target item which are the items most similar to that target item.
-        
-            In item-Knn order to make the rating predictions for target item B by user A, the first step is to determine a set S of items that are most similar to target item B. The ratings in the item set $S$, specified by A, are used to predict whether user A will like item B. Therefore, a person's ratings on similar science fiction movies like Alien and Predator can be used to predict her rating on Terminator.
-    
-            For the $m \times n$ ratings matrix $R = [r_{uj}]$ with $m$ users and $n$ items, let $I_u$ denote the set of item indices for which ratings have been specified by user (row) $u$ (user profile). Consider the case in which the rating of target item $t$ for user $u$ needs to be determined. The first step is to choose the top-$k$ most similar items to the item $t$ based on the aforementioned adjusted cosine similarity. Let the top-$k$ matching items to the item $t$, for which the user $u$ has specified ratings, be denoted by $Q_{t}(u)$. The weighted average value of these ratings is reported as the predicted value $\hat{r}_{ut}$. The weight of item $j$ in this average is equal to the similarity between item $j$ and the target item $t$.
-        
-            \begin{equation}
-                \hat{r}_{ut} = \frac{\sum_{j \in Q_{t}(u)} \text{Similarity(j,t)} \cdot r_{uj}}{\sum_{j \in Q_{t}(u)} |\text{Similarity(j,t)}|}
-            \end{equation}
-            \vspace{0.25cm}
-        
-            The underlying idea here is to make use of the user’s \textit{own} ratings on similar items in the final step of making the prediction. For example, in a movie recommendation system, the nearest neighbors of the movie will typically be movies of a similar genre. The rating history of the same user on such movies is a very reliable predictor of that user's interests.
-        
-            We use a standard item-based nearest neighbor technique \cite{desrosiers2011comprehensive} as a baseline recommendation system in our research. Neighborhood-based collaborative filtering algorithms were among the earliest and very effective collaborative filtering approaches and among the most popular methods. Their popularity might not be because of their accuracy but rather because they are quite simple to implement. It is also quite easy to explain their generated recommendations with the list of the neighbors used. Another strengths of neighborhood based models is its potential to make serendipitous recommendations that can lead users to the discovery of unexpected, yet very interesting items.
-        
-            When the data is sparse, these algorithms don't work very well as there aren't sufficiently similar neighbors to predict the rating robustly. Therefore they don't have full coverage of the rating predictions. Of course, if we only focus on the top-$k$ items, this problem seems to become less significant. Most of our proposed methods aim to increase provider-side fairness using the methods that increase diversity in the recommendation lists so we can then filter or re-order the items based on the system's fairness concerns. 
-        
-            Item-Knn tends to have a more diverse recommendation outcome compared to user-Knn, therefore it is a good baseline to have for comparison reasons. User-Knn algorithms have less diverse outcomes mainly due to the popularity bias issue. In a movie recommendation scenario, this means that most of the users have rated popular genres of movies. Now, if a user likes a niche genre, since we might not have enough ratings of nearest neighbor users for that niche genre, the user-Knn algorithm might perform poorly in predicting the rating of that movie for that user. In a way user-Knn has a great prediction on the movies that we have a lot of data about, while ignoring the niche genres. This issue leads to have less diverse recommendation results. While item-Knn, predicts the rating for that niche genre based on the user's own ratings. Since the user likes that genre, she might have rated more movies in that genre which gives the algorithm enough data to have a good prediction for the user. In this way item-Knn keeps all the less popular genres in the recommendations, hence more diverse recommendation results. Therefore item-Knn is a better option as our baseline.
-        
-            % So, the data has popularity bias, therefore most of the users have rated popular items. So, If I like a niche genre that only a few people like, user-Knn might not be able to do a good job on predicting a rating for me about that niche genre. And it's only giving me great predictions on the items that a lot of people have rated.But since item-Knn calculates the ratings based on my own ratings, It should have a better prediction whether i like that movie or not.  Since I like that niche genre, I have probably rated some movies in that genre, and because it uses my own ratings, it's predictions are more accurate.So item-Knn has diversity since it includes all the preferences of users, but user-Knn ignores the less popular preferences of users therefore less diversity.
-        
-            Besides the previously mentioned reason, we chose item-based Knn, as they are typically preferred when the number of users far exceeds the number of available items since they provide more accurate recommendations in this case. Compared to item-based Knn, they are more computationally efficient and requiring less frequent updates.
-
-        \vspace{0.25cm}
-        \noindent \paragraph{Non-Negative Matrix Factorization (NNMF)}
-        \vspace{0.25cm}
-        % \textbf{Non-negative matrix factorization (NNMF)}:
-       
-            Matrix factorization models \cite{koren20009mf} are also in the collaborative filtering family of methods. In a basic matrix factorization model, the rating matrix $R$ of size $m\times n$ is approximately factorized into $m\times k$ matrix $U$ and and $n\times k$ matrix $V$, as below:
-            
-           \begin{equation}
-               R\approx UV^T
-           \end{equation}
-        %   \vspace{0.cm}
-       
-            Each column of $U$ (or $V$ ) is referred to as a latent vector or latent component, whereas each row of $U$ (or $V$ ) is referred to as a latent factor. The $i$th row $\bar{u_i}$ of $U$ is referred to as a user factor, and each row $\bar{v_j}$ of V is referred to as an item factor. They both have $k$ entries and they correspond to the affinity of user $i$ and item $j$ to the $k$ concepts. Each rating $r_{ij}$ in in $R$ can be approximately expressed as a dot product of $i$th user factor and $j$th item factor:
-       
-           \begin{equation}
-               r_{ij} \approx \sum_{s=1}^{k} u_{is} \cdot v_{js}
-           \end{equation}
-           \vspace{0.25cm}
-       
-            Where $u_{is}$ is the affinity of user $i$ to concept $s$ and $v_{js}$ is the affinity of item $j$ to concept $s$. Non-negative matrix factorization (NNMF) \cite{lee2001algorithms,zhang2006learning} may be used for rating matrices that are non-negative ($U$ and $V$). The major advantage of this method is its interpretability which helps in understanding the user-item interactions. This property is most useful for cases when the the data consists of implicit feedback data (a unary ratings matrix which only contains positive feedback) such as clicks or likes. We chose NNMF as one of our other baseline recommender systems as a well-established collaborative filtering algorithms as a the latent factor model and because of its higher interpretability compared to other matrix factorization models.
-       
        
             % non-negative matrix factorization model treats missing entries as negative feedback by setting them to 0s. This example is a manifestation of overfitting caused by a lack of
 

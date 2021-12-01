@@ -1,29 +1,34 @@
 \chapter{Fairness through post-processing}
 \label{ch:fairness_postproc}
 
-\todo[inline]{missing some initial sentences}
-One application of re-ranking is to improve the \textit{diversity} of the results. As an example Maximum marginal relevance (MMR) adjusts the balance in the re-ranked list by minimizing the similarity between the new item and the previous chosen items \cite{carbonell1998use} while maximizing their relevance. The main idea in MMR is to avoid redundancy, in other words if one item doesn't meet a user's need, it's likely that another similar item to that won't suit the user as well. \cite{Ziegler:2005:IRL:1060745.1060754} provides another approach to diversify the ranked lists that operates only on item orderings instead of balancing similarity or relevance. 
+Post-processing is one way to integrate a fairness objective with an accuracy goal. This approach offers offer a number of advantages. Learned relevance or ranking models are often computationally costly, therefore, re-ranking can be used as an approach to constraint the large previously produced results to achieve other goals without re-training the model. Since the trade-off between accuracy and fairness can be tuned without re-learning the recommendation model, this is a suitable approach to control the fairness/accuracy balance. Additionally, researchers have found that re-ranking can achieve better trade-offs with accuracy with this type of model~\cite{abdollahpouri2019managing,liu2019personalized}. Compared to complex machine learning models, re-ranking approaches provide more transparency to the users of the system. Sonboli and Smith et al. \cite{Sonboli2021transparency} discuss the importance of transparency in the goals of the recommender system, particularly when the system has additional interventions (e.g. fairness) to the original model. Transparency in recommender systems has several benefits such as increasing users' trust in the system, allowing the users to detect and report any flaw or bias in the system, etc.
 
-re-ranking is also a common approach to mitigate certain types of unfairness, for example representation unfairness. Usually learned relevance or ranking models often are computationally costly, therefore, re-ranking can be used as an approach to constraint the large previously produced results to achieve other goals without re-training the model.
-
-Compared to complex machine learning models, re-ranking approaches provide more transparency to the users of the system. Sonboli and Smith et al. \cite{Sonboli2021transparency} suggest to design to models that are transparent. So, the users will be able to understand the intentions of the system, detect any flaws in the algorithm, or in other words, have some agency over their results. Re-ranking models are easier to explain as the goals are well separated in the formula and the extend to which one wants fairness or accuracy can be controlled using their hyper-parameters. 
+In this Chapter, three re-ranking methods are presented. ``Fair-Aware Re-ranking/Personalized Fair-Aware Re-ranking (FAR/PFAR)'' is presented in Section \ref{sec:farpfar}, ``Opportunistic Multi-aspect Fairness through Personalized Re-ranking (OFAIR)'' in Section \ref{sec:ofair}, and finally ``Social Choice for Re-ranking Under Fairness (SCRUF)'' in Section \ref{sec:dynamicfair}.
 
 
-\todo[inline]{advantages of re-ranking! and why we chose them?}
-\todo[inline]{I think it's better to break it into different mini chapters but write a page explaining these methods briefly and how they are connected maybe.}
+% The general idea of these objectives can be easily explained to the stakeholders. Therefore, the users will be aware of the system's interventions in their recommendations.
+% Re-ranking models are easier to explain as their objectives are well separated in the formula and the extent to which one wants fairness or accuracy can be controlled using their hyper-parameters. 
+
+
+% One application of re-ranking is to improve the \textit{diversity} of the results. As an example Maximum marginal relevance (MMR) adjusts the balance in the re-ranked list by minimizing the similarity between the new item and the previous chosen items \cite{carbonell1998use} while maximizing their relevance. The main idea in MMR is to avoid redundancy, in other words if one item doesn't meet a user's need, it's likely that another similar item to that won't suit the user as well. \cite{Ziegler:2005:IRL:1060745.1060754} provides another approach to diversify the ranked lists that operates only on item orderings instead of balancing similarity or relevance. 
+
+% re-ranking is also a common approach to mitigate certain types of unfairness, for example representation unfairness. Usually learned relevance or ranking models often are computationally costly, therefore, re-ranking can be used as an approach to constraint the large previously produced results to achieve other goals without re-training the model.
+
+% \todo[inline]{advantages of re-ranking! and why we chose them?}
+% \todo[inline]{I think it's better to break it into different mini chapters but write a page explaining these methods briefly and how they are connected maybe.}
 % \section{baseline rerankers}
 % \section{A survey of re-rankers} ( adding some overall experiments to compare methods)
 
-\section{Fair-Aware Re-ranking/Personalized Fair-Aware Re-ranking (FAR/PFAR)}
+\section{Fair-Aware Re-ranking and Personalized Fair-Aware Re-ranking }
     \input chapter6-farpfar.tex
     \clearpage
     
 
-\section{Opportunistic Multi-aspect Fairness through Personalized Re-ranking (OFAIR)}
+\section{Opportunistic Multi-aspect Fairness through Personalized Re-ranking}
     \input chapter6-ofair.tex
     \clearpage
 % \section{Social Choice for Re-ranking Under Fairness (SCRUF): Dynamic Lotteries for Multi-group Fairness-Aware Recommendation}
-\section{Social Choice for Re-ranking Under Fairness (SCRUF)}
+\section{Social Choice for Re-ranking Under Fairness}
     \input chapter6-dynamicfair.tex
     
 
