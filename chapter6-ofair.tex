@@ -19,7 +19,7 @@ Optimizing recommendation accuracy often comes at the expense of provider fairne
 
 Our work in this section, extends the FAR/PFAR approach discussed in the previous section (FAR/PFAR), which was seeking to improve the accuracy/fairness tradeoff through increased \textit{personalization}. Namely, can we tailor the type and degree of optimization specific to each user's tastes and preferences and therefore improve accuracy? We label this approach \textit{opportunistic} because we view each user as presenting a particular type of opportunity to increase recommendation fairness and try to make the most of each. In particular, we seek to identify the particular dimensions along which a user might be open to result diversification that improves fairness and thereby enable multiple fairness concerns to be addressed at once.
 
-
+\vspace{0.25cm}
 \begin{table}[htb]
     \centering
     \begin{tabular}{|c|c|c|>{\columncolor[gray]{0.7}}c|c|}
@@ -40,7 +40,7 @@ Our work in this section, extends the FAR/PFAR approach discussed in the previou
 
 As an example, in the context of loan recommendation, suppose user $u$ prefers to lend her money to women in Kenya, but she does not have a strong preference for a loan's purpose or economic sector (displayed in gray). This user's profile might appear as in Table \ref{table:user_profile}. While the user might not respond well to loans in other countries, we can consider her open-mindedness regarding the Sector feature as an opportunity to increase fairness in this area. For the sake of example, assume loans from the Education and Conflict Zones sectors are historically underfunded in Kenya, so the loans in these sectors are identified as protected. Consider the recommendation results in Table \ref{table_user_recoms}. The first two recommendations ($r_1 \text{and} r_2$) increase fairness across only the Sector feature by promoting items from underfunded sectors while honoring the user's preference to lend money to Kenyan women. On the other hand, loan $r_3$ might not be an effective recommendation for this user since it diversifies on the wrong dimensions, although it might still be promoting protected items. In other words, we want to promote fairness concerns when the user's profile indicates receptivity and be cautious otherwise.
 
-% \vspace{-1mm}
+\vspace{0.25cm}
 \begin{table}[tbh]\centering
     \begin{tabular}{|c|c|c|c|c|}
     \hline
@@ -298,6 +298,7 @@ For each algorithm, we retrieve $k=200$ top items for each user and re-rank the 
 In our experiments, we compared our OFAiR algorithm with FAR and PFAR as our baseline methods. We also used MMR by itself as a diversity-enhancing re-ranker, a variant of OFAiR that includes only user tolerance weights for each feature, and a variant that includes only the fairness weights for the protected feature dimensions without the tolerance weights. In this way, we can study separately the contribution of each of these aspects of the algorithm.
 % , without weighting the protected and unprotected feature values
 
+\vspace{0.25cm}
 \begin{table}[]
 \centering
 \begin{tabular}{lllll}
@@ -320,7 +321,7 @@ Table \ref{tbl:kiva_fairness_accuracy_relationship} summarizes the results acros
 
 Table \ref{tbl:ML_fairness_accuracy_relationship} shows even more robust findings in favor of the OFAiR algorithm on the Movies dataset. Two trends are noticeable. One is that there is very little change in fairness for increased $\lambda$ values in the MMR and MMR with tolerance cases. This trend also exists in the Kiva dataset. OFAiR is a clear improvement at all levels of nDCG loss, although in absolute terms the improvement is still small.
 
-
+\vspace{0.25cm}
 \begin{table}[]
 \centering
 \begin{tabular}{lllll}

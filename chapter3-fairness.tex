@@ -172,6 +172,7 @@ This chapter provides a short overview of algorithmic fairness for classical mac
             \vspace{0.25cm}
             \noindent \paragraph{Individual Fairness}
             \vspace{0.25cm}
+            
             % \subsection{}
                 If the goal of a system for consumers is individual fairness, then the system needs to make sure that similar individuals have similar experiences or quality of service within the system. This similarity can be calculated based on any user characteristics that the system might have been discriminating against, such as gender, location, user profile, etc. Previous literature has used the accuracy of the recommendation outcomes to compare the quality of the service that individual users are experiencing. 
             
@@ -181,6 +182,7 @@ This chapter provides a short overview of algorithmic fairness for classical mac
             \vspace{0.25cm}
             \noindent \paragraph{Group Fairness}
             \vspace{0.25cm}
+            
             % \subsection{Group Fairness}
                 Group fairness in a system means to ensure that the system provides the same (or comparable) quality of service or utility to different consumer groups within the system. For example, in a job recommendation website, if, on average, women receive lower-paying job recommendations than the rest of the users, this could be considered unfair. One way of detecting any potential performance discrepancy between the consumer groups is to compute the utility that is used to evaluate system's general performance such as offline accuracy evaluation, or an online A/B test, and then break down that utility by consumer groups. In other words, we calculate the average utility per consumer group. Utility can be operationalized based on the general measures that assess system's general effectiveness including ranking accuracy measures such as nDCG, and ERR, click through rates (CTR), or any online or offline measures.
             
@@ -189,6 +191,7 @@ This chapter provides a short overview of algorithmic fairness for classical mac
             \vspace{0.25cm}
             \noindent \paragraph{Accuracy-based Fairness}
             \vspace{0.25cm}
+            
             % \subsection{Accuracy-based Fairness}
                 Different approaches have been offered to correct inequitable distributions of system utility. Yao and Huang \cite{yao2017beyond} introduce regularizers to mitigate discrepancies in rating prediction errors. Re-ranking recommendations to improve their fairness is also a post-processing approach that can be used for this goal. This method is mostly used to mitigate provider-side fairness, but there are examples of its usage for consumer fairness in Abdollahpouri \cite{abdollahpouri2020popularity}. In their research, user groups are defines based on their level of interests towards popular items and then it is showed that there is a utility discrepancy between users who like popular items versus the users who like niche less popular items. The latter group experiences lower quality recommendations. \cite{abdollahpouri2020addressing} also presents a re-ranking approach based on idea of calibration in Steck \cite{steck2018calibrated} to improve the fairness for these consumer groups.
             
@@ -207,23 +210,44 @@ This chapter provides a short overview of algorithmic fairness for classical mac
             \vspace{0.25cm}
             \noindent \paragraph{Complex Scenarios}
             \vspace{0.25cm}
+            
             % \subsection{Complex Scenarios}
                 Most of the work on consumer fairness to date has focused on simpler settings, such as considering fairness as a concept that entails only a single protected attribute or a single dimension of the sensitive attributes. And even when multiple sensitive attributes are considered, such as gender and age and race, etc., they are considered separately. In reality, a series of protected attributes might need to be considered simultaneously as determined by laws or organizational requirements. Crenshaw \cite{crenshaw1989demarginalizing} explains about the complexities of multiple protected groups under the framework of intersectionality. In fair machine learning, Kearns et al. \cite{kearns2019empirical} defines this concept as rich subgroup fairness and in recommender systems this issue has been studied for providers by Sonboli et al. 2020 \cite{sonboli2020opportunistic}  (explained in Chapter \ref{ch:fairness_postproc} in Section \ref{sec:ofair}). There are no other existing work to date, that addresses this problem in depth. Another simplification in modeling consumer-side fairness is to assume fairness concerns are binary (protected vs unprotected) rather than multiple attributes that might include continuous features. There is not any work in recommender systems that considers this nuances for fairness concepts.
 
         \textbf{(\romannum{2})~Provider Fairness}
-        % \subsection{Provider Fairness}
-        \todo[inline]{missing Provider Fairness}
+
+            Provider-side fairness (P-fairness) is concerned with treating the suppliers of information or items being recommended fairly. We can think of recommendation opportunities as a resource and the fair distribution of those opportunities among providers as provider fairness. 
+            
+            Much of the research on diversity and decreasing popularity bias can be used to increase provider-side fairness. However, these methods need to root their motivations in social justice concepts. To achieve provider fairness, Mehrotra et al. (2018) \cite{mehtora2018towards} proposes an approach to ensure that different sub-groups are similarly represented in the recommendations.
+                
+            The utility for providers is mainly defined as exposure opportunities. It is a rivalrous good because recommendation lists contain limited slots that provide opportunities to increase the provider's visibility to consumers. According to the user attention pattern, the items on top of the list receive more attention, decreasing as we go down in the list. Therefore, different positions in a list provide different utilities, and only one slot in the whole list can have the most valuable position and receive the most benefit \cite{diaz2020}. 
+            
+            Provider utility is calculated over all the recommendation lists delivered to all the users. Therefore, to calculate each consumer's utility, we only need to look at each consumer's recommendations and nothing more. Most of the metrics introduced to compute and measure provider utility are based on NDCG \cite{biega2018equity}. %\todo{cite}
+            
+            \vspace{0.25cm}
+            \noindent \paragraph{Individual Fairness}
+            \vspace{0.25cm}
+            % \paragraph{Individual Fairness}
+            %individual fairness
+            
+                Individual fairness for providers means that similar items should receive similar utility from the recommender system. For example, items that bring the same utility to a user (the user likes them both) are considered equivalent. So, they should receive equal exposures in a recommendation list. Biega et al. (2018) \cite{biega2018equity} aggregate each item's attention and relevance over multiple rankings and assume the providers are being treated fairly if the attention they receive from users is proportional to their relevance.The similarity of providers can be calculated in many other different ways and is an open research area.
+                
+            \vspace{0.25cm}
+            \noindent \paragraph{Group Fairness}
+            \vspace{0.25cm}
+            
+            % \paragraph{Group Fairness}
+            %group fairness
+                Group fairness for providers is concerned with the fair treatment of different provider sub-groups. This goal should be aligned with personalization since it considers users' preferences and does not recommend provider groups to users that don't like them. Kamishima et al. (2018) \cite{kamishima2018recommendation} proposes that the recommendation outcomes should be statistically independent of a subgroup's protected attribute to have group fairness. As a result, the probability that an item shows up in a recommendation list is independent of its sensitive attribute.
+                
+                Another method is to ensure a fair representation of providers in the recommendation lists. Unfairness here is defined as a significant divergence between the distribution of the provider groups in the lists and the target distribution \cite{yang2017measuring,das2019conceptual}. This divergence can be calculated using KL-divergence, the difference in probabilities, odds ratio, etc. 
+                
+                Biega et al. (2018) \cite{biega2018equity} calculate the provider groups fairness by aggregating expected exposure over multiple rankings. Therefore, fairness for each provider group is when they receives an appropriate level of exposure. Beutel at al. (2019) \cite{beutel2019fairness} incorporate a fair construct (disparate mistreatment) in the loss function of Bayesian Personalized Ranking (BPR) \cite{rendlebpr2009}. In this construct, a fair ranking happens when ranking a relevant item over an irrelevant item is independent of its group membership. Their pairwise fairness objective is defined in two ways: once between groups and once within groups.
 
 
-        \textbf{(\romannum{3})~Provider Fairness}
-        \todo[inline]{missing}
-
-
-
-
-
-
-
+        \textbf{(\romannum{3})~Fairness for other Stakeholders}
+            
+            Besides the consumers and providers, there might be other stakeholders in the system whose fairness matters. Subject fairness is another instance of this type, where the subject is a stakeholder entity. And the fair goal might be having a fair distribution of the subjects of items being recommended. For example, in news platforms, to avoid polarization in society, we might want to have a fair representation of different points of view or give fair coverage to various topics and avoid certain popular topics from monopolizing news feeds.
 
 
     \subsection{Dynamic Fairness}
@@ -257,7 +281,7 @@ This chapter provides a short overview of algorithmic fairness for classical mac
 
         In-processing approaches mitigate the unfairness of the output by modifying the algorithms' by integrating fairness notions in their loss functions. Therefore, the problem will turn into a multi-objective optimization problem that maximizes utility and fairness simultaneously. These algorithmic interventions sometimes take the form of regularizers to control certain structural properties of the model in the optimization functions. Regularizers are usually used to control the complexity of the model and prevent the model from overfitting, although they can also capture the model's unfairness. For example, Zafar et al. (2017) \cite{zafar2017fairness} propose to add fairness constraints on top of the accuracy constraints in the optimization objective of a classifier. 
         
-        Fairness regularization has been used in other classification and regression problems such as \cite{kamishima2012fairness,berk2017convex} and recommendation problems. For example, Kamishima et al. (2018) \cite{kamishima2018recommendation,kamishima-} propose to add an independence term to the loss function to penalize any correlations between the sensitive attribute and the predicted ratings. This term lessens the effect of consumer-side unfairness \cite{kamishima2017considerations}. They also propose multiple non-independence measures such as the difference in mean ratings between groups and the mutual information between the predicted ratings and the sensitive attributes. Yao et al. (2017) \cite{yao_huang_fatml-2017} also uses a regularization approach to minimize disparate rating predictions errors. Beutel et al. (2017) \cite{beutel2017data} add a penalty term to their pairwise ranking loss function to ensure that the difference between the ranking scores of the relevant and irrelevant items is uncorrelated with the relevant item's sensitive attribute. It is also possible to directly optimize a learning-to-rank such as \cite{diaz2020} that uses such method to achieve equal expected exposure.
+        Fairness regularization has been used in other classification and regression problems such as \cite{kamishima2012fairness,berk2017convex} and recommendation problems. For example, Kamishima et al. (2018) \cite{kamishima2018recommendation} propose to add an independence term to the loss function to penalize any correlations between the sensitive attribute and the predicted ratings. This term lessens the effect of consumer-side unfairness \cite{kamishima2017considerations}. They also propose multiple non-independence measures such as the difference in mean ratings between groups and the mutual information between the predicted ratings and the sensitive attributes. Yao et al. (2017) \cite{yao_huang_fatml-2017} also uses a regularization approach to minimize disparate rating predictions errors. Beutel et al. (2017) \cite{beutel2017data} add a penalty term to their pairwise ranking loss function to ensure that the difference between the ranking scores of the relevant and irrelevant items is uncorrelated with the relevant item's sensitive attribute. It is also possible to directly optimize a learning-to-rank such as \cite{diaz2020} that uses such method to achieve equal expected exposure.
 
         In Chapter \ref{ch:fairness_inproc}, the Balanced Neighborhood method is presented as an in-processing algorithm to balance fairness and accuracy. In neighborhood-based models, the users or items in users' proximity are influential in their recommendations, and unfair recommendations could be because of having homogeneous neighborhoods. To decrease unfairness in this approach for both providers and consumers, we added a regularizer that ensures a diverse neighborhood for users. Many of machine learning algorithms' objective functions are traditionally designed to optimize only for accuracy. Adding fairness notions as extra constraints might prevent the objective functions from converging. Post-processing methods provide alternatives where in-processing modification of algorithms is not fruitful.
 
